@@ -21,6 +21,11 @@ class User extends Authenticatable
     use Notifiable;
     use TwoFactorAuthenticatable;
 
+    public function recipes()
+    {
+        return $this->hasMany(Recipe::class, 'author_id');
+    }
+
     /**
      * The attributes that are mass assignable.
      *
