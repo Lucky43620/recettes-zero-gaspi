@@ -11,12 +11,12 @@ class RecipeStep extends Model
         'recipe_id',
         'position',
         'text',
-        'timer_seconds',
+        'timer_minutes',
     ];
 
     protected $casts = [
         'position' => 'integer',
-        'timer_seconds' => 'integer',
+        'timer_minutes' => 'integer',
     ];
 
     public function recipe(): BelongsTo

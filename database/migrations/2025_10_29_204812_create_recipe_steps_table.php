@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('recipe_id')->constrained()->onDelete('cascade');
             $table->unsignedInteger('position');
             $table->text('text');
-            $table->unsignedInteger('timer_seconds')->nullable();
+            $table->unsignedInteger('timer_minutes')->nullable();
             $table->timestamps();
 
             $table->unique(['recipe_id', 'position']);

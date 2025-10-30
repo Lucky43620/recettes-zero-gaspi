@@ -14,7 +14,7 @@ const steps = computed({
 });
 
 function addStep() {
-    steps.value.push({ text: '', timer_seconds: null });
+    steps.value.push({ text: '', timer_minutes: null });
 }
 
 function removeStep(index) {
@@ -28,7 +28,7 @@ function updateStepText(index, text) {
 }
 
 function updateStepTimer(index, timer) {
-    steps.value[index].timer_seconds = timer;
+    steps.value[index].timer_minutes = timer;
 }
 </script>
 
@@ -53,10 +53,10 @@ function updateStepTimer(index, timer) {
                 />
             </div>
             <input
-                :value="step.timer_seconds"
+                :value="step.timer_minutes"
                 @input="updateStepTimer(index, $event.target.value ? parseInt($event.target.value) : null)"
                 type="number"
-                placeholder="Timer (s)"
+                placeholder="Timer (min)"
                 min="0"
                 class="w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />

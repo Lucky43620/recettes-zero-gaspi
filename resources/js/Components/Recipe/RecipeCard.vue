@@ -1,18 +1,12 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import { useDifficultyLabels } from '@/composables/useDifficultyLabels';
 
 const props = defineProps({
     recipe: Object,
 });
 
-function getDifficultyLabel(level) {
-    const labels = {
-        easy: 'Facile',
-        medium: 'Moyen',
-        hard: 'Difficile',
-    };
-    return labels[level] || level;
-}
+const { getDifficultyLabel } = useDifficultyLabels();
 </script>
 
 <template>
@@ -20,8 +14,15 @@ function getDifficultyLabel(level) {
         :href="route('recipes.show', recipe.slug)"
         class="bg-white overflow-hidden shadow-xl sm:rounded-lg hover:shadow-2xl transition-shadow block"
     >
-        <div class="h-48 bg-gray-200 flex items-center justify-center">
-            <span class="text-gray-400">Image</span>
+        <div v-if="recipe.media && recipe.media.length > 0" class="h-48 bg-gray-100">
+            <img
+                :src="recipe.media[0].original_url"
+                :alt="recipe.title"
+                class="w-full h-full object-cover"
+            />
+        </div>
+        <div v-else class="h-48 bg-gray-200 flex items-center justify-center">
+            <span class="text-gray-400">Pas d'image</span>
         </div>
         <div class="p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-2">

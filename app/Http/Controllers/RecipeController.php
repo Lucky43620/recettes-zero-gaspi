@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreRecipeRequest;
+use App\Http\Requests\UpdateRecipeRequest;
 use App\Models\Recipe;
 use App\Models\Unit;
+use App\Services\RecipeService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,9 +16,13 @@ class RecipeController extends Controller
 {
     use AuthorizesRequests;
 
+    public function __construct(
+        private RecipeService $recipeService
+    ) {}
+
     public function index(Request $request)
     {
-        $query = Recipe::with('author')
+        $query = Recipe::with(['author', 'media'])
             ->where('is_public', true)
             ->latest();
 
@@ -55,52 +62,9 @@ class RecipeController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreRecipeRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'summary' => 'nullable|string',
-            'servings' => 'required|integer|min:1',
-            'prep_minutes' => 'nullable|integer|min:0',
-            'cook_minutes' => 'nullable|integer|min:0',
-            'difficulty' => 'nullable|in:easy,medium,hard',
-            'cuisine' => 'nullable|string|max:100',
-            'is_public' => 'boolean',
-            'calories' => 'nullable|integer|min:0',
-            'nutrients' => 'nullable|array',
-            'steps' => 'required|array|min:1',
-            'steps.*.text' => 'required|string',
-            'steps.*.timer_seconds' => 'nullable|integer|min:0',
-            'images' => 'nullable|array',
-            'images.*' => 'image|max:10240',
-        ]);
-
-        $recipe = Auth::user()->recipes()->create([
-            'title' => $validated['title'],
-            'summary' => $validated['summary'] ?? null,
-            'servings' => $validated['servings'],
-            'prep_minutes' => $validated['prep_minutes'] ?? null,
-            'cook_minutes' => $validated['cook_minutes'] ?? null,
-            'difficulty' => $validated['difficulty'] ?? null,
-            'cuisine' => $validated['cuisine'] ?? null,
-            'is_public' => $validated['is_public'] ?? true,
-            'calories' => $validated['calories'] ?? null,
-            'nutrients' => $validated['nutrients'] ?? null,
-        ]);
-
-        foreach ($validated['steps'] as $index => $step) {
-            $recipe->steps()->create([
-                'position' => $index + 1,
-                'text' => $step['text'],
-                'timer_seconds' => $step['timer_seconds'] ?? null,
-            ]);
-        }
-
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $recipe->addMedia($image)->toMediaCollection('images');
-            }
-        }
+        $recipe = $this->recipeService->createRecipe($request->validated());
 
         return redirect()->route('recipes.show', $recipe->slug)
             ->with('success', 'Recette créée avec succès');
@@ -134,55 +98,9 @@ class RecipeController extends Controller
         ]);
     }
 
-    public function update(Request $request, Recipe $recipe)
+    public function update(UpdateRecipeRequest $request, Recipe $recipe)
     {
-        $this->authorize('update', $recipe);
-
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'summary' => 'nullable|string',
-            'servings' => 'required|integer|min:1',
-            'prep_minutes' => 'nullable|integer|min:0',
-            'cook_minutes' => 'nullable|integer|min:0',
-            'difficulty' => 'nullable|in:easy,medium,hard',
-            'cuisine' => 'nullable|string|max:100',
-            'is_public' => 'boolean',
-            'calories' => 'nullable|integer|min:0',
-            'nutrients' => 'nullable|array',
-            'steps' => 'required|array|min:1',
-            'steps.*.text' => 'required|string',
-            'steps.*.timer_seconds' => 'nullable|integer|min:0',
-            'images' => 'nullable|array',
-            'images.*' => 'image|max:10240',
-        ]);
-
-        $recipe->update([
-            'title' => $validated['title'],
-            'summary' => $validated['summary'] ?? null,
-            'servings' => $validated['servings'],
-            'prep_minutes' => $validated['prep_minutes'] ?? null,
-            'cook_minutes' => $validated['cook_minutes'] ?? null,
-            'difficulty' => $validated['difficulty'] ?? null,
-            'cuisine' => $validated['cuisine'] ?? null,
-            'is_public' => $validated['is_public'] ?? true,
-            'calories' => $validated['calories'] ?? null,
-            'nutrients' => $validated['nutrients'] ?? null,
-        ]);
-
-        $recipe->steps()->delete();
-        foreach ($validated['steps'] as $index => $step) {
-            $recipe->steps()->create([
-                'position' => $index + 1,
-                'text' => $step['text'],
-                'timer_seconds' => $step['timer_seconds'] ?? null,
-            ]);
-        }
-
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $recipe->addMedia($image)->toMediaCollection('images');
-            }
-        }
+        $this->recipeService->updateRecipe($recipe, $request->validated());
 
         return redirect()->route('recipes.show', $recipe->slug)
             ->with('success', 'Recette mise à jour avec succès');

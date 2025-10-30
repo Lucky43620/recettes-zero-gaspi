@@ -2,6 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
+import { useDifficultyLabels } from '@/composables/useDifficultyLabels';
 
 const props = defineProps({
     recipe: Object,
@@ -9,14 +10,7 @@ const props = defineProps({
     canDelete: Boolean,
 });
 
-function getDifficultyLabel(level) {
-    const labels = {
-        easy: 'Facile',
-        medium: 'Moyen',
-        hard: 'Difficile',
-    };
-    return labels[level] || level;
-}
+const { getDifficultyLabel } = useDifficultyLabels();
 
 function deleteRecipe() {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette recette ?')) {
@@ -102,8 +96,8 @@ function deleteRecipe() {
                                     </span>
                                     <div class="flex-1">
                                         <p class="text-gray-800">{{ step.text }}</p>
-                                        <p v-if="step.timer_seconds" class="text-sm text-blue-600 mt-2">
-                                            ⏱️ {{ Math.floor(step.timer_seconds / 60) }}:{{ String(step.timer_seconds % 60).padStart(2, '0') }}
+                                        <p v-if="step.timer_minutes" class="text-sm text-blue-600 mt-2">
+                                            ⏱️ {{ step.timer_minutes }} min
                                         </p>
                                     </div>
                                 </li>

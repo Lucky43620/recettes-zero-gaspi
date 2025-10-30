@@ -18,7 +18,7 @@ const form = useForm({
     cuisine: '',
     is_public: true,
     calories: null,
-    steps: [{ text: '', timer_seconds: null }],
+    steps: [{ text: '', timer_minutes: null }],
     images: [],
 });
 
@@ -29,12 +29,7 @@ function handleImageUpload(event) {
 
 function submit() {
     form.post(route('recipes.store'), {
-        onSuccess: () => {
-            console.log('Recipe created successfully');
-        },
-        onError: (errors) => {
-            console.error('Creation failed:', errors);
-        },
+        preserveScroll: true,
     });
 }
 </script>
