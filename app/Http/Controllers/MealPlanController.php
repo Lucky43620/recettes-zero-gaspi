@@ -49,10 +49,7 @@ class MealPlanController extends Controller
 
     public function addRecipe(Request $request, MealPlan $mealPlan)
     {
-        // Authorization check
-        if ($mealPlan->user_id !== Auth::id()) {
-            abort(403, 'Vous n\'êtes pas autorisé à modifier ce planning.');
-        }
+        $this->authorize('update', $mealPlan);
 
         $validated = $request->validate([
             'recipe_id' => 'required|exists:recipes,id',
@@ -69,10 +66,7 @@ class MealPlanController extends Controller
 
     public function removeRecipe(MealPlanRecipe $mealPlanRecipe)
     {
-        // Authorization check
-        if ($mealPlanRecipe->mealPlan->user_id !== Auth::id()) {
-            abort(403, 'Vous n\'êtes pas autorisé à modifier ce planning.');
-        }
+        $this->authorize('update', $mealPlanRecipe->mealPlan);
 
         $mealPlanRecipe->delete();
 
@@ -81,10 +75,7 @@ class MealPlanController extends Controller
 
     public function updateRecipe(Request $request, MealPlanRecipe $mealPlanRecipe)
     {
-        // Authorization check
-        if ($mealPlanRecipe->mealPlan->user_id !== Auth::id()) {
-            abort(403, 'Vous n\'êtes pas autorisé à modifier ce planning.');
-        }
+        $this->authorize('update', $mealPlanRecipe->mealPlan);
 
         $validated = $request->validate([
             'servings' => 'nullable|integer|min:1',
@@ -98,10 +89,7 @@ class MealPlanController extends Controller
 
     public function duplicate(Request $request, MealPlan $mealPlan)
     {
-        // Authorization check
-        if ($mealPlan->user_id !== Auth::id()) {
-            abort(403, 'Vous n\'êtes pas autorisé à dupliquer ce planning.');
-        }
+        $this->authorize('view', $mealPlan);
 
         $validated = $request->validate([
             'week_start' => 'required|date',

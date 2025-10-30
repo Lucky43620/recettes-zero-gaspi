@@ -25,10 +25,7 @@ class ShoppingListController extends Controller
 
     public function show(ShoppingList $shoppingList)
     {
-        // Authorization check
-        if ($shoppingList->user_id !== Auth::id()) {
-            abort(403, 'Vous n\'êtes pas autorisé à voir cette liste.');
-        }
+        $this->authorize('view', $shoppingList);
 
         $shoppingList->load('items.unit');
 
@@ -52,10 +49,7 @@ class ShoppingListController extends Controller
 
     public function generateFromMealPlan(Request $request, MealPlan $mealPlan)
     {
-        // Authorization check
-        if ($mealPlan->user_id !== Auth::id()) {
-            abort(403, 'Vous n\'êtes pas autorisé à générer une liste depuis ce planning.');
-        }
+        $this->authorize('view', $mealPlan);
 
         $mealPlan->load('mealPlanRecipes.recipe.ingredients.unit');
 
@@ -95,6 +89,8 @@ class ShoppingListController extends Controller
 
     public function destroy(ShoppingList $shoppingList)
     {
+        $this->authorize('delete', $shoppingList);
+
         $shoppingList->delete();
 
         return redirect()->route('shopping-lists.index')
@@ -103,6 +99,8 @@ class ShoppingListController extends Controller
 
     public function addItem(Request $request, ShoppingList $shoppingList)
     {
+        $this->authorize('update', $shoppingList);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'quantity' => 'nullable|numeric|min:0',
@@ -116,6 +114,8 @@ class ShoppingListController extends Controller
 
     public function updateItem(Request $request, ShoppingListItem $item)
     {
+        $this->authorize('update', $item->shoppingList);
+
         $validated = $request->validate([
             'is_checked' => 'required|boolean',
         ]);
@@ -127,6 +127,8 @@ class ShoppingListController extends Controller
 
     public function removeItem(ShoppingListItem $item)
     {
+        $this->authorize('update', $item->shoppingList);
+
         $item->delete();
 
         return back();

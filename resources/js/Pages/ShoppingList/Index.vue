@@ -1,5 +1,8 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
+import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -9,6 +12,8 @@ const props = defineProps({
 
 const showCreateModal = ref(false);
 const newListName = ref('');
+const confirmingListDeletion = ref(false);
+const listToDelete = ref(null);
 
 const createList = () => {
     router.post(route('shopping-lists.store'), {
@@ -21,10 +26,23 @@ const createList = () => {
     });
 };
 
-const deleteList = (listId) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette liste ?')) {
-        router.delete(route('shopping-lists.destroy', listId));
-    }
+const confirmDelete = (listId) => {
+    listToDelete.value = listId;
+    confirmingListDeletion.value = true;
+};
+
+const deleteList = () => {
+    router.delete(route('shopping-lists.destroy', listToDelete.value), {
+        onFinish: () => {
+            confirmingListDeletion.value = false;
+            listToDelete.value = null;
+        },
+    });
+};
+
+const closeDeleteModal = () => {
+    confirmingListDeletion.value = false;
+    listToDelete.value = null;
 };
 </script>
 
@@ -55,7 +73,7 @@ const deleteList = (listId) => {
                         <div class="flex justify-between items-start mb-4">
                             <h3 class="text-lg font-semibold">{{ list.name }}</h3>
                             <button
-                                @click="deleteList(list.id)"
+                                @click="confirmDelete(list.id)"
                                 class="text-red-500 hover:text-red-700"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,5 +140,28 @@ const deleteList = (listId) => {
                 </div>
             </div>
         </div>
+
+        <ConfirmationModal :show="confirmingListDeletion" @close="closeDeleteModal">
+            <template #title>
+                Supprimer la liste de courses
+            </template>
+
+            <template #content>
+                Êtes-vous sûr de vouloir supprimer cette liste ? Cette action est irréversible.
+            </template>
+
+            <template #footer>
+                <SecondaryButton @click="closeDeleteModal">
+                    Annuler
+                </SecondaryButton>
+
+                <DangerButton
+                    class="ms-3"
+                    @click="deleteList"
+                >
+                    Supprimer
+                </DangerButton>
+            </template>
+        </ConfirmationModal>
     </AppLayout>
 </template>

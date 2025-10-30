@@ -34,6 +34,8 @@ const mealTypeLabels = {
 const draggedRecipe = ref(null);
 const showDuplicateModal = ref(false);
 const duplicateWeekStart = ref('');
+const isGeneratingShoppingList = ref(false);
+const isDuplicating = ref(false);
 
 const currentWeekStart = computed(() => new Date(props.weekStart));
 
@@ -94,14 +96,24 @@ const openDuplicateModal = () => {
 };
 
 const duplicateWeek = () => {
+    isDuplicating.value = true;
     router.post(route('meal-plans.duplicate', props.mealPlan.id), {
         week_start: duplicateWeekStart.value,
+    }, {
+        onFinish: () => {
+            isDuplicating.value = false;
+            showDuplicateModal.value = false;
+        },
     });
-    showDuplicateModal.value = false;
 };
 
 const generateShoppingList = () => {
-    router.post(route('shopping-lists.generate', props.mealPlan.id));
+    isGeneratingShoppingList.value = true;
+    router.post(route('shopping-lists.generate', props.mealPlan.id), {
+        onFinish: () => {
+            isGeneratingShoppingList.value = false;
+        },
+    });
 };
 
 const getRecipeImage = (recipe) => {
@@ -119,9 +131,14 @@ const getRecipeImage = (recipe) => {
                 <div class="flex gap-3">
                     <button
                         @click="generateShoppingList"
-                        class="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700"
+                        :disabled="isGeneratingShoppingList"
+                        class="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        Générer liste de courses
+                        <svg v-if="isGeneratingShoppingList" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {{ isGeneratingShoppingList ? 'Génération...' : 'Générer liste de courses' }}
                     </button>
                     <button
                         @click="openDuplicateModal"
@@ -219,7 +236,8 @@ const getRecipeImage = (recipe) => {
                     </div>
 
                     <div class="lg:col-span-3">
-                        <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <!-- Desktop view: Table -->
+                        <div class="hidden md:block bg-white rounded-lg shadow overflow-hidden">
                             <div class="overflow-x-auto">
                                 <table class="w-full">
                                     <thead class="bg-gray-50">
@@ -282,6 +300,56 @@ const getRecipeImage = (recipe) => {
                                 </table>
                             </div>
                         </div>
+
+                        <!-- Mobile view: Cards -->
+                        <div class="md:hidden space-y-4">
+                            <div
+                                v-for="day in daysOfWeek"
+                                :key="day"
+                                class="bg-white rounded-lg shadow p-4"
+                            >
+                                <h3 class="font-semibold text-lg mb-3 text-gray-800">{{ dayLabels[day] }}</h3>
+                                <div class="space-y-3">
+                                    <div v-for="mealType in mealTypes" :key="`${day}-${mealType}`">
+                                        <div
+                                            @dragover="onDragOver"
+                                            @drop="onDrop(day, mealType)"
+                                            class="border-2 border-dashed border-gray-200 rounded-lg p-3 min-h-[80px]"
+                                        >
+                                            <p class="text-sm font-medium text-gray-600 mb-2">{{ mealTypeLabels[mealType] }}</p>
+                                            <div class="space-y-2">
+                                                <div
+                                                    v-for="mpr in getMealPlanRecipes(day, mealType)"
+                                                    :key="mpr.id"
+                                                    class="p-2 bg-green-50 rounded border border-green-200 relative group cursor-pointer hover:bg-green-100 transition"
+                                                    @click="router.visit(route('recipes.show', mpr.recipe.slug))"
+                                                >
+                                                    <button
+                                                        @click.stop="removeRecipe(mpr.id)"
+                                                        class="absolute top-1 right-1 text-red-500 hover:text-red-700"
+                                                    >
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
+                                                    <div class="flex items-start gap-2">
+                                                        <img
+                                                            :src="getRecipeImage(mpr.recipe)"
+                                                            :alt="mpr.recipe.title"
+                                                            class="w-10 h-10 object-cover rounded"
+                                                        />
+                                                        <div class="flex-1 min-w-0">
+                                                            <p class="text-xs font-medium truncate">{{ mpr.recipe.title }}</p>
+                                                            <p class="text-xs text-gray-500">{{ mpr.servings }} portions</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -307,15 +375,21 @@ const getRecipeImage = (recipe) => {
                 <div class="flex gap-3 justify-end">
                     <button
                         @click="showDuplicateModal = false"
-                        class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                        :disabled="isDuplicating"
+                        class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md disabled:opacity-50"
                     >
                         Annuler
                     </button>
                     <button
                         @click="duplicateWeek"
-                        class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                        :disabled="isDuplicating"
+                        class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        Dupliquer
+                        <svg v-if="isDuplicating" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {{ isDuplicating ? 'Duplication...' : 'Dupliquer' }}
                     </button>
                 </div>
             </div>

@@ -78,6 +78,7 @@ class RecipeController extends Controller
         $recipe->load([
             'author',
             'steps',
+            'ingredients.unit',
             'media',
             'ratings.user',
             'comments' => function ($query) {

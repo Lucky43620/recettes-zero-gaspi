@@ -119,6 +119,22 @@ function deleteRecipe() {
                             </div>
                         </div>
 
+                        <div v-if="recipe.ingredients && recipe.ingredients.length > 0" class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Ingrédients</h3>
+                            <div class="bg-white border border-gray-200 rounded-lg divide-y divide-gray-200">
+                                <div
+                                    v-for="ingredient in recipe.ingredients"
+                                    :key="ingredient.id"
+                                    class="px-4 py-3 flex items-center justify-between hover:bg-gray-50"
+                                >
+                                    <span class="text-gray-800">{{ ingredient.name }}</span>
+                                    <span class="text-gray-600 font-medium">
+                                        {{ ingredient.quantity }} {{ ingredient.unit?.symbol || '' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-6">
                             <h3 class="text-xl font-semibold text-gray-900 mb-4">Étapes</h3>
                             <ol class="space-y-4">
