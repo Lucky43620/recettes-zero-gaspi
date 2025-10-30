@@ -40,7 +40,7 @@ watch([search, difficulty, sort], () => {
                     v-model="search"
                     type="text"
                     placeholder="Titre ou description..."
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                     @keyup.enter="applyFilters"
                 />
             </div>
@@ -51,7 +51,7 @@ watch([search, difficulty, sort], () => {
                 </label>
                 <select
                     v-model="difficulty"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                     @change="applyFilters"
                 >
                     <option value="">Toutes</option>
@@ -67,7 +67,7 @@ watch([search, difficulty, sort], () => {
                 </label>
                 <select
                     v-model="sort"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                     @change="applyFilters"
                 >
                     <option value="latest">Plus récent</option>

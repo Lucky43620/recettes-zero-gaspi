@@ -27,12 +27,17 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Reset Password" />
+    <Head title="Réinitialiser le mot de passe" />
 
     <AuthenticationCard>
         <template #logo>
             <AuthenticationCardLogo />
         </template>
+
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Nouveau mot de passe</h1>
+            <p class="text-gray-600">Choisissez un nouveau mot de passe sécurisé</p>
+        </div>
 
         <form @submit.prevent="submit">
             <div>
@@ -50,7 +55,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Nouveau mot de passe" />
                 <TextInput
                     id="password"
                     v-model="form.password"
@@ -63,7 +68,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <InputLabel for="password_confirmation" value="Confirmer le mot de passe" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
@@ -75,11 +80,9 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Reset Password
-                </PrimaryButton>
-            </div>
+            <PrimaryButton class="w-full justify-center mt-6 bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                Réinitialiser le mot de passe
+            </PrimaryButton>
         </form>
     </AuthenticationCard>
 </template>

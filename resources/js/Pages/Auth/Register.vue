@@ -24,16 +24,21 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Register" />
+    <Head title="Inscription" />
 
     <AuthenticationCard>
         <template #logo>
             <AuthenticationCardLogo />
         </template>
 
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Créer un compte</h1>
+            <p class="text-gray-600">Rejoignez la communauté anti-gaspillage</p>
+        </div>
+
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" value="Nom" />
                 <TextInput
                     id="name"
                     v-model="form.name"
@@ -60,7 +65,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Mot de passe" />
                 <TextInput
                     id="password"
                     v-model="form.password"
@@ -73,7 +78,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <InputLabel for="password_confirmation" value="Confirmer le mot de passe" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
@@ -90,22 +95,25 @@ const submit = () => {
                     <div class="flex items-center">
                         <Checkbox id="terms" v-model:checked="form.terms" name="terms" required />
 
-                        <div class="ms-2">
-                            I agree to the <a target="_blank" :href="route('terms.show')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Terms of Service</a> and <a target="_blank" :href="route('policy.show')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Privacy Policy</a>
+                        <div class="ms-2 text-sm">
+                            J'accepte les <a target="_blank" :href="route('terms.show')" class="underline text-green-600 hover:text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">Conditions d'utilisation</a> et la <a target="_blank" :href="route('policy.show')" class="underline text-green-600 hover:text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">Politique de confidentialité</a>
                         </div>
                     </div>
                     <InputError class="mt-2" :message="form.errors.terms" />
                 </InputLabel>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Already registered?
-                </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
+            <div class="flex flex-col gap-4 mt-6">
+                <PrimaryButton class="w-full justify-center bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    S'inscrire
                 </PrimaryButton>
+
+                <div class="text-center text-sm text-gray-600">
+                    Déjà un compte ?
+                    <Link :href="route('login')" class="text-green-600 hover:text-green-800 font-medium">
+                        Se connecter
+                    </Link>
+                </div>
             </div>
         </form>
     </AuthenticationCard>

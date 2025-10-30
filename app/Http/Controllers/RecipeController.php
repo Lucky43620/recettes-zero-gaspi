@@ -53,6 +53,43 @@ class RecipeController extends Controller
         ]);
     }
 
+    public function myRecipes(Request $request)
+    {
+        $query = Recipe::with(['author', 'media'])
+            ->where('author_id', Auth::id())
+            ->latest();
+
+        if ($request->has('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                    ->orWhere('summary', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->has('difficulty')) {
+            $query->where('difficulty', $request->difficulty);
+        }
+
+        if ($request->has('visibility')) {
+            $query->where('is_public', $request->visibility === 'public');
+        }
+
+        if ($request->has('sort')) {
+            match ($request->sort) {
+                'rating' => $query->orderBy('rating_avg', 'desc'),
+                'duration' => $query->orderByRaw('COALESCE(prep_minutes, 0) + COALESCE(cook_minutes, 0) ASC'),
+                default => $query->latest(),
+            };
+        }
+
+        $recipes = $query->paginate(12);
+
+        return Inertia::render('Recipe/MyRecipes', [
+            'recipes' => $recipes,
+            'filters' => $request->only(['search', 'difficulty', 'sort', 'visibility']),
+        ]);
+    }
+
     public function create()
     {
         $units = Unit::all();
@@ -66,22 +103,50 @@ class RecipeController extends Controller
     {
         $recipe = $this->recipeService->createRecipe($request->validated());
 
-        return redirect()->route('recipes.show', $recipe->slug)
+        return redirect()->route('recipes.show', ['recipe' => $recipe->slug, 'from' => 'my'])
             ->with('success', 'Recette créée avec succès');
     }
 
-    public function show(Recipe $recipe)
+    public function show(Request $request, Recipe $recipe)
     {
         if (!$recipe->is_public && $recipe->author_id !== Auth::id()) {
             abort(403);
         }
 
-        $recipe->load(['author', 'steps', 'media']);
+        $recipe->load([
+            'author',
+            'steps',
+            'media',
+            'ratings.user',
+            'comments' => function ($query) {
+                $query->with(['user', 'replies.user'])->orderBy('upvotes', 'desc')->orderBy('created_at', 'desc');
+            },
+        ]);
+
+        $userRating = null;
+        $isFavorited = false;
+        $commentVotes = [];
+
+        if (Auth::check()) {
+            $userRating = $recipe->ratings()->where('user_id', Auth::id())->first();
+            $isFavorited = Auth::user()->hasFavorited($recipe);
+            $commentVotes = \App\Models\CommentVote::where('user_id', Auth::id())
+                ->whereIn('comment_id', $recipe->comments->pluck('id'))
+                ->pluck('vote', 'comment_id')
+                ->toArray();
+        }
+
+        $isOwner = Auth::id() === $recipe->author_id;
+        $fromMyRecipes = $request->query('from') === 'my';
 
         return Inertia::render('Recipe/Show', [
             'recipe' => $recipe,
+            'userRating' => $userRating,
+            'isFavorited' => $isFavorited,
+            'commentVotes' => $commentVotes,
             'canEdit' => Auth::user()?->can('update', $recipe),
             'canDelete' => Auth::user()?->can('delete', $recipe),
+            'usePrivateLayout' => $isOwner && $fromMyRecipes,
         ]);
     }
 
@@ -102,7 +167,7 @@ class RecipeController extends Controller
     {
         $this->recipeService->updateRecipe($recipe, $request->validated());
 
-        return redirect()->route('recipes.show', $recipe->slug)
+        return redirect()->route('recipes.show', ['recipe' => $recipe->slug, 'from' => 'my'])
             ->with('success', 'Recette mise à jour avec succès');
     }
 

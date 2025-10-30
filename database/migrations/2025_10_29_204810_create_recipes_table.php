@@ -25,7 +25,7 @@ return new class extends Migration
             $table->boolean('is_public')->default(true);
             $table->unsignedInteger('calories')->nullable();
             $table->json('nutrients')->nullable();
-            $table->decimal('rating_avg', 3, 2)->default(0);
+            $table->decimal('rating_avg', 4, 2)->default(0);
             $table->unsignedInteger('rating_count')->default(0);
             $table->timestamps();
 

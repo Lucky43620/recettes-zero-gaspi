@@ -1,17 +1,27 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import { useDifficultyLabels } from '@/composables/useDifficultyLabels';
+import { computed } from 'vue';
 
 const props = defineProps({
     recipe: Object,
+    fromMyRecipes: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const { getDifficultyLabel } = useDifficultyLabels();
+
+const recipeUrl = computed(() => {
+    const params = props.fromMyRecipes ? { from: 'my' } : {};
+    return route('recipes.show', [props.recipe.slug, params]);
+});
 </script>
 
 <template>
     <Link
-        :href="route('recipes.show', recipe.slug)"
+        :href="recipeUrl"
         class="bg-white overflow-hidden shadow-xl sm:rounded-lg hover:shadow-2xl transition-shadow block"
     >
         <div v-if="recipe.media && recipe.media.length > 0" class="h-48 bg-gray-100">
@@ -32,7 +42,8 @@ const { getDifficultyLabel } = useDifficultyLabels();
                 {{ recipe.summary }}
             </p>
             <div class="flex justify-between items-center text-sm text-gray-500">
-                <span>{{ recipe.author.name }}</span>
+                <span v-if="recipe.author">{{ recipe.author.name }}</span>
+                <span v-else>Anonyme</span>
                 <span v-if="recipe.difficulty">
                     {{ getDifficultyLabel(recipe.difficulty) }}
                 </span>

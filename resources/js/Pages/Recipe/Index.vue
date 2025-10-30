@@ -1,42 +1,28 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import PublicLayout from '@/Layouts/PublicLayout.vue';
 import { Link } from '@inertiajs/vue3';
-import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
+import RecipeGrid from '@/Components/Recipe/RecipeGrid.vue';
 import RecipeFilters from '@/Components/Recipe/RecipeFilters.vue';
+import PageHeader from '@/Components/Common/PageHeader.vue';
 
-const props = defineProps({
+defineProps({
     recipes: Object,
     filters: Object,
 });
 </script>
 
 <template>
-    <AppLayout title="Recettes">
-        <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Recettes
-                </h2>
-                <Link
-                    :href="route('recipes.create')"
-                    class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-                >
-                    Créer une recette
-                </Link>
-            </div>
-        </template>
+    <PublicLayout title="Recettes">
+        <div class="py-8">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 min-h-[60vh]">
+                <PageHeader
+                    title="Toutes les recettes"
+                    subtitle="Découvrez toutes les recettes partagées par notre communauté"
+                />
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <RecipeFilters :filters="filters" class="mb-6" />
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <RecipeCard
-                        v-for="recipe in recipes.data"
-                        :key="recipe.id"
-                        :recipe="recipe"
-                    />
-                </div>
+                <RecipeGrid :recipes="recipes.data" />
 
                 <div v-if="recipes.links" class="mt-6 flex justify-center">
                     <nav class="flex gap-2">
@@ -46,7 +32,7 @@ const props = defineProps({
                             :is="link.url ? Link : 'span'"
                             :href="link.url"
                             :class="{
-                                'bg-blue-600 text-white': link.active,
+                                'bg-green-600 text-white': link.active,
                                 'bg-white text-gray-700 hover:bg-gray-50': !link.active && link.url,
                                 'cursor-not-allowed opacity-50': !link.url,
                             }"
@@ -60,5 +46,5 @@ const props = defineProps({
                 </div>
             </div>
         </div>
-    </AppLayout>
+    </PublicLayout>
 </template>

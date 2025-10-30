@@ -26,6 +26,46 @@ class User extends Authenticatable
         return $this->hasMany(Recipe::class, 'author_id');
     }
 
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'following_id', 'follower_id');
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id');
+    }
+
+    public function isFollowing(User $user)
+    {
+        return $this->following()->where('following_id', $user->id)->exists();
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Recipe::class, 'favorites')->withTimestamps();
+    }
+
+    public function hasFavorited(Recipe $recipe)
+    {
+        return $this->favorites()->where('recipe_id', $recipe->id)->exists();
+    }
+
+    public function collections()
+    {
+        return $this->hasMany(Collection::class);
+    }
+
     /**
      * The attributes that are mass assignable.
      *

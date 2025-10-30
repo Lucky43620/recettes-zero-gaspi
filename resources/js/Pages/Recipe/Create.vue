@@ -74,7 +74,7 @@ function submit() {
                                 v-model="form.is_public"
                                 type="checkbox"
                                 id="is_public"
-                                class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-500 focus:ring-green-500"
                             />
                             <label for="is_public" class="ml-2 text-sm text-gray-700">
                                 Rendre cette recette publique
@@ -91,7 +91,7 @@ function submit() {
                             <button
                                 type="submit"
                                 :disabled="form.processing"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
                             >
                                 Créer la recette
                             </button>

@@ -14,7 +14,7 @@ const props = defineProps({
                 v-model="form.title"
                 type="text"
                 required
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
             />
             <div v-if="form.errors.title" class="text-red-600 text-sm mt-1">
                 {{ form.errors.title }}
@@ -28,7 +28,7 @@ const props = defineProps({
             <textarea
                 v-model="form.summary"
                 rows="3"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
             />
             <div v-if="form.errors.summary" class="text-red-600 text-sm mt-1">
                 {{ form.errors.summary }}
@@ -45,7 +45,7 @@ const props = defineProps({
                     type="number"
                     min="1"
                     required
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                 />
             </div>
 
@@ -57,7 +57,7 @@ const props = defineProps({
                     v-model.number="form.prep_minutes"
                     type="number"
                     min="0"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                 />
             </div>
 
@@ -69,7 +69,7 @@ const props = defineProps({
                     v-model.number="form.cook_minutes"
                     type="number"
                     min="0"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                 />
             </div>
         </div>
@@ -81,7 +81,7 @@ const props = defineProps({
                 </label>
                 <select
                     v-model="form.difficulty"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                 >
                     <option value="">Sélectionner</option>
                     <option value="easy">Facile</option>
@@ -97,7 +97,7 @@ const props = defineProps({
                 <input
                     v-model="form.cuisine"
                     type="text"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                 />
             </div>
         </div>

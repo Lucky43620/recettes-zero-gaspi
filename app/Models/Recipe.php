@@ -74,6 +74,27 @@ class Recipe extends Model implements HasMedia
         return $this->hasMany(RecipeStep::class)->orderBy('position');
     }
 
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id');
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+    }
+
+    public function collections()
+    {
+        return $this->belongsToMany(Collection::class)
+            ->withPivot('position', 'added_at');
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')

@@ -49,7 +49,7 @@ function updateStepTimer(index, timer) {
                     :placeholder="`Étape ${index + 1}`"
                     required
                     rows="2"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                 />
             </div>
             <input
@@ -58,7 +58,7 @@ function updateStepTimer(index, timer) {
                 type="number"
                 placeholder="Timer (min)"
                 min="0"
-                class="w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                class="w-32 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
             />
             <button
                 type="button"
