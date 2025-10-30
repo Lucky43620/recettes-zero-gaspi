@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Recipe;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RecipeService
@@ -53,6 +54,32 @@ class RecipeService
         }
 
         return $recipe;
+    }
+
+    public function applyFilters($query, Request $request)
+    {
+        if ($request->has('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                    ->orWhere('summary', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->has('difficulty')) {
+            $query->where('difficulty', $request->difficulty);
+        }
+
+        if ($request->has('sort')) {
+            match ($request->sort) {
+                'rating' => $query->orderBy('rating_avg', 'desc'),
+                'duration' => $query->orderByRaw('COALESCE(prep_minutes, 0) + COALESCE(cook_minutes, 0) ASC'),
+                default => $query->latest(),
+            };
+        } else {
+            $query->latest();
+        }
+
+        return $query;
     }
 
     private function syncSteps(Recipe $recipe, array $steps): void

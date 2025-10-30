@@ -23,28 +23,9 @@ class RecipeController extends Controller
     public function index(Request $request)
     {
         $query = Recipe::with(['author', 'media'])
-            ->where('is_public', true)
-            ->latest();
+            ->where('is_public', true);
 
-        if ($request->has('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                    ->orWhere('summary', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        if ($request->has('difficulty')) {
-            $query->where('difficulty', $request->difficulty);
-        }
-
-        if ($request->has('sort')) {
-            match ($request->sort) {
-                'rating' => $query->orderBy('rating_avg', 'desc'),
-                'duration' => $query->orderByRaw('COALESCE(prep_minutes, 0) + COALESCE(cook_minutes, 0) ASC'),
-                default => $query->latest(),
-            };
-        }
-
+        $query = $this->recipeService->applyFilters($query, $request);
         $recipes = $query->paginate(12);
 
         return Inertia::render('Recipe/Index', [
@@ -56,32 +37,13 @@ class RecipeController extends Controller
     public function myRecipes(Request $request)
     {
         $query = Recipe::with(['author', 'media'])
-            ->where('author_id', Auth::id())
-            ->latest();
-
-        if ($request->has('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                    ->orWhere('summary', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        if ($request->has('difficulty')) {
-            $query->where('difficulty', $request->difficulty);
-        }
+            ->where('author_id', Auth::id());
 
         if ($request->has('visibility')) {
             $query->where('is_public', $request->visibility === 'public');
         }
 
-        if ($request->has('sort')) {
-            match ($request->sort) {
-                'rating' => $query->orderBy('rating_avg', 'desc'),
-                'duration' => $query->orderByRaw('COALESCE(prep_minutes, 0) + COALESCE(cook_minutes, 0) ASC'),
-                default => $query->latest(),
-            };
-        }
-
+        $query = $this->recipeService->applyFilters($query, $request);
         $recipes = $query->paginate(12);
 
         return Inertia::render('Recipe/MyRecipes', [

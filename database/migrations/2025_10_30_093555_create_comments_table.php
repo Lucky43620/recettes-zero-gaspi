@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreignId('recipe_id')->constrained()->onDelete('cascade');
             $table->foreignId('parent_id')->nullable()->constrained('comments')->onDelete('cascade');
             $table->text('content');
-            $table->integer('helpful_count')->default(0);
+            $table->integer('upvotes')->default(0);
+            $table->integer('downvotes')->default(0);
             $table->timestamps();
             $table->softDeletes();
 
