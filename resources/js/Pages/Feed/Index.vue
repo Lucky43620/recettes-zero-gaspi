@@ -1,7 +1,8 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
-import { Link } from '@inertiajs/vue3';
+import Pagination from '@/Components/Common/Pagination.vue';
+import EmptyState from '@/Components/Common/EmptyState.vue';
 
 const props = defineProps({
     feed: Object,
@@ -26,37 +27,17 @@ const props = defineProps({
                     />
                 </div>
 
-                <div v-else class="bg-white rounded-lg shadow p-8 text-center">
-                    <p class="text-gray-600 mb-4">
-                        Vous ne suivez personne pour le moment
-                    </p>
-                    <Link
-                        :href="route('home')"
-                        class="inline-block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                    >
-                        Découvrir des recettes
-                    </Link>
-                </div>
+                <EmptyState
+                    v-else
+                    icon="search"
+                    title="Vous ne suivez personne pour le moment"
+                    message="Commencez à suivre des cuisiniers pour voir leurs nouvelles recettes"
+                    action-label="Découvrir des recettes"
+                    :action-href="route('recipes.index')"
+                />
 
-                <div v-if="feed.data.length && feed.last_page > 1" class="mt-6 flex justify-center gap-2">
-                    <component
-                        v-for="(link, index) in feed.links"
-                        :key="index"
-                        :is="link.url ? Link : 'span'"
-                        :href="link.url"
-                        :class="[
-                            'px-3 py-2 border rounded',
-                            link.active
-                                ? 'bg-green-600 text-white border-green-600'
-                                : link.url
-                                    ? 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                    : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                        ]"
-                    >
-                        <span v-if="link.label.includes('Previous')">← Précédent</span>
-                        <span v-else-if="link.label.includes('Next')">Suivant →</span>
-                        <span v-else v-html="link.label"></span>
-                    </component>
+                <div v-if="feed.links" class="mt-6 flex justify-center">
+                    <Pagination :links="feed.links" />
                 </div>
             </div>
         </div>

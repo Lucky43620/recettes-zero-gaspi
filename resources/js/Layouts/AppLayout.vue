@@ -47,6 +47,12 @@ const logout = () => {
                                 <NavLink :href="route('recipes.my')" :active="route().current('recipes.my')">
                                     Mes recettes
                                 </NavLink>
+                                <NavLink :href="route('meal-plans.index')" :active="route().current('meal-plans.*')">
+                                    Planning
+                                </NavLink>
+                                <NavLink :href="route('shopping-lists.index')" :active="route().current('shopping-lists.*')">
+                                    Courses
+                                </NavLink>
                                 <NavLink :href="route('favorites.index')" :active="route().current('favorites.index')">
                                     Favoris
                                 </NavLink>
@@ -138,6 +144,12 @@ const logout = () => {
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('recipes.my')" :active="route().current('recipes.my')">
                             Mes recettes
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('meal-plans.index')" :active="route().current('meal-plans.*')">
+                            Planning
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('shopping-lists.index')" :active="route().current('shopping-lists.*')">
+                            Courses
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('favorites.index')" :active="route().current('favorites.index')">
                             Favoris

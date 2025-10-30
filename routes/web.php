@@ -5,9 +5,11 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\MealPlanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\ShoppingListController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,7 +29,9 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+// Public recipe routes - order matters! Specific routes before parameterized routes
 Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
+Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create')->middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']);
 Route::get('/recipes/{recipe:slug}', [RecipeController::class, 'show'])->name('recipes.show');
 
 Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
@@ -59,7 +63,6 @@ Route::middleware([
     })->name('dashboard');
 
     Route::get('/my-recipes', [RecipeController::class, 'myRecipes'])->name('recipes.my');
-    Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
     Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
     Route::get('/recipes/{recipe:slug}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
     Route::put('/recipes/{recipe:slug}', [RecipeController::class, 'update'])->name('recipes.update');
@@ -88,4 +91,19 @@ Route::middleware([
     Route::post('/collections/{collection}/recipes/{recipe:slug}', [CollectionController::class, 'addRecipe'])->name('collections.recipes.add');
     Route::delete('/collections/{collection}/recipes/{recipe:slug}', [CollectionController::class, 'removeRecipe'])->name('collections.recipes.remove');
     Route::post('/collections/{collection}/reorder', [CollectionController::class, 'reorder'])->name('collections.reorder');
+
+    Route::get('/meal-plans', [MealPlanController::class, 'index'])->name('meal-plans.index');
+    Route::post('/meal-plans/{mealPlan}/recipes', [MealPlanController::class, 'addRecipe'])->name('meal-plans.recipes.add');
+    Route::delete('/meal-plan-recipes/{mealPlanRecipe}', [MealPlanController::class, 'removeRecipe'])->name('meal-plans.recipes.remove');
+    Route::put('/meal-plan-recipes/{mealPlanRecipe}', [MealPlanController::class, 'updateRecipe'])->name('meal-plans.recipes.update');
+    Route::post('/meal-plans/{mealPlan}/duplicate', [MealPlanController::class, 'duplicate'])->name('meal-plans.duplicate');
+
+    Route::get('/shopping-lists', [ShoppingListController::class, 'index'])->name('shopping-lists.index');
+    Route::post('/shopping-lists', [ShoppingListController::class, 'store'])->name('shopping-lists.store');
+    Route::get('/shopping-lists/{shoppingList}', [ShoppingListController::class, 'show'])->name('shopping-lists.show');
+    Route::delete('/shopping-lists/{shoppingList}', [ShoppingListController::class, 'destroy'])->name('shopping-lists.destroy');
+    Route::post('/meal-plans/{mealPlan}/generate-shopping-list', [ShoppingListController::class, 'generateFromMealPlan'])->name('shopping-lists.generate');
+    Route::post('/shopping-lists/{shoppingList}/items', [ShoppingListController::class, 'addItem'])->name('shopping-lists.items.add');
+    Route::put('/shopping-list-items/{item}', [ShoppingListController::class, 'updateItem'])->name('shopping-lists.items.update');
+    Route::delete('/shopping-list-items/{item}', [ShoppingListController::class, 'removeItem'])->name('shopping-lists.items.remove');
 });
