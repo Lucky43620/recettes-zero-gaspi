@@ -6,12 +6,14 @@ use App\Models\MealPlan;
 use App\Models\MealPlanRecipe;
 use App\Models\Recipe;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class MealPlanController extends Controller
 {
+    use AuthorizesRequests;
     public function index(Request $request)
     {
         $weekStart = $request->has('week')

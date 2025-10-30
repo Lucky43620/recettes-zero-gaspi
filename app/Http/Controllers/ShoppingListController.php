@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\MealPlan;
 use App\Models\ShoppingList;
 use App\Models\ShoppingListItem;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ShoppingListController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
         $shoppingLists = Auth::user()->shoppingLists()
