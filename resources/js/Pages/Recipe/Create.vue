@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import RecipeStepEditor from '@/Components/Recipe/RecipeStepEditor.vue';
 import RecipeFormFields from '@/Components/Recipe/RecipeFormFields.vue';
+import RecipeIngredientEditor from '@/Components/Recipe/RecipeIngredientEditor.vue';
 import FileUpload from '@/Components/Common/FileUpload.vue';
 
 const props = defineProps({
@@ -20,6 +21,7 @@ const form = useForm({
     is_public: true,
     calories: null,
     steps: [{ text: '', timer_minutes: null }],
+    ingredients: [],
     images: [],
 });
 
@@ -57,6 +59,19 @@ function submit() {
                                 <div class="border-t pt-6">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                         <span class="flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 rounded-full text-sm font-bold">2</span>
+                                        Ingrédients
+                                    </h3>
+                                    <div class="pl-10">
+                                        <RecipeIngredientEditor
+                                            v-model="form.ingredients"
+                                            :units="units"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div class="border-t pt-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <span class="flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 rounded-full text-sm font-bold">3</span>
                                         Étapes de préparation
                                     </h3>
                                     <div class="pl-10">
@@ -69,7 +84,7 @@ function submit() {
 
                                 <div class="border-t pt-6">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                        <span class="flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 rounded-full text-sm font-bold">3</span>
+                                        <span class="flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 rounded-full text-sm font-bold">4</span>
                                         Photos de la recette
                                     </h3>
                                     <div class="pl-10">

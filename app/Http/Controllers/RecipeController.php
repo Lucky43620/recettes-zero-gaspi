@@ -78,6 +78,7 @@ class RecipeController extends Controller
         $recipe->load([
             'author',
             'steps',
+            'ingredients',
             'media',
             'ratings.user',
             'comments' => function ($query) {
@@ -116,7 +117,7 @@ class RecipeController extends Controller
     {
         $this->authorize('update', $recipe);
 
-        $recipe->load(['steps', 'media']);
+        $recipe->load(['steps', 'ingredients', 'media']);
         $units = Unit::all();
 
         return Inertia::render('Recipe/Edit', [

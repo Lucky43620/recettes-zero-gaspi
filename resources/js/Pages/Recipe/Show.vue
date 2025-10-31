@@ -129,8 +129,8 @@ function deleteRecipe() {
                                     class="px-4 py-3 flex items-center justify-between hover:bg-gray-50"
                                 >
                                     <span class="text-gray-800">{{ ingredient.name }}</span>
-                                    <span class="text-gray-600 font-medium">
-                                        {{ ingredient.quantity }} {{ ingredient.unit?.symbol || '' }}
+                                    <span v-if="ingredient.pivot.quantity" class="text-gray-600 font-medium">
+                                        {{ ingredient.pivot.quantity }} {{ ingredient.pivot.unit_code || '' }}
                                     </span>
                                 </div>
                             </div>

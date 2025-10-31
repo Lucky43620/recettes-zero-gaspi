@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Ingredient;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +25,10 @@ class RecipeService
         ]);
 
         $this->syncSteps($recipe, $validated['steps']);
+
+        if (!empty($validated['ingredients'])) {
+            $this->syncIngredients($recipe, $validated['ingredients']);
+        }
 
         if (!empty($validated['images'])) {
             $this->syncImages($recipe, $validated['images']);
@@ -48,6 +53,10 @@ class RecipeService
         ]);
 
         $this->syncSteps($recipe, $validated['steps']);
+
+        if (!empty($validated['ingredients'])) {
+            $this->syncIngredients($recipe, $validated['ingredients']);
+        }
 
         if (!empty($validated['images'])) {
             $this->syncImages($recipe, $validated['images']);
@@ -91,6 +100,27 @@ class RecipeService
                 'position' => $index + 1,
                 'text' => $step['text'],
                 'timer_minutes' => $step['timer_minutes'] ?? null,
+            ]);
+        }
+    }
+
+    private function syncIngredients(Recipe $recipe, array $ingredients): void
+    {
+        $recipe->ingredients()->detach();
+
+        foreach ($ingredients as $index => $ingredientData) {
+            if (empty($ingredientData['name'])) {
+                continue;
+            }
+
+            $ingredient = Ingredient::firstOrCreate(
+                ['name' => $ingredientData['name']]
+            );
+
+            $recipe->ingredients()->attach($ingredient->id, [
+                'quantity' => $ingredientData['quantity'] ?? null,
+                'unit_code' => $ingredientData['unit_code'] ?? null,
+                'position' => $index,
             ]);
         }
     }

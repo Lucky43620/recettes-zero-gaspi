@@ -30,6 +30,10 @@ class StoreRecipeRequest extends FormRequest
             'steps' => 'required|array|min:1',
             'steps.*.text' => 'required|string',
             'steps.*.timer_minutes' => 'nullable|numeric|min:0',
+            'ingredients' => 'nullable|array',
+            'ingredients.*.name' => 'required|string|max:255',
+            'ingredients.*.quantity' => 'nullable|numeric|min:0',
+            'ingredients.*.unit_code' => 'nullable|string|exists:units,code',
             'images' => 'nullable|array',
             'images.*' => 'image|max:10240',
         ];

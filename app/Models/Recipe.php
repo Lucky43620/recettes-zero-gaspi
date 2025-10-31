@@ -95,6 +95,14 @@ class Recipe extends Model implements HasMedia
             ->withPivot('position', 'added_at');
     }
 
+    public function ingredients()
+    {
+        return $this->belongsToMany(Ingredient::class, 'recipe_ingredients')
+            ->withPivot('quantity', 'unit_code', 'position')
+            ->withTimestamps()
+            ->orderBy('recipe_ingredients.position');
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')
