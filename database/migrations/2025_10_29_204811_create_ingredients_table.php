@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('barcode', 50)->nullable()->index();
-            $table->string('category', 100)->nullable();
+            $table->text('category')->nullable();
             $table->timestamps();
 
             $table->index('name');
