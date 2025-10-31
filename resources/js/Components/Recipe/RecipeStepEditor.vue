@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import { TrashIcon, PlusIcon, ClockIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     modelValue: Array,
@@ -27,56 +28,105 @@ function updateStepText(index, text) {
     steps.value[index].text = text;
 }
 
-function updateStepTimer(index, timer) {
-    steps.value[index].timer_minutes = timer;
+function updateStepTimer(index, minutes, seconds) {
+    const totalMinutes = (parseInt(minutes) || 0) + (parseInt(seconds) || 0) / 60;
+    steps.value[index].timer_minutes = totalMinutes > 0 ? parseFloat(totalMinutes.toFixed(2)) : null;
+}
+
+function getMinutes(timerMinutes) {
+    if (!timerMinutes) return '';
+    return Math.floor(timerMinutes);
+}
+
+function getSeconds(timerMinutes) {
+    if (!timerMinutes) return '';
+    const seconds = Math.round((timerMinutes % 1) * 60);
+    return seconds;
 }
 </script>
 
 <template>
-    <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-            Étapes *
+    <div class="space-y-4">
+        <label class="block text-sm font-medium text-gray-700">
+            Étapes de préparation *
         </label>
-        <div
-            v-for="(step, index) in steps"
-            :key="index"
-            class="flex gap-2 mb-3"
-        >
-            <div class="flex-1">
-                <textarea
-                    :value="step.text"
-                    @input="updateStepText(index, $event.target.value)"
-                    :placeholder="`Étape ${index + 1}`"
-                    required
-                    rows="2"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                />
-            </div>
-            <input
-                :value="step.timer_minutes"
-                @input="updateStepTimer(index, $event.target.value ? parseInt($event.target.value) : null)"
-                type="number"
-                placeholder="Timer (min)"
-                min="0"
-                class="w-32 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            />
-            <button
-                type="button"
-                @click="removeStep(index)"
-                :disabled="steps.length === 1"
-                class="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+
+        <div class="space-y-4">
+            <div
+                v-for="(step, index) in steps"
+                :key="index"
+                class="border-2 border-gray-200 rounded-lg p-4 hover:border-green-300 transition-colors"
             >
-                ×
-            </button>
+                <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-semibold text-sm mt-1">
+                        {{ index + 1 }}
+                    </div>
+
+                    <div class="flex-1 space-y-3">
+                        <textarea
+                            :value="step.text"
+                            @input="updateStepText(index, $event.target.value)"
+                            :placeholder="`Décrivez l'étape ${index + 1}...`"
+                            required
+                            rows="3"
+                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 resize-none"
+                        />
+
+                        <div class="flex items-center gap-2">
+                            <ClockIcon class="h-5 w-5 text-gray-400" />
+                            <span class="text-sm text-gray-600 font-medium">Minuteur (optionnel):</span>
+                            <div class="flex items-center gap-2">
+                                <input
+                                    :value="getMinutes(step.timer_minutes)"
+                                    @input="updateStepTimer(index, $event.target.value, getSeconds(step.timer_minutes))"
+                                    type="number"
+                                    placeholder="Min"
+                                    min="0"
+                                    max="999"
+                                    class="w-20 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-center"
+                                />
+                                <span class="text-gray-500 font-medium">:</span>
+                                <input
+                                    :value="getSeconds(step.timer_minutes)"
+                                    @input="updateStepTimer(index, getMinutes(step.timer_minutes), $event.target.value)"
+                                    type="number"
+                                    placeholder="Sec"
+                                    min="0"
+                                    max="59"
+                                    class="w-20 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-center"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        @click="removeStep(index)"
+                        :disabled="steps.length === 1"
+                        :class="[
+                            'flex-shrink-0 p-2 rounded-lg transition-all',
+                            steps.length === 1
+                                ? 'text-gray-300 cursor-not-allowed'
+                                : 'text-red-600 hover:bg-red-50 hover:text-red-700'
+                        ]"
+                        :title="steps.length === 1 ? 'Au moins une étape est requise' : 'Supprimer cette étape'"
+                    >
+                        <TrashIcon class="h-5 w-5" />
+                    </button>
+                </div>
+            </div>
         </div>
+
         <button
             type="button"
             @click="addStep"
-            class="w-full py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+            class="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-green-400 hover:text-green-600 hover:bg-green-50 transition-all font-medium flex items-center justify-center gap-2"
         >
-            + Ajouter une étape
+            <PlusIcon class="h-5 w-5" />
+            Ajouter une étape
         </button>
-        <div v-if="errors?.steps" class="text-red-600 text-sm mt-1">
+
+        <div v-if="errors?.steps" class="text-red-600 text-sm">
             {{ errors.steps }}
         </div>
     </div>

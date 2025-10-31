@@ -29,7 +29,7 @@ class StoreRecipeRequest extends FormRequest
             'nutrients' => 'nullable|array',
             'steps' => 'required|array|min:1',
             'steps.*.text' => 'required|string',
-            'steps.*.timer_minutes' => 'nullable|integer|min:0',
+            'steps.*.timer_minutes' => 'nullable|numeric|min:0',
             'images' => 'nullable|array',
             'images.*' => 'image|max:10240',
         ];

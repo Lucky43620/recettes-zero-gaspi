@@ -1,5 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
+import BackButton from '@/Components/Common/BackButton.vue';
 import { Link, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 
@@ -51,23 +52,18 @@ const removeItem = (itemId) => {
 <template>
     <AppLayout :title="shoppingList.name">
         <template #header>
-            <div class="flex justify-between items-center">
-                <div>
-                    <Link
-                        :href="route('shopping-lists.index')"
-                        class="text-sm text-gray-500 hover:text-gray-700 mb-2 inline-block"
-                    >
-                        ← Retour aux listes
-                    </Link>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        {{ shoppingList.name }}
-                    </h2>
-                </div>
-            </div>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ shoppingList.name }}
+            </h2>
         </template>
 
         <div class="py-12">
             <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+                <BackButton
+                    :href="route('shopping-lists.index')"
+                    label="Retour aux listes"
+                    class="mb-6"
+                />
                 <div class="bg-white rounded-lg shadow p-6 mb-6">
                     <h3 class="font-semibold text-lg mb-4">Ajouter un article</h3>
                     <div class="flex gap-3">

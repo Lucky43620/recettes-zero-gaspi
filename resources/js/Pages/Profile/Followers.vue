@@ -1,5 +1,6 @@
 <script setup>
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import BackButton from '@/Components/Common/BackButton.vue';
 import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -12,14 +13,11 @@ const props = defineProps({
     <PublicLayout :title="`Abonnés de ${profileUser.name}`">
         <div class="py-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="mb-6">
-                    <Link
-                        :href="`/profile/${profileUser.id}`"
-                        class="text-green-600 hover:text-green-800"
-                    >
-                        ← Retour au profil
-                    </Link>
-                </div>
+                <BackButton
+                    :href="`/profile/${profileUser.id}`"
+                    label="Retour au profil"
+                    class="mb-6"
+                />
 
                 <h1 class="text-3xl font-bold text-gray-900 mb-8">
                     Abonnés de {{ profileUser.name }}

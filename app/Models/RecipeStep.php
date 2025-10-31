@@ -16,7 +16,7 @@ class RecipeStep extends Model
 
     protected $casts = [
         'position' => 'integer',
-        'timer_minutes' => 'integer',
+        'timer_minutes' => 'float',
     ];
 
     public function recipe(): BelongsTo

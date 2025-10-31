@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import BackButton from '@/Components/Common/BackButton.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
 import { useDifficultyLabels } from '@/composables/useDifficultyLabels';
@@ -29,10 +30,6 @@ const { getDifficultyLabel } = useDifficultyLabels();
 const confirmingDeletion = ref(false);
 const page = usePage();
 const isAuthenticated = computed(() => !!page.props.auth.user);
-
-function goBack() {
-    window.history.back();
-}
 
 function confirmDeleteRecipe() {
     confirmingDeletion.value = true;
@@ -72,6 +69,10 @@ function deleteRecipe() {
 
         <div :class="props.usePrivateLayout ? 'py-12' : 'py-8'">
             <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+                <BackButton
+                    :href="props.usePrivateLayout ? route('recipes.my') : null"
+                    class="mb-6"
+                />
                 <div v-if="!props.usePrivateLayout" class="mb-6">
                     <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ recipe.title }}</h1>
                 </div>
@@ -225,23 +226,6 @@ function deleteRecipe() {
                             <CommentSection :recipe="recipe" :comments="recipe.comments" :comment-votes="commentVotes" />
                         </div>
                     </div>
-                </div>
-
-                <div class="mt-6">
-                    <button
-                        v-if="!props.usePrivateLayout"
-                        @click="goBack"
-                        class="text-green-600 hover:text-green-800"
-                    >
-                        ← Retour
-                    </button>
-                    <Link
-                        v-else
-                        :href="route('recipes.my')"
-                        class="text-green-600 hover:text-green-800"
-                    >
-                        ← Retour
-                    </Link>
                 </div>
             </div>
         </div>

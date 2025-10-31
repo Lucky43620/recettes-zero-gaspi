@@ -2,6 +2,7 @@
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
 import FollowButton from '@/Components/Social/FollowButton.vue';
+import BackButton from '@/Components/Common/BackButton.vue';
 import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -18,53 +19,60 @@ const props = defineProps({
     <PublicLayout :title="profileUser.name">
         <div class="py-8">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-start gap-6 mb-8">
-                            <img
-                                :src="profileUser.profile_photo_url"
-                                :alt="profileUser.name"
-                                class="w-24 h-24 rounded-full"
-                            />
-                            <div class="flex-1">
-                                <h1 class="text-2xl font-bold text-gray-900 mb-2">
-                                    {{ profileUser.name }}
-                                </h1>
+                <BackButton class="mb-6" />
+                <div class="bg-white overflow-hidden shadow-xl rounded-xl">
+                    <div class="relative h-48 bg-gradient-to-r from-green-600 to-orange-500">
+                        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE0YzYuMDc1IDAgMTEgNC45MjUgMTEgMTEtMCA2LjA3NS00LjkyNSAxMS0xMSAxMS02LjA3NSAwLTExLTQuOTI1LTExLTExIDAtNi4wNzUgNC45MjUtMTEgMTEtMTF6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
+                    </div>
 
-                                <p v-if="profileUser.bio" class="text-gray-600 mb-4">
-                                    {{ profileUser.bio }}
-                                </p>
-
-                                <div class="flex gap-6 mb-4">
-                                    <div>
-                                        <span class="font-semibold">{{ profileUser.recipes_count }}</span>
-                                        <span class="text-gray-600"> recettes</span>
-                                    </div>
-                                    <Link
-                                        :href="`/profile/${profileUser.id}/followers`"
-                                        class="hover:underline"
-                                    >
-                                        <span class="font-semibold">{{ profileUser.followers_count }}</span>
-                                        <span class="text-gray-600"> abonnés</span>
-                                    </Link>
-                                    <Link
-                                        :href="`/profile/${profileUser.id}/following`"
-                                        class="hover:underline"
-                                    >
-                                        <span class="font-semibold">{{ profileUser.following_count }}</span>
-                                        <span class="text-gray-600"> abonnements</span>
-                                    </Link>
-                                    <div v-if="averageRating">
-                                        <span class="font-semibold">⭐ {{ averageRating }}</span>
-                                        <span class="text-gray-600"> moyenne</span>
-                                    </div>
-                                </div>
-
-                                <FollowButton
-                                    v-if="!isOwnProfile && $page.props.auth.user"
-                                    :user="profileUser"
-                                    :is-following="isFollowing"
+                    <div class="px-6 pb-6">
+                        <div class="flex flex-col md:flex-row md:items-end md:justify-between -mt-20 mb-6">
+                            <div class="flex items-end gap-4">
+                                <img
+                                    :src="profileUser.profile_photo_url"
+                                    :alt="profileUser.name"
+                                    class="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white relative z-10"
                                 />
+                                <div class="pb-2">
+                                    <h1 class="text-3xl font-bold text-gray-900">
+                                        {{ profileUser.name }}
+                                    </h1>
+                                    <p v-if="profileUser.bio" class="text-gray-600 mt-1">
+                                        {{ profileUser.bio }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <FollowButton
+                                v-if="!isOwnProfile && $page.props.auth.user"
+                                :user="profileUser"
+                                :is-following="isFollowing"
+                                class="mt-4 md:mt-0"
+                            />
+                        </div>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 p-6 bg-gray-50 rounded-lg">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-green-600">{{ profileUser.recipes_count }}</div>
+                                <div class="text-sm text-gray-600">Recettes</div>
+                            </div>
+                            <Link
+                                :href="`/profile/${profileUser.id}/followers`"
+                                class="text-center hover:bg-gray-100 rounded-lg transition-colors p-2"
+                            >
+                                <div class="text-2xl font-bold text-green-600">{{ profileUser.followers_count }}</div>
+                                <div class="text-sm text-gray-600">Abonnés</div>
+                            </Link>
+                            <Link
+                                :href="`/profile/${profileUser.id}/following`"
+                                class="text-center hover:bg-gray-100 rounded-lg transition-colors p-2"
+                            >
+                                <div class="text-2xl font-bold text-green-600">{{ profileUser.following_count }}</div>
+                                <div class="text-sm text-gray-600">Abonnements</div>
+                            </Link>
+                            <div v-if="averageRating" class="text-center">
+                                <div class="text-2xl font-bold text-yellow-500">⭐ {{ averageRating }}</div>
+                                <div class="text-sm text-gray-600">Note moyenne</div>
                             </div>
                         </div>
 
