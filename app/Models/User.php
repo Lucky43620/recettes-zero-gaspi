@@ -76,6 +76,11 @@ class User extends Authenticatable
         return $this->hasMany(ShoppingList::class);
     }
 
+    public function pantryItems()
+    {
+        return $this->hasMany(PantryItem::class);
+    }
+
     /**
      * The attributes that are mass assignable.
      *

@@ -40,6 +40,15 @@ defineProps({
                             >
                                 Recettes
                             </Link>
+                            <Link
+                                :href="route('products.index')"
+                                :class="[
+                                    'text-gray-700 hover:text-gray-900 transition',
+                                    route().current('products.*') ? 'font-semibold text-gray-900' : ''
+                                ]"
+                            >
+                                Produits
+                            </Link>
 
                             <div class="flex items-center gap-3">
                                 <template v-if="$page.props.auth.user">

@@ -47,6 +47,9 @@ const logout = () => {
                                 <NavLink :href="route('recipes.my')" :active="route().current('recipes.my')">
                                     Mes recettes
                                 </NavLink>
+                                <NavLink :href="route('pantry.index')" :active="route().current('pantry.*')">
+                                    Garde-manger
+                                </NavLink>
                                 <NavLink :href="route('meal-plans.index')" :active="route().current('meal-plans.*')">
                                     Planning
                                 </NavLink>
@@ -144,6 +147,9 @@ const logout = () => {
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('recipes.my')" :active="route().current('recipes.my')">
                             Mes recettes
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('pantry.index')" :active="route().current('pantry.*')">
+                            Garde-manger
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('meal-plans.index')" :active="route().current('meal-plans.*')">
                             Planning

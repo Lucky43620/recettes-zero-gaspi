@@ -5,7 +5,10 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\MealPlanController;
+use App\Http\Controllers\PantryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RecipeController;
@@ -33,6 +36,9 @@ Route::get('/', function () {
 Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
 Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create')->middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']);
 Route::get('/recipes/{recipe:slug}', [RecipeController::class, 'show'])->name('recipes.show');
+
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show'])->name('ingredients.show');
 
 Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
 Route::get('/profile/{user}/followers', [ProfileController::class, 'followers'])->name('profile.followers');
@@ -106,4 +112,9 @@ Route::middleware([
     Route::post('/shopping-lists/{shoppingList}/items', [ShoppingListController::class, 'addItem'])->name('shopping-lists.items.add');
     Route::put('/shopping-list-items/{item}', [ShoppingListController::class, 'updateItem'])->name('shopping-lists.items.update');
     Route::delete('/shopping-list-items/{item}', [ShoppingListController::class, 'removeItem'])->name('shopping-lists.items.remove');
+
+    Route::get('/pantry', [PantryController::class, 'index'])->name('pantry.index');
+    Route::post('/pantry', [PantryController::class, 'store'])->name('pantry.store');
+    Route::put('/pantry/{pantryItem}', [PantryController::class, 'update'])->name('pantry.update');
+    Route::delete('/pantry/{pantryItem}', [PantryController::class, 'destroy'])->name('pantry.destroy');
 });

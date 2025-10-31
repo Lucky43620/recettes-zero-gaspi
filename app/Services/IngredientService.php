@@ -16,11 +16,15 @@ class IngredientService
         private OpenFoodFactsConnector $connector
     ) {}
 
-    public function searchIngredients(string $searchTerm, int $limit = 20): Collection
+    public function searchIngredients(string $searchTerm, int $limit = 20, bool $localOnly = false): Collection
     {
         $localResults = $this->searchLocal($searchTerm, $limit);
 
-        if ($localResults->count() >= $limit) {
+        if ($localOnly || $localResults->count() >= $limit) {
+            return $localResults;
+        }
+
+        if ($localResults->count() >= 5) {
             return $localResults;
         }
 
@@ -62,11 +66,19 @@ class IngredientService
 
     private function searchLocal(string $searchTerm, int $limit): Collection
     {
-        return Ingredient::where('name', 'like', "%{$searchTerm}%")
-            ->orWhere('brands', 'like', "%{$searchTerm}%")
-            ->orWhere('category', 'like', "%{$searchTerm}%")
-            ->limit($limit)
-            ->get();
+        $query = Ingredient::query();
+
+        if (strlen($searchTerm) >= 3) {
+            $query->whereRaw('MATCH(name) AGAINST(? IN BOOLEAN MODE)', [$searchTerm . '*'])
+                ->orWhere('brands', 'like', "%{$searchTerm}%")
+                ->orWhere('barcode', 'like', "%{$searchTerm}%");
+        } else {
+            $query->where('name', 'like', "{$searchTerm}%")
+                ->orWhere('brands', 'like', "{$searchTerm}%")
+                ->orWhere('barcode', 'like', "{$searchTerm}%");
+        }
+
+        return $query->limit($limit)->get();
     }
 
     private function searchFromOpenFoodFacts(string $searchTerm, int $pageSize = 20): Collection

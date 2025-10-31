@@ -22,7 +22,8 @@ class IngredientController extends Controller
 
         $results = $this->ingredientService->searchIngredients(
             $request->input('q'),
-            $request->input('limit', 20)
+            $request->input('limit', 20),
+            true
         );
 
         return response()->json([
