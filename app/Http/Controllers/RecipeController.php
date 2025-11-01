@@ -122,6 +122,26 @@ class RecipeController extends Controller
         ]);
     }
 
+    public function cook(Recipe $recipe)
+    {
+        if (!$recipe->is_public && $recipe->author_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $recipe->load(['steps' => function ($query) {
+            $query->orderBy('position');
+        }, 'author']);
+
+        if ($recipe->steps->isEmpty()) {
+            return redirect()->route('recipes.show', $recipe->slug)
+                ->with('error', 'Cette recette n\'a pas d\'étapes définies.');
+        }
+
+        return Inertia::render('Recipe/Cook', [
+            'recipe' => $recipe,
+        ]);
+    }
+
     public function edit(Recipe $recipe)
     {
         $this->authorize('update', $recipe);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
 use App\Models\Recipe;
+use App\Notifications\CommentReplyNotification;
 use App\Services\CommentVoteService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
@@ -18,11 +19,18 @@ class CommentController extends Controller
 
     public function store(StoreCommentRequest $request, Recipe $recipe)
     {
-        $recipe->comments()->create([
+        $comment = $recipe->comments()->create([
             'user_id' => Auth::id(),
             'content' => $request->validated('content'),
             'parent_id' => $request->validated('parent_id'),
         ]);
+
+        if ($comment->parent_id) {
+            $parentComment = Comment::find($comment->parent_id);
+            if ($parentComment && $parentComment->user_id !== Auth::id()) {
+                $parentComment->user->notify(new CommentReplyNotification($comment));
+            }
+        }
 
         return back()->with('success', 'Commentaire ajouté');
     }

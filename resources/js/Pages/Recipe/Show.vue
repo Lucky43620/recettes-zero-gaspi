@@ -93,6 +93,16 @@ function deleteRecipe() {
                             <div class="flex-1">
                                 <p class="text-gray-700 text-lg mb-4">{{ recipe.summary }}</p>
                                 <RatingStars :recipe="recipe" :readonly="true" size="md" />
+                                <Link
+                                    v-if="recipe.steps && recipe.steps.length > 0"
+                                    :href="route('recipes.cook', recipe.slug)"
+                                    class="mt-4 inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                                    </svg>
+                                    Mode Cuisine
+                                </Link>
                             </div>
                             <FavoriteButton
                                 v-if="$page.props.auth.user"
