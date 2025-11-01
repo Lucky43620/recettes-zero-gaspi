@@ -96,13 +96,20 @@ class RecipeService
         $recipe->ingredients()->detach();
 
         foreach ($ingredients as $index => $ingredientData) {
-            if (empty($ingredientData['name'])) {
+            // Handle both ingredient_id (from tests/API) and name (from form)
+            if (!empty($ingredientData['ingredient_id'])) {
+                $ingredient = Ingredient::find($ingredientData['ingredient_id']);
+            } elseif (!empty($ingredientData['name'])) {
+                $ingredient = Ingredient::firstOrCreate(
+                    ['name' => $ingredientData['name']]
+                );
+            } else {
                 continue;
             }
 
-            $ingredient = Ingredient::firstOrCreate(
-                ['name' => $ingredientData['name']]
-            );
+            if (!$ingredient) {
+                continue;
+            }
 
             $recipe->ingredients()->attach($ingredient->id, [
                 'quantity' => $ingredientData['quantity'] ?? null,
@@ -119,5 +126,31 @@ class RecipeService
         foreach ($images as $image) {
             $recipe->addMedia($image)->toMediaCollection('images');
         }
+    }
+
+    public function searchWithPantryIngredients(array $pantryIngredientIds)
+    {
+        $placeholders = implode(',', array_fill(0, count($pantryIngredientIds), '?'));
+
+        return Recipe::where('is_public', true)
+            ->with(['author', 'media', 'ingredients'])
+            ->select('recipes.*')
+            ->selectRaw("
+                (SELECT COUNT(DISTINCT ingredient_id)
+                 FROM recipe_ingredients
+                 WHERE recipe_ingredients.recipe_id = recipes.id
+                 AND ingredient_id IN ({$placeholders})) as matching_ingredients_count
+            ", $pantryIngredientIds)
+            ->selectRaw('
+                (SELECT COUNT(DISTINCT ingredient_id)
+                 FROM recipe_ingredients
+                 WHERE recipe_ingredients.recipe_id = recipes.id) as total_ingredients_count
+            ')
+            ->groupBy('recipes.id')
+            ->havingRaw('matching_ingredients_count > 0')
+            ->orderByDesc('matching_ingredients_count')
+            ->orderByRaw('(matching_ingredients_count * 100.0 / NULLIF(total_ingredients_count, 0)) DESC')
+            ->limit(50)
+            ->get();
     }
 }

@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Scout\Searchable;
 
 class Ingredient extends Model
 {
-    use Searchable;
+    use HasFactory, Searchable;
 
     protected $fillable = [
         'name',
@@ -57,5 +60,23 @@ class Ingredient extends Model
     public function hasAllergens(): bool
     {
         return !empty($this->allergens);
+    }
+
+    public function recipes(): BelongsToMany
+    {
+        return $this->belongsToMany(Recipe::class, 'recipe_ingredients')
+            ->withPivot('quantity', 'unit_code', 'position')
+            ->withTimestamps()
+            ->orderByPivot('position');
+    }
+
+    public function pantryItems(): HasMany
+    {
+        return $this->hasMany(PantryItem::class);
+    }
+
+    public function shoppingListItems(): HasMany
+    {
+        return $this->hasMany(ShoppingListItem::class);
     }
 }

@@ -11,11 +11,11 @@ class ShoppingListService
 {
     public function generateFromMealPlan(MealPlan $mealPlan, int $userId): ShoppingList
     {
-        $mealPlan->load('mealPlanRecipes.recipe.ingredients.unit');
+        $mealPlan->load('recipes.ingredients');
 
         $ingredients = $this->aggregateIngredients($mealPlan);
 
-        $weekStart = Carbon::parse($mealPlan->week_start)->format('d/m/Y');
+        $weekStart = Carbon::parse($mealPlan->week_start_date)->format('d/m/Y');
 
         $shoppingList = ShoppingList::create([
             'user_id' => $userId,
@@ -34,11 +34,13 @@ class ShoppingListService
     {
         $ingredients = collect();
 
-        foreach ($mealPlan->mealPlanRecipes as $mealPlanRecipe) {
-            foreach ($mealPlanRecipe->recipe->ingredients as $ingredient) {
+        foreach ($mealPlan->recipes as $recipe) {
+            $servings = $recipe->pivot->servings;
+
+            foreach ($recipe->ingredients as $ingredient) {
                 $key = $ingredient->id . '_' . ($ingredient->pivot->unit_code ?? 'none');
 
-                $servingMultiplier = $mealPlanRecipe->servings / $mealPlanRecipe->recipe->servings;
+                $servingMultiplier = $servings / $recipe->servings;
                 $adjustedQuantity = $ingredient->pivot->quantity * $servingMultiplier;
 
                 if ($ingredients->has($key)) {
@@ -47,6 +49,7 @@ class ShoppingListService
                     $ingredients->put($key, $existing);
                 } else {
                     $ingredients->put($key, [
+                        'ingredient_id' => $ingredient->id,
                         'name' => $ingredient->name,
                         'quantity' => $adjustedQuantity,
                         'unit_code' => $ingredient->pivot->unit_code,

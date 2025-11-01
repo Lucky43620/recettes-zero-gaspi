@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCollectionRequest;
 use App\Models\Collection;
 use App\Models\Recipe;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CollectionController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
         $collections = Auth::user()->collections()
@@ -25,15 +27,13 @@ class CollectionController extends Controller
 
     public function show(Collection $collection)
     {
-        if (!$collection->is_public && $collection->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorize('view', $collection);
 
         $collection->load(['recipes.author', 'recipes.media', 'user']);
 
         return Inertia::render('Collection/Show', [
             'collection' => $collection,
-            'canEdit' => Auth::id() === $collection->user_id,
+            'canEdit' => Auth::user()?->can('update', $collection),
         ]);
     }
 
@@ -47,9 +47,7 @@ class CollectionController extends Controller
 
     public function update(StoreCollectionRequest $request, Collection $collection)
     {
-        if ($collection->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorize('update', $collection);
 
         $collection->update($request->validated());
 
@@ -58,9 +56,7 @@ class CollectionController extends Controller
 
     public function destroy(Collection $collection)
     {
-        if ($collection->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $collection);
 
         $collection->delete();
 
@@ -70,15 +66,13 @@ class CollectionController extends Controller
 
     public function addRecipe(Collection $collection, Recipe $recipe)
     {
-        if ($collection->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorize('update', $collection);
 
         if ($collection->recipes()->where('recipe_id', $recipe->id)->exists()) {
             return back()->withErrors(['error' => 'Cette recette est déjà dans la collection']);
         }
 
-        $maxPosition = $collection->recipes()->max('position') ?? -1;
+        $maxPosition = $collection->recipes()->max('collection_recipe.position') ?? -1;
 
         $collection->recipes()->attach($recipe->id, [
             'position' => $maxPosition + 1,
@@ -89,9 +83,7 @@ class CollectionController extends Controller
 
     public function removeRecipe(Collection $collection, Recipe $recipe)
     {
-        if ($collection->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorize('update', $collection);
 
         $collection->recipes()->detach($recipe->id);
 
@@ -100,19 +92,16 @@ class CollectionController extends Controller
 
     public function reorder(Collection $collection, Request $request)
     {
-        if ($collection->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorize('update', $collection);
 
         $validated = $request->validate([
-            'recipes' => 'required|array',
-            'recipes.*.id' => 'required|exists:recipes,id',
-            'recipes.*.position' => 'required|integer',
+            'recipe_ids' => 'required|array',
+            'recipe_ids.*' => 'required|exists:recipes,id',
         ]);
 
-        foreach ($validated['recipes'] as $recipe) {
-            $collection->recipes()->updateExistingPivot($recipe['id'], [
-                'position' => $recipe['position'],
+        foreach ($validated['recipe_ids'] as $position => $recipeId) {
+            $collection->recipes()->updateExistingPivot($recipeId, [
+                'position' => $position + 1,
             ]);
         }
 

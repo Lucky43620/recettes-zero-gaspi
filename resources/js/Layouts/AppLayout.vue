@@ -50,6 +50,9 @@ const logout = () => {
                                 <NavLink :href="route('pantry.index')" :active="route().current('pantry.*')">
                                     Garde-manger
                                 </NavLink>
+                                <NavLink :href="route('anti-waste.index')" :active="route().current('anti-waste.*')">
+                                    Recettes anti-gaspi
+                                </NavLink>
                                 <NavLink :href="route('meal-plans.index')" :active="route().current('meal-plans.*')">
                                     Planning
                                 </NavLink>

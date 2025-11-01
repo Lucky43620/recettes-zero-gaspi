@@ -13,11 +13,11 @@ class CommentVote extends Model
     protected $fillable = [
         'user_id',
         'comment_id',
-        'vote',
+        'vote_type',
     ];
 
     protected $casts = [
-        'vote' => 'integer',
+        'vote_type' => 'string',
     ];
 
     protected function setKeysForSaveQuery($query)

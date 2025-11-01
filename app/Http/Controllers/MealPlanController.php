@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreMealPlanRequest;
+use App\Http\Requests\UpdateMealPlanRecipeRequest;
 use App\Models\MealPlan;
 use App\Models\MealPlanRecipe;
 use App\Models\Recipe;
@@ -21,13 +23,13 @@ class MealPlanController extends Controller
             : Carbon::now()->startOfWeek();
 
         $mealPlan = Auth::user()->mealPlans()
-            ->where('week_start', $weekStart->format('Y-m-d'))
+            ->where('week_start_date', $weekStart->format('Y-m-d'))
             ->with(['mealPlanRecipes.recipe.media'])
             ->first();
 
         if (!$mealPlan) {
             $mealPlan = Auth::user()->mealPlans()->create([
-                'week_start' => $weekStart->format('Y-m-d'),
+                'week_start_date' => $weekStart->format('Y-m-d'),
             ]);
         }
 
@@ -49,17 +51,11 @@ class MealPlanController extends Controller
         ]);
     }
 
-    public function addRecipe(Request $request, MealPlan $mealPlan)
+    public function addRecipe(StoreMealPlanRequest $request, MealPlan $mealPlan)
     {
         $this->authorize('update', $mealPlan);
 
-        $validated = $request->validate([
-            'recipe_id' => 'required|exists:recipes,id',
-            'day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
-            'meal_type' => 'required|in:breakfast,lunch,dinner,snack',
-            'servings' => 'nullable|integer|min:1',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $mealPlan->mealPlanRecipes()->create($validated);
 
@@ -75,14 +71,11 @@ class MealPlanController extends Controller
         return back();
     }
 
-    public function updateRecipe(Request $request, MealPlanRecipe $mealPlanRecipe)
+    public function updateRecipe(UpdateMealPlanRecipeRequest $request, MealPlanRecipe $mealPlanRecipe)
     {
         $this->authorize('update', $mealPlanRecipe->mealPlan);
 
-        $validated = $request->validate([
-            'servings' => 'nullable|integer|min:1',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $mealPlanRecipe->update($validated);
 
@@ -94,13 +87,13 @@ class MealPlanController extends Controller
         $this->authorize('view', $mealPlan);
 
         $validated = $request->validate([
-            'week_start' => 'required|date',
+            'week_start_date' => 'required|date',
         ]);
 
-        $newWeekStart = Carbon::parse($validated['week_start']);
+        $newWeekStart = Carbon::parse($validated['week_start_date']);
 
         $existingPlan = Auth::user()->mealPlans()
-            ->where('week_start', $newWeekStart->format('Y-m-d'))
+            ->where('week_start_date', $newWeekStart->format('Y-m-d'))
             ->first();
 
         if ($existingPlan) {
@@ -108,7 +101,7 @@ class MealPlanController extends Controller
             $newPlan = $existingPlan;
         } else {
             $newPlan = Auth::user()->mealPlans()->create([
-                'week_start' => $newWeekStart->format('Y-m-d'),
+                'week_start_date' => $newWeekStart->format('Y-m-d'),
                 'name' => $mealPlan->name,
             ]);
         }
@@ -116,7 +109,7 @@ class MealPlanController extends Controller
         foreach ($mealPlan->mealPlanRecipes as $mealPlanRecipe) {
             $newPlan->mealPlanRecipes()->create([
                 'recipe_id' => $mealPlanRecipe->recipe_id,
-                'day_of_week' => $mealPlanRecipe->day_of_week,
+                'planned_date' => $mealPlanRecipe->planned_date,
                 'meal_type' => $mealPlanRecipe->meal_type,
                 'servings' => $mealPlanRecipe->servings,
                 'notes' => $mealPlanRecipe->notes,

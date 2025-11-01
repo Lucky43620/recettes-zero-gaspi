@@ -6,7 +6,6 @@ use App\Http\Requests\StoreRatingRequest;
 use App\Models\Recipe;
 use App\Models\Rating;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class RatingController extends Controller
 {
@@ -25,31 +24,26 @@ class RatingController extends Controller
             ]
         );
 
-        $this->updateRecipeRating($recipe);
-
         return back()->with('success', 'Votre note a été enregistrée');
     }
 
     public function destroy(Recipe $recipe)
     {
-        Rating::where('user_id', Auth::id())
+        $deleted = Rating::where('user_id', Auth::id())
             ->where('recipe_id', $recipe->id)
             ->delete();
 
-        $this->updateRecipeRating($recipe);
+        if ($deleted) {
+            $stats = $recipe->ratings()
+                ->selectRaw('AVG(rating) as avg, COUNT(*) as count')
+                ->first();
+
+            $recipe->update([
+                'rating_avg' => $stats->avg ?? 0,
+                'rating_count' => $stats->count ?? 0,
+            ]);
+        }
 
         return back()->with('success', 'Votre note a été supprimée');
-    }
-
-    private function updateRecipeRating(Recipe $recipe)
-    {
-        $stats = $recipe->ratings()
-            ->select(DB::raw('AVG(rating) as avg, COUNT(*) as count'))
-            ->first();
-
-        $recipe->update([
-            'rating_avg' => $stats->avg ?? 0,
-            'rating_count' => $stats->count ?? 0,
-        ]);
     }
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -31,7 +32,10 @@ return new class extends Migration
 
             $table->index(['author_id', 'created_at']);
             $table->index(['rating_avg', 'rating_count']);
-            $table->fullText(['title', 'summary']);
+
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->fullText(['title', 'summary']);
+            }
         });
     }
 

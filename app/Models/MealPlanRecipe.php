@@ -10,13 +10,14 @@ class MealPlanRecipe extends Model
     protected $fillable = [
         'meal_plan_id',
         'recipe_id',
-        'day_of_week',
+        'planned_date',
         'meal_type',
         'servings',
         'notes',
     ];
 
     protected $casts = [
+        'planned_date' => 'date:Y-m-d',
         'servings' => 'integer',
     ];
 

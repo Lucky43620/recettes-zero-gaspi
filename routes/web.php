@@ -13,9 +13,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\ShoppingListController;
+use App\Models\MealPlanRecipe;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::bind('mealPlanRecipe', function (string $value) {
+    return MealPlanRecipe::findOrFail($value);
+});
 
 Route::get('/', function () {
     $featuredRecipes = \App\Models\Recipe::where('is_public', true)
@@ -94,7 +99,7 @@ Route::middleware([
     Route::get('/collections/{collection}', [CollectionController::class, 'show'])->name('collections.show');
     Route::put('/collections/{collection}', [CollectionController::class, 'update'])->name('collections.update');
     Route::delete('/collections/{collection}', [CollectionController::class, 'destroy'])->name('collections.destroy');
-    Route::post('/collections/{collection}/recipes/{recipe:slug}', [CollectionController::class, 'addRecipe'])->name('collections.recipes.add');
+    Route::post('/collections/{collection}/recipes/{recipe}', [CollectionController::class, 'addRecipe'])->name('collections.recipes.add')->where('recipe', '[0-9]+');
     Route::delete('/collections/{collection}/recipes/{recipe:slug}', [CollectionController::class, 'removeRecipe'])->name('collections.recipes.remove');
     Route::post('/collections/{collection}/reorder', [CollectionController::class, 'reorder'])->name('collections.reorder');
 
@@ -117,4 +122,8 @@ Route::middleware([
     Route::post('/pantry', [PantryController::class, 'store'])->name('pantry.store');
     Route::put('/pantry/{pantryItem}', [PantryController::class, 'update'])->name('pantry.update');
     Route::delete('/pantry/{pantryItem}', [PantryController::class, 'destroy'])->name('pantry.destroy');
+
+    Route::get('/anti-waste', function () {
+        return Inertia::render('AntiWaste/Index');
+    })->name('anti-waste.index');
 });

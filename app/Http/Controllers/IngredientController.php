@@ -9,8 +9,6 @@ class IngredientController extends Controller
 {
     public function show(Ingredient $ingredient)
     {
-        $ingredient->load([]);
-
         return Inertia::render('Ingredient/Show', [
             'ingredient' => $ingredient,
         ]);

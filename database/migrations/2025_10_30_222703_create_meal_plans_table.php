@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name')->nullable();
-            $table->date('week_start');
+            $table->date('week_start_date');
             $table->timestamps();
 
-            $table->index(['user_id', 'week_start']);
+            $table->index(['user_id', 'week_start_date']);
         });
     }
 

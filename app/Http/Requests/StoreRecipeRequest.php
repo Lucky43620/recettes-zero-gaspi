@@ -31,11 +31,29 @@ class StoreRecipeRequest extends FormRequest
             'steps.*.text' => 'required|string',
             'steps.*.timer_minutes' => 'nullable|numeric|min:0',
             'ingredients' => 'nullable|array',
-            'ingredients.*.name' => 'required|string|max:255',
+            'ingredients.*.ingredient_id' => 'nullable|exists:ingredients,id',
+            'ingredients.*.name' => 'nullable|string|max:255',
             'ingredients.*.quantity' => 'nullable|numeric|min:0',
             'ingredients.*.unit_code' => 'nullable|string|exists:units,code',
             'images' => 'nullable|array',
             'images.*' => 'image|max:10240',
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            // Ensure each ingredient has either ingredient_id or name
+            if ($this->has('ingredients')) {
+                foreach ($this->input('ingredients', []) as $index => $ingredient) {
+                    if (empty($ingredient['ingredient_id']) && empty($ingredient['name'])) {
+                        $validator->errors()->add(
+                            "ingredients.{$index}",
+                            'Each ingredient must have either an ingredient_id or a name.'
+                        );
+                    }
+                }
+            }
+        });
     }
 }

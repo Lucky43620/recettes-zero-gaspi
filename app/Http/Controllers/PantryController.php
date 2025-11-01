@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\StorageLocation;
+use App\Http\Requests\StorePantryItemRequest;
+use App\Http\Requests\UpdatePantryItemRequest;
+use App\Http\Resources\PantryItemResource;
 use App\Models\PantryItem;
 use App\Models\Unit;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -31,27 +34,7 @@ class PantryController extends Controller
             $query->where('storage_location', $request->storage);
         }
 
-        $items = $query->get()->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'ingredient' => [
-                    'id' => $item->ingredient->id,
-                    'name' => $item->ingredient->name,
-                    'image_url' => $item->ingredient->image_url,
-                ],
-                'quantity' => $item->quantity,
-                'unit' => [
-                    'code' => $item->unit->code,
-                    'name' => $item->unit->name,
-                ],
-                'expiration_date' => $item->expiration_date?->format('Y-m-d'),
-                'storage_location' => $item->storage_location,
-                'opened' => $item->opened,
-                'is_expired' => $item->isExpired(),
-                'is_expiring_soon' => $item->isExpiringSoon(),
-                'days_until_expiration' => $item->daysUntilExpiration(),
-            ];
-        });
+        $items = PantryItemResource::collection($query->get());
 
         $stats = [
             'total' => $request->user()->pantryItems()->count(),
@@ -67,40 +50,27 @@ class PantryController extends Controller
             ->all();
 
         return Inertia::render('Pantry/Index', [
-            'items' => $items->values()->all(),
+            'items' => $items->resolve(),
             'stats' => $stats,
             'storageLocations' => StorageLocation::values(),
             'units' => Unit::all()->values()->all(),
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StorePantryItemRequest $request)
     {
-        $validated = $request->validate([
-            'ingredient_id' => 'required|exists:ingredients,id',
-            'quantity' => 'required|numeric|min:0.01',
-            'unit_code' => 'required|exists:units,code',
-            'expiration_date' => 'nullable|date|after_or_equal:today',
-            'storage_location' => 'nullable|string|max:255',
-            'opened' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $pantryItem = $request->user()->pantryItems()->create($validated);
 
         return redirect()->back()->with('success', 'Article ajouté au garde-manger.');
     }
 
-    public function update(Request $request, PantryItem $pantryItem)
+    public function update(UpdatePantryItemRequest $request, PantryItem $pantryItem)
     {
         $this->authorize('update', $pantryItem);
 
-        $validated = $request->validate([
-            'quantity' => 'required|numeric|min:0.01',
-            'unit_code' => 'required|exists:units,code',
-            'expiration_date' => 'nullable|date',
-            'storage_location' => 'nullable|string|max:255',
-            'opened' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $pantryItem->update($validated);
 

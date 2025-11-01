@@ -104,7 +104,7 @@ class RecipeController extends Controller
             $isFavorited = Auth::user()->hasFavorited($recipe);
             $commentVotes = \App\Models\CommentVote::where('user_id', Auth::id())
                 ->whereIn('comment_id', $recipe->comments->pluck('id'))
-                ->pluck('vote', 'comment_id')
+                ->pluck('vote_type', 'comment_id')
                 ->toArray();
         }
 
@@ -149,7 +149,7 @@ class RecipeController extends Controller
 
         $recipe->delete();
 
-        return redirect()->route('recipes.index')
+        return redirect()->to('/my-recipes')
             ->with('success', 'Recette supprimée avec succès');
     }
 }

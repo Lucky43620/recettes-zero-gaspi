@@ -10,12 +10,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UnitSeeder::class,
-        ]);
+            // Core data
+            UserSeeder::class,
+            IngredientSeeder::class,  // Also creates units
+            RecipeSeeder::class,
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            // Social features
+            RatingSeeder::class,
+            CommentSeeder::class,
+            FollowSeeder::class,
+            FavoriteSeeder::class,
+            CollectionSeeder::class,
+
+            // Planning features
+            PantrySeeder::class,
+            MealPlanSeeder::class,
+            ShoppingListSeeder::class,
         ]);
     }
 }

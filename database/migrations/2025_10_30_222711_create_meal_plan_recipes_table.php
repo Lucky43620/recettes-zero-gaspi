@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('meal_plan_id')->constrained()->onDelete('cascade');
             $table->foreignId('recipe_id')->constrained()->onDelete('cascade');
-            $table->enum('day_of_week', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
+            $table->date('planned_date');
             $table->enum('meal_type', ['breakfast', 'lunch', 'dinner', 'snack']);
             $table->integer('servings')->default(1);
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->index(['meal_plan_id', 'day_of_week', 'meal_type']);
+            $table->index(['meal_plan_id', 'planned_date', 'meal_type']);
         });
     }
 

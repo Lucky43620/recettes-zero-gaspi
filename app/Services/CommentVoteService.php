@@ -13,18 +13,16 @@ class CommentVoteService
             ->where('comment_id', $comment->id)
             ->first();
 
-        $newVote = $type === 'up' ? 1 : -1;
-
         if ($existingVote) {
-            $this->handleExistingVote($comment, $existingVote, $newVote, $userId);
+            $this->handleExistingVote($comment, $existingVote, $type, $userId);
         } else {
-            $this->createNewVote($comment, $userId, $newVote);
+            $this->createNewVote($comment, $userId, $type);
         }
     }
 
-    private function handleExistingVote(Comment $comment, CommentVote $existingVote, int $newVote, int $userId): void
+    private function handleExistingVote(Comment $comment, CommentVote $existingVote, string $newVote, int $userId): void
     {
-        if ($existingVote->vote === $newVote) {
+        if ($existingVote->vote_type === $newVote) {
             $this->removeVote($comment, $existingVote, $userId);
         } else {
             $this->switchVote($comment, $existingVote, $newVote, $userId);
@@ -33,7 +31,7 @@ class CommentVoteService
 
     private function removeVote(Comment $comment, CommentVote $existingVote, int $userId): void
     {
-        if ($existingVote->vote === 1) {
+        if ($existingVote->vote_type === 'up') {
             $comment->decrement('upvotes');
         } else {
             $comment->decrement('downvotes');
@@ -44,9 +42,9 @@ class CommentVoteService
             ->delete();
     }
 
-    private function switchVote(Comment $comment, CommentVote $existingVote, int $newVote, int $userId): void
+    private function switchVote(Comment $comment, CommentVote $existingVote, string $newVote, int $userId): void
     {
-        if ($existingVote->vote === 1) {
+        if ($existingVote->vote_type === 'up') {
             $comment->decrement('upvotes');
             $comment->increment('downvotes');
         } else {
@@ -56,18 +54,18 @@ class CommentVoteService
 
         CommentVote::where('user_id', $userId)
             ->where('comment_id', $comment->id)
-            ->update(['vote' => $newVote]);
+            ->update(['vote_type' => $newVote]);
     }
 
-    private function createNewVote(Comment $comment, int $userId, int $vote): void
+    private function createNewVote(Comment $comment, int $userId, string $vote): void
     {
         CommentVote::create([
             'user_id' => $userId,
             'comment_id' => $comment->id,
-            'vote' => $vote,
+            'vote_type' => $vote,
         ]);
 
-        if ($vote === 1) {
+        if ($vote === 'up') {
             $comment->increment('upvotes');
         } else {
             $comment->increment('downvotes');

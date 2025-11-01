@@ -26,7 +26,7 @@ const { difficultyOptions } = useDifficultyLabels();
         <FormTextarea
             v-model="form.summary"
             label="Description courte"
-            rows="4"
+            :rows="4"
             placeholder="Décrivez votre recette en quelques mots..."
             :error="form.errors.summary"
         />

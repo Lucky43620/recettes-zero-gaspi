@@ -1,0 +1,43 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class IngredientFactory extends Factory
+{
+    public function definition(): array
+    {
+        return [
+            'name' => fake()->randomElement([
+                'Tomate', 'Pomme de terre', 'Carotte', 'Oignon', 'Ail',
+                'Courgette', 'Aubergine', 'Poivron', 'Salade', 'Concombre',
+                'Poulet', 'Boeuf', 'Porc', 'Poisson', 'Crevettes',
+                'Riz', 'Pâtes', 'Pain', 'Farine', 'Sucre',
+                'Lait', 'Beurre', 'Fromage', 'Oeuf', 'Huile d\'olive'
+            ]),
+            'barcode' => fake()->optional()->numerify('############'),
+            'category' => fake()->randomElement([
+                'Fruits et légumes',
+                'Viandes et poissons',
+                'Produits laitiers',
+                'Féculents',
+                'Condiments',
+                'Épices'
+            ]),
+            'openfoodfacts_id' => fake()->optional()->numerify('############'),
+            'nutritional_info' => fake()->optional()->passthrough([
+                'energy' => fake()->numberBetween(50, 500),
+                'proteins' => fake()->numberBetween(0, 30),
+                'carbohydrates' => fake()->numberBetween(0, 50),
+                'fat' => fake()->numberBetween(0, 30),
+            ]),
+            'allergens' => fake()->optional()->randomElements(['gluten', 'lactose', 'nuts', 'eggs'], fake()->numberBetween(1, 2)),
+            'image_url' => fake()->optional()->imageUrl(),
+            'labels' => fake()->optional()->randomElements(['bio', 'local', 'fair-trade'], fake()->numberBetween(1, 2)),
+            'brands' => fake()->optional()->company(),
+            'avg_shelf_life_days' => fake()->optional()->numberBetween(3, 365),
+            'openfoodfacts_synced_at' => fake()->optional()->dateTimeBetween('-30 days', 'now'),
+        ];
+    }
+}

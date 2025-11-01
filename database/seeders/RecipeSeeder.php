@@ -2,33 +2,26 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Difficulty;
+use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class RecipeSeeder extends Seeder
 {
     public function run(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Recipe::truncate();
+        DB::table('recipe_steps')->truncate();
+        DB::table('recipe_ingredients')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         $users = User::all();
-
-        if ($users->isEmpty()) {
-            $users = User::factory(5)->create();
-        }
-
-        foreach ($users as $user) {
-            Recipe::factory(rand(2, 5))
-                ->for($user, 'author')
-                ->create()
-                ->each(function ($recipe) {
-                    for ($i = 1; $i <= rand(3, 8); $i++) {
-                        $recipe->steps()->create([
-                            'position' => $i,
-                            'text' => fake()->paragraph(),
-                            'timer_seconds' => rand(0, 1) ? rand(60, 600) : null,
-                        ]);
-                    }
-                });
-        }
+        
+        // Generate random recipes
+        Recipe::factory(60)->create();
     }
 }

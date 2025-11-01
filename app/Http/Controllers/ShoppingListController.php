@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddShoppingListItemRequest;
+use App\Http\Requests\StoreShoppingListRequest;
+use App\Http\Requests\UpdateShoppingListItemRequest;
 use App\Models\MealPlan;
 use App\Models\ShoppingList;
 use App\Models\ShoppingListItem;
@@ -42,12 +45,9 @@ class ShoppingListController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreShoppingListRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'meal_plan_id' => 'nullable|exists:meal_plans,id',
-        ]);
+        $validated = $request->validated();
 
         $shoppingList = Auth::user()->shoppingLists()->create($validated);
 
@@ -75,28 +75,22 @@ class ShoppingListController extends Controller
             ->with('success', 'Liste supprimée avec succès');
     }
 
-    public function addItem(Request $request, ShoppingList $shoppingList)
+    public function addItem(AddShoppingListItemRequest $request, ShoppingList $shoppingList)
     {
         $this->authorize('update', $shoppingList);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'quantity' => 'nullable|numeric|min:0',
-            'unit_code' => 'nullable|exists:units,code',
-        ]);
+        $validated = $request->validated();
 
         $shoppingList->items()->create($validated);
 
         return back();
     }
 
-    public function updateItem(Request $request, ShoppingListItem $item)
+    public function updateItem(UpdateShoppingListItemRequest $request, ShoppingListItem $item)
     {
         $this->authorize('update', $item->shoppingList);
 
-        $validated = $request->validate([
-            'is_checked' => 'required|boolean',
-        ]);
+        $validated = $request->validated();
 
         $item->update($validated);
 

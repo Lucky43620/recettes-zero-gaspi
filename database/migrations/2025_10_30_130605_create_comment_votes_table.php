@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('comment_votes', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('comment_id')->constrained()->onDelete('cascade');
-            $table->tinyInteger('vote');
+            $table->enum('vote_type', ['up', 'down']);
             $table->timestamp('created_at')->useCurrent();
 
             $table->primary(['user_id', 'comment_id']);
-            $table->index('vote');
+            $table->index('vote_type');
         });
     }
 
