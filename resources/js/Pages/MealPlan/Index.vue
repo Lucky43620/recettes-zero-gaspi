@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import MealPlanMobileCard from '@/Components/MealPlanMobileCard.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { ref, computed } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 
@@ -130,45 +131,32 @@ const getRecipeImage = (recipe) => {
                     Planning des repas
                 </h2>
                 <div class="flex gap-3">
-                    <button
+                    <PrimaryButton
                         @click="generateShoppingList"
-                        :disabled="isGeneratingShoppingList"
-                        class="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        :loading="isGeneratingShoppingList"
+                        variant="warning"
                     >
-                        <svg v-if="isGeneratingShoppingList" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        {{ isGeneratingShoppingList ? 'Génération...' : 'Générer liste de courses' }}
-                    </button>
-                    <button
-                        @click="openDuplicateModal"
-                        class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-                    >
+                        Générer liste de courses
+                    </PrimaryButton>
+                    <PrimaryButton @click="openDuplicateModal">
                         Dupliquer cette semaine
-                    </button>
+                    </PrimaryButton>
                 </div>
             </div>
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
                 <div class="mb-6 flex justify-between items-center">
-                    <button
-                        @click="navigateWeek(prevWeek)"
-                        class="bg-white px-4 py-2 rounded-md border hover:bg-gray-50"
-                    >
+                    <PrimaryButton variant="secondary" @click="navigateWeek(prevWeek)">
                         ← Semaine précédente
-                    </button>
+                    </PrimaryButton>
                     <div class="text-lg font-semibold">
                         Semaine du {{ new Date(weekStart).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) }}
                     </div>
-                    <button
-                        @click="navigateWeek(nextWeek)"
-                        class="bg-white px-4 py-2 rounded-md border hover:bg-gray-50"
-                    >
+                    <PrimaryButton variant="secondary" @click="navigateWeek(nextWeek)">
                         Semaine suivante →
-                    </button>
+                    </PrimaryButton>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -341,24 +329,19 @@ const getRecipeImage = (recipe) => {
                     />
                 </div>
                 <div class="flex gap-3 justify-end">
-                    <button
+                    <PrimaryButton
+                        variant="secondary"
                         @click="showDuplicateModal = false"
                         :disabled="isDuplicating"
-                        class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md disabled:opacity-50"
                     >
                         Annuler
-                    </button>
-                    <button
+                    </PrimaryButton>
+                    <PrimaryButton
                         @click="duplicateWeek"
-                        :disabled="isDuplicating"
-                        class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        :loading="isDuplicating"
                     >
-                        <svg v-if="isDuplicating" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        {{ isDuplicating ? 'Duplication...' : 'Dupliquer' }}
-                    </button>
+                        Dupliquer
+                    </PrimaryButton>
                 </div>
             </div>
         </div>

@@ -19,7 +19,7 @@ function toggleFavorite() {
     <button
         @click="toggleFavorite"
         :disabled="form.processing"
-        class="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 transition"
+        class="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 transition disabled:opacity-50"
     >
         <svg
             class="w-5 h-5"

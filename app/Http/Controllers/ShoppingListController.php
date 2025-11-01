@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MealPlan;
 use App\Models\ShoppingList;
 use App\Models\ShoppingListItem;
+use App\Services\ShoppingListService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,11 @@ use Inertia\Inertia;
 class ShoppingListController extends Controller
 {
     use AuthorizesRequests;
+
+    public function __construct(
+        private ShoppingListService $shoppingListService
+    ) {}
+
     public function index()
     {
         $shoppingLists = Auth::user()->shoppingLists()
@@ -53,37 +59,7 @@ class ShoppingListController extends Controller
     {
         $this->authorize('view', $mealPlan);
 
-        $mealPlan->load('mealPlanRecipes.recipe.ingredients.unit');
-
-        $ingredients = collect();
-
-        foreach ($mealPlan->mealPlanRecipes as $mealPlanRecipe) {
-            foreach ($mealPlanRecipe->recipe->ingredients as $ingredient) {
-                $key = $ingredient->name . '_' . $ingredient->unit_code;
-
-                if ($ingredients->has($key)) {
-                    $existing = $ingredients->get($key);
-                    $existing['quantity'] += $ingredient->quantity * ($mealPlanRecipe->servings / $mealPlanRecipe->recipe->servings);
-                    $ingredients->put($key, $existing);
-                } else {
-                    $ingredients->put($key, [
-                        'name' => $ingredient->name,
-                        'quantity' => $ingredient->quantity * ($mealPlanRecipe->servings / $mealPlanRecipe->recipe->servings),
-                        'unit_code' => $ingredient->unit_code,
-                    ]);
-                }
-            }
-        }
-
-        $weekStart = \Carbon\Carbon::parse($mealPlan->week_start)->format('d/m/Y');
-        $shoppingList = Auth::user()->shoppingLists()->create([
-            'name' => "Liste - Semaine du {$weekStart}",
-            'meal_plan_id' => $mealPlan->id,
-        ]);
-
-        foreach ($ingredients as $ingredient) {
-            $shoppingList->items()->create($ingredient);
-        }
+        $shoppingList = $this->shoppingListService->generateFromMealPlan($mealPlan, Auth::id());
 
         return redirect()->route('shopping-lists.show', $shoppingList)
             ->with('success', 'Liste de courses générée avec succès');

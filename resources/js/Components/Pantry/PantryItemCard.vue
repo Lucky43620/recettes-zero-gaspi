@@ -3,8 +3,8 @@
         <div class="p-6">
             <div class="flex items-start gap-4">
                 <div class="flex-shrink-0">
-                    <div v-if="item.ingredient.image_url" class="w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
-                        <img :src="item.ingredient.image_url" :alt="item.ingredient.name" class="w-full h-full object-cover">
+                    <div v-if="item.ingredient?.image_url" class="w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
+                        <img :src="item.ingredient.image_url" :alt="item.ingredient?.name" class="w-full h-full object-cover">
                     </div>
                     <div v-else class="w-20 h-20 rounded-lg bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
                         <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,11 +15,11 @@
 
                 <div class="flex-1 min-w-0">
                     <h3 class="text-lg font-semibold text-gray-900 truncate mb-1">
-                        {{ item.ingredient.name }}
+                        {{ item.ingredient?.name }}
                     </h3>
 
                     <p class="text-sm text-gray-600 mb-2">
-                        {{ item.quantity }} {{ item.unit.name }}
+                        {{ item.quantity }} {{ item.unit?.name }}
                     </p>
 
                     <div v-if="item.storage_location" class="flex items-center text-sm text-gray-500 mb-2">
@@ -82,15 +82,13 @@
 </template>
 
 <script setup>
+import { useDateFormat } from '@/composables/useDateFormat';
+
 defineProps({
     item: Object,
 });
 
 defineEmits(['edit', 'delete']);
 
-const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
-};
+const { formatDate } = useDateFormat();
 </script>

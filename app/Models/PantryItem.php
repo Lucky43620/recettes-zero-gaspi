@@ -66,4 +66,27 @@ class PantryItem extends Model
 
         return (int) $this->expiration_date->diffInDays(Carbon::now(), false);
     }
+
+    public function scopeExpired($query)
+    {
+        return $query->whereNotNull('expiration_date')
+            ->whereDate('expiration_date', '<', Carbon::now());
+    }
+
+    public function scopeExpiringSoon($query, int $days = 3)
+    {
+        return $query->whereNotNull('expiration_date')
+            ->whereDate('expiration_date', '>=', Carbon::now())
+            ->whereDate('expiration_date', '<=', Carbon::now()->addDays($days));
+    }
+
+    public function scopeWithRelations($query)
+    {
+        return $query->with(['ingredient', 'unit']);
+    }
+
+    public function scopeForUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
 }

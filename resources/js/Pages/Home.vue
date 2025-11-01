@@ -39,7 +39,7 @@ const features = [
         <div class="relative overflow-hidden bg-gradient-to-br from-green-600 via-green-700 to-orange-600 py-24 md:py-32">
             <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE0YzYuMDc1IDAgMTEgNC45MjUgMTEgMTEtMCA2LjA3NS00LjkyNSAxMS0xMSAxMS02LjA3NSAwLTExLTQuOTI1LTExLTExIDAtNi4wNzUgNC45MjUtMTEgMTEtMTF6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
 
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 relative">
                 <div class="text-center">
                     <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
                         Cuisinez sans
@@ -81,7 +81,7 @@ const features = [
         </div>
 
         <div class="bg-gray-50 py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
                     <h2 class="text-4xl font-bold text-gray-900 mb-4">
                         Recettes populaires
@@ -108,7 +108,7 @@ const features = [
         </div>
 
         <div class="bg-gradient-to-r from-green-600 to-green-700 py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
                     Prêt à réduire le gaspillage ?
                 </h2>

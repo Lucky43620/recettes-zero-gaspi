@@ -12,6 +12,19 @@ use Illuminate\Support\Facades\Log;
 
 class IngredientService
 {
+    public function transformToArray(Ingredient $ingredient): array
+    {
+        return [
+            'id' => $ingredient->id,
+            'name' => $ingredient->name,
+            'barcode' => $ingredient->barcode ?? null,
+            'brands' => $ingredient->brands ?? null,
+            'category' => $ingredient->category ?? null,
+            'image_url' => $ingredient->image_url ?? null,
+            'nutritional_info' => $ingredient->nutritional_info ?? null,
+            'labels' => $ingredient->labels ?? null,
+        ];
+    }
     public function __construct(
         private OpenFoodFactsConnector $connector
     ) {}
@@ -20,17 +33,39 @@ class IngredientService
     {
         $localResults = $this->searchLocal($searchTerm, $limit);
 
-        if ($localOnly || $localResults->count() >= $limit) {
+        if ($localOnly) {
             return $localResults;
         }
 
-        if ($localResults->count() >= 5) {
+        if ($localResults->count() >= $limit) {
             return $localResults;
         }
 
-        $apiResults = $this->searchFromOpenFoodFacts($searchTerm, $limit);
+        try {
+            // Première recherche API avec filtre strict (nom du produit uniquement)
+            $remainingLimit = $limit - $localResults->count();
+            $apiResults = $this->searchFromOpenFoodFacts($searchTerm, 50, true);
 
-        return $localResults->concat($apiResults)->unique('id')->take($limit);
+            $combined = $localResults->concat($apiResults)->unique(function ($item) {
+                return $item->id ?? $item->openfoodfacts_id ?? $item->name;
+            });
+
+            // Si on n'a toujours pas assez de résultats, faire une recherche plus large
+            if ($combined->count() < $limit) {
+                $broadResults = $this->searchFromOpenFoodFacts($searchTerm, 50, false);
+                $combined = $combined->concat($broadResults)->unique(function ($item) {
+                    return $item->id ?? $item->openfoodfacts_id ?? $item->name;
+                });
+            }
+
+            return $combined->take($limit);
+        } catch (\Exception $e) {
+            Log::warning('API search skipped due to timeout', [
+                'search_term' => $searchTerm,
+                'error' => $e->getMessage(),
+            ]);
+            return $localResults;
+        }
     }
 
     public function findOrCreateByBarcode(string $barcode): ?Ingredient
@@ -66,22 +101,33 @@ class IngredientService
 
     private function searchLocal(string $searchTerm, int $limit): Collection
     {
-        $query = Ingredient::query();
+        $exactMatches = Ingredient::where('name', 'like', "{$searchTerm}%")->limit($limit)->get();
+
+        if ($exactMatches->count() >= $limit) {
+            return $exactMatches;
+        }
+
+        $remainingLimit = $limit - $exactMatches->count();
+        $exactIds = $exactMatches->pluck('id');
+
+        $query = Ingredient::query()->whereNotIn('id', $exactIds);
 
         if (strlen($searchTerm) >= 3) {
             $query->whereRaw('MATCH(name) AGAINST(? IN BOOLEAN MODE)', [$searchTerm . '*'])
                 ->orWhere('brands', 'like', "%{$searchTerm}%")
                 ->orWhere('barcode', 'like', "%{$searchTerm}%");
         } else {
-            $query->where('name', 'like', "{$searchTerm}%")
-                ->orWhere('brands', 'like', "{$searchTerm}%")
-                ->orWhere('barcode', 'like', "{$searchTerm}%");
+            $query->where('name', 'like', "%{$searchTerm}%")
+                ->orWhere('brands', 'like', "%{$searchTerm}%")
+                ->orWhere('barcode', 'like', "%{$searchTerm}%");
         }
 
-        return $query->limit($limit)->get();
+        $otherMatches = $query->limit($remainingLimit)->get();
+
+        return $exactMatches->concat($otherMatches);
     }
 
-    private function searchFromOpenFoodFacts(string $searchTerm, int $pageSize = 20): Collection
+    private function searchFromOpenFoodFacts(string $searchTerm, int $pageSize = 50, bool $strictFilter = true): Collection
     {
         try {
             $request = new SearchProductsRequest($searchTerm, 1, $pageSize);
@@ -98,10 +144,23 @@ class IngredientService
             $data = $response->json();
             $products = $data['products'] ?? [];
 
-            return collect($products)->map(function ($product) {
+            $results = collect($products);
+
+            // Appliquer le filtre strict uniquement si demandé
+            if ($strictFilter) {
+                $results = $results->filter(function ($product) use ($searchTerm) {
+                    $productName = strtolower($product['product_name'] ?? '');
+                    $search = strtolower($searchTerm);
+                    return str_contains($productName, $search);
+                });
+            }
+
+            $results = $results->map(function ($product) {
                 $productData = ProductData::fromOpenFoodFactsResponse($product);
-                return $this->createFromProductData($productData);
+                return $this->mapProductDataToIngredient($productData);
             });
+
+            return $this->sortByRelevance($results, $searchTerm);
         } catch (\Exception $e) {
             Log::error('OpenFoodFacts search error', [
                 'search_term' => $searchTerm,
@@ -109,6 +168,38 @@ class IngredientService
             ]);
             return collect();
         }
+    }
+
+    private function sortByRelevance(Collection $results, string $searchTerm): Collection
+    {
+        return $results->sortBy(function ($ingredient) use ($searchTerm) {
+            $name = strtolower($ingredient->name);
+            $search = strtolower($searchTerm);
+
+            if (str_starts_with($name, $search)) {
+                return 0;
+            }
+
+            if (str_contains($name, $search)) {
+                return 1;
+            }
+
+            return 2;
+        })->values();
+    }
+
+    private function mapProductDataToIngredient(ProductData $productData): Ingredient
+    {
+        $existing = Ingredient::where('openfoodfacts_id', $productData->code)->first();
+
+        if ($existing) {
+            return $existing;
+        }
+
+        $ingredient = new Ingredient($productData->toArray());
+        $ingredient->exists = false;
+
+        return $ingredient;
     }
 
     private function createFromBarcode(string $barcode): ?Ingredient

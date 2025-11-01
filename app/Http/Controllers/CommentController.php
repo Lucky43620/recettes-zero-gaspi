@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
-use App\Models\CommentVote;
 use App\Models\Recipe;
+use App\Services\CommentVoteService;
 use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
+    public function __construct(
+        private CommentVoteService $commentVoteService
+    ) {}
+
     public function store(StoreCommentRequest $request, Recipe $recipe)
     {
         $recipe->comments()->create([
@@ -34,48 +38,7 @@ class CommentController extends Controller
 
     public function vote(Comment $comment, $type)
     {
-        $userId = Auth::id();
-        $existingVote = CommentVote::where('user_id', $userId)
-            ->where('comment_id', $comment->id)
-            ->first();
-
-        $newVote = $type === 'up' ? 1 : -1;
-
-        if ($existingVote) {
-            if ($existingVote->vote === $newVote) {
-                if ($newVote === 1) {
-                    $comment->decrement('upvotes');
-                } else {
-                    $comment->decrement('downvotes');
-                }
-                CommentVote::where('user_id', $userId)
-                    ->where('comment_id', $comment->id)
-                    ->delete();
-            } else {
-                if ($existingVote->vote === 1) {
-                    $comment->decrement('upvotes');
-                    $comment->increment('downvotes');
-                } else {
-                    $comment->increment('upvotes');
-                    $comment->decrement('downvotes');
-                }
-                CommentVote::where('user_id', $userId)
-                    ->where('comment_id', $comment->id)
-                    ->update(['vote' => $newVote]);
-            }
-        } else {
-            CommentVote::create([
-                'user_id' => $userId,
-                'comment_id' => $comment->id,
-                'vote' => $newVote,
-            ]);
-
-            if ($newVote === 1) {
-                $comment->increment('upvotes');
-            } else {
-                $comment->increment('downvotes');
-            }
-        }
+        $this->commentVoteService->toggle($comment, Auth::id(), $type);
 
         return back();
     }

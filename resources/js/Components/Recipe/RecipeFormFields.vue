@@ -1,120 +1,112 @@
 <script setup>
 import { UserGroupIcon, ClockIcon, FireIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
+import FormInput from '@/Components/Common/FormInput.vue';
+import FormTextarea from '@/Components/Common/FormTextarea.vue';
+import FormSelect from '@/Components/Common/FormSelect.vue';
+import { useDifficultyLabels } from '@/composables/useEnumLabels';
 
 const props = defineProps({
     form: Object,
 });
+
+const { difficultyOptions } = useDifficultyLabels();
 </script>
 
 <template>
     <div class="space-y-6">
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                Titre de la recette *
-            </label>
-            <input
-                v-model="form.title"
-                type="text"
-                required
-                placeholder="Ex: Tarte aux pommes maison"
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-lg"
-            />
-            <div v-if="form.errors.title" class="text-red-600 text-sm mt-1">
-                {{ form.errors.title }}
-            </div>
-        </div>
+        <FormInput
+            v-model="form.title"
+            label="Titre de la recette"
+            type="text"
+            required
+            placeholder="Ex: Tarte aux pommes maison"
+            :error="form.errors.title"
+        />
 
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                Description courte
-            </label>
-            <textarea
-                v-model="form.summary"
-                rows="4"
-                placeholder="Décrivez votre recette en quelques mots..."
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 resize-none"
-            />
-            <div v-if="form.errors.summary" class="text-red-600 text-sm mt-1">
-                {{ form.errors.summary }}
-            </div>
-        </div>
+        <FormTextarea
+            v-model="form.summary"
+            label="Description courte"
+            rows="4"
+            placeholder="Décrivez votre recette en quelques mots..."
+            :error="form.errors.summary"
+        />
 
         <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
             <h4 class="text-sm font-semibold text-gray-700 mb-4">Informations pratiques</h4>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                        <UserGroupIcon class="h-4 w-4 text-gray-500" />
-                        Portions *
-                    </label>
-                    <input
-                        v-model.number="form.servings"
-                        type="number"
-                        min="1"
-                        required
-                        placeholder="4"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                    />
-                </div>
+                <FormInput
+                    v-model.number="form.servings"
+                    type="number"
+                    min="1"
+                    required
+                    placeholder="4"
+                    :error="form.errors.servings"
+                >
+                    <template #label>
+                        <span class="flex items-center gap-2">
+                            <UserGroupIcon class="h-4 w-4 text-gray-500" />
+                            Portions
+                        </span>
+                    </template>
+                </FormInput>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                        <ClockIcon class="h-4 w-4 text-gray-500" />
-                        Préparation (min)
-                    </label>
-                    <input
-                        v-model.number="form.prep_minutes"
-                        type="number"
-                        min="0"
-                        placeholder="15"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                    />
-                </div>
+                <FormInput
+                    v-model.number="form.prep_minutes"
+                    type="number"
+                    min="0"
+                    placeholder="15"
+                    :error="form.errors.prep_minutes"
+                >
+                    <template #label>
+                        <span class="flex items-center gap-2">
+                            <ClockIcon class="h-4 w-4 text-gray-500" />
+                            Préparation (min)
+                        </span>
+                    </template>
+                </FormInput>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                        <FireIcon class="h-4 w-4 text-gray-500" />
-                        Cuisson (min)
-                    </label>
-                    <input
-                        v-model.number="form.cook_minutes"
-                        type="number"
-                        min="0"
-                        placeholder="30"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                    />
-                </div>
+                <FormInput
+                    v-model.number="form.cook_minutes"
+                    type="number"
+                    min="0"
+                    placeholder="30"
+                    :error="form.errors.cook_minutes"
+                >
+                    <template #label>
+                        <span class="flex items-center gap-2">
+                            <FireIcon class="h-4 w-4 text-gray-500" />
+                            Cuisson (min)
+                        </span>
+                    </template>
+                </FormInput>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Niveau de difficulté
-                </label>
-                <select
-                    v-model="form.difficulty"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                >
-                    <option value="">Sélectionner un niveau</option>
-                    <option value="easy">😊 Facile</option>
-                    <option value="medium">👨‍🍳 Moyen</option>
-                    <option value="hard">⭐ Difficile</option>
-                </select>
-            </div>
+            <FormSelect
+                v-model="form.difficulty"
+                label="Niveau de difficulté"
+                placeholder="Sélectionner un niveau"
+                :error="form.errors.difficulty"
+            >
+                <option v-for="option in difficultyOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                </option>
+            </FormSelect>
 
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <GlobeAltIcon class="h-4 w-4 text-gray-500" />
-                    Type de cuisine
-                </label>
-                <input
-                    v-model="form.cuisine"
-                    type="text"
-                    placeholder="Ex: Française, Italienne, Asiatique..."
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                />
-            </div>
+            <FormInput
+                v-model="form.cuisine"
+                type="text"
+                placeholder="Ex: Française, Italienne, Asiatique..."
+                :error="form.errors.cuisine"
+            >
+                <template #label>
+                    <span class="flex items-center gap-2">
+                        <GlobeAltIcon class="h-4 w-4 text-gray-500" />
+                        Type de cuisine
+                    </span>
+                </template>
+            </FormInput>
         </div>
     </div>
 </template>

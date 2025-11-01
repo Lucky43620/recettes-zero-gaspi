@@ -1,7 +1,7 @@
 <template>
     <PublicLayout :title="ingredient.name">
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
                 <div class="mb-6">
                     <BackButton />
                 </div>

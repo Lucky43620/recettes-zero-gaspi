@@ -1,14 +1,21 @@
 <template>
-    <Link
-        :href="route('ingredients.show', product.id)"
-        class="bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-lg transition-all duration-200 block group"
+    <component
+        :is="product.exists ? Link : 'div'"
+        :href="product.exists ? route('ingredients.show', product.id) : null"
+        :class="[
+            'bg-white overflow-hidden shadow-sm sm:rounded-lg transition-all duration-200 block group',
+            product.exists ? 'hover:shadow-lg cursor-pointer' : 'opacity-75 cursor-not-allowed'
+        ]"
     >
         <div class="relative">
             <div v-if="product.image_url" class="h-48 overflow-hidden bg-gray-100">
                 <img
                     :src="product.image_url"
                     :alt="product.name"
-                    class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
+                    :class="[
+                        'w-full h-full object-contain transition-transform duration-200',
+                        product.exists ? 'group-hover:scale-105' : ''
+                    ]"
                 >
             </div>
             <div v-else class="h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
@@ -23,7 +30,10 @@
         </div>
 
         <div class="p-4">
-            <h3 class="font-semibold text-gray-900 text-lg mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
+            <h3 :class="[
+                'font-semibold text-lg mb-2 line-clamp-2 transition-colors',
+                product.exists ? 'text-gray-900 group-hover:text-green-600' : 'text-gray-700'
+            ]">
                 {{ product.name }}
             </h3>
 
@@ -57,14 +67,20 @@
                 </span>
             </div>
 
-            <div class="mt-3 flex items-center text-sm text-gray-500">
+            <div v-if="product.exists" class="mt-3 flex items-center text-sm text-gray-500">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Voir les détails
             </div>
+            <div v-else class="mt-3 flex items-center text-sm text-gray-400">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Produit non enregistré
+            </div>
         </div>
-    </Link>
+    </component>
 </template>
 
 <script setup>

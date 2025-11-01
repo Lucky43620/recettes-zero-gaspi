@@ -13,7 +13,7 @@ defineProps({
 
         <div class="min-h-screen bg-gray-50 flex flex-col">
             <nav class="bg-white shadow-sm">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
                         <div class="flex items-center">
                             <Link :href="route('home')" class="flex items-center">
@@ -84,7 +84,7 @@ defineProps({
             </main>
 
             <footer class="bg-white border-t border-gray-200 py-8 mt-12">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
+                <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
                     <p>© 2025 Recettes Zéro Gaspi. Tous droits réservés.</p>
                 </div>
             </footer>

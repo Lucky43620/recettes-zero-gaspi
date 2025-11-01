@@ -41,6 +41,7 @@ class Recipe extends Model implements HasMedia
         'calories' => 'integer',
         'rating_count' => 'integer',
         'rating_avg' => 'decimal:2',
+        'difficulty' => \App\Enums\Difficulty::class,
     ];
 
     public function sluggable(): array
@@ -107,5 +108,35 @@ class Recipe extends Model implements HasMedia
     {
         $this->addMediaCollection('images')
             ->useFallbackUrl('/images/recipe-placeholder.jpg');
+    }
+
+    public function scopePublic($query)
+    {
+        return $query->where('is_public', true);
+    }
+
+    public function scopeWithMetadata($query)
+    {
+        return $query->with(['author', 'media']);
+    }
+
+    public function scopeWithFullData($query)
+    {
+        return $query->with(['author', 'media', 'ratings', 'comments']);
+    }
+
+    public function scopeByDifficulty($query, $difficulty)
+    {
+        return $query->where('difficulty', $difficulty);
+    }
+
+    public function scopePopular($query)
+    {
+        return $query->where('rating_count', '>', 0)->orderByDesc('rating_avg');
+    }
+
+    public function scopeRecent($query)
+    {
+        return $query->latest();
     }
 }

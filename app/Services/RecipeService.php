@@ -11,35 +11,19 @@ class RecipeService
 {
     public function createRecipe(array $validated): Recipe
     {
-        $recipe = Auth::user()->recipes()->create([
-            'title' => $validated['title'],
-            'summary' => $validated['summary'] ?? null,
-            'servings' => $validated['servings'],
-            'prep_minutes' => $validated['prep_minutes'] ?? null,
-            'cook_minutes' => $validated['cook_minutes'] ?? null,
-            'difficulty' => $validated['difficulty'] ?? null,
-            'cuisine' => $validated['cuisine'] ?? null,
-            'is_public' => $validated['is_public'] ?? true,
-            'calories' => $validated['calories'] ?? null,
-            'nutrients' => $validated['nutrients'] ?? null,
-        ]);
-
-        $this->syncSteps($recipe, $validated['steps']);
-
-        if (!empty($validated['ingredients'])) {
-            $this->syncIngredients($recipe, $validated['ingredients']);
-        }
-
-        if (!empty($validated['images'])) {
-            $this->syncImages($recipe, $validated['images']);
-        }
-
-        return $recipe;
+        $recipe = Auth::user()->recipes()->create($this->extractRecipeData($validated));
+        return $this->syncRecipeRelations($recipe, $validated);
     }
 
     public function updateRecipe(Recipe $recipe, array $validated): Recipe
     {
-        $recipe->update([
+        $recipe->update($this->extractRecipeData($validated));
+        return $this->syncRecipeRelations($recipe, $validated);
+    }
+
+    private function extractRecipeData(array $validated): array
+    {
+        return [
             'title' => $validated['title'],
             'summary' => $validated['summary'] ?? null,
             'servings' => $validated['servings'],
@@ -50,8 +34,11 @@ class RecipeService
             'is_public' => $validated['is_public'] ?? true,
             'calories' => $validated['calories'] ?? null,
             'nutrients' => $validated['nutrients'] ?? null,
-        ]);
+        ];
+    }
 
+    private function syncRecipeRelations(Recipe $recipe, array $validated): Recipe
+    {
         $this->syncSteps($recipe, $validated['steps']);
 
         if (!empty($validated['ingredients'])) {
@@ -65,7 +52,7 @@ class RecipeService
         return $recipe;
     }
 
-    public function applyFilters($query, Request $request)
+    public function applyFilters(\Illuminate\Database\Eloquent\Builder $query, Request $request): \Illuminate\Database\Eloquent\Builder
     {
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {

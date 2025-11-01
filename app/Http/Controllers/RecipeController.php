@@ -30,7 +30,11 @@ class RecipeController extends Controller
 
         return Inertia::render('Recipe/Index', [
             'recipes' => $recipes,
-            'filters' => $request->only(['search', 'difficulty', 'sort']),
+            'filters' => [
+                'search' => $request->input('search', ''),
+                'difficulty' => $request->input('difficulty', ''),
+                'sort' => $request->input('sort', 'latest'),
+            ],
         ]);
     }
 
@@ -48,7 +52,12 @@ class RecipeController extends Controller
 
         return Inertia::render('Recipe/MyRecipes', [
             'recipes' => $recipes,
-            'filters' => $request->only(['search', 'difficulty', 'sort', 'visibility']),
+            'filters' => [
+                'search' => $request->input('search', ''),
+                'difficulty' => $request->input('difficulty', ''),
+                'sort' => $request->input('sort', 'latest'),
+                'visibility' => $request->input('visibility', ''),
+            ],
         ]);
     }
 

@@ -10,8 +10,7 @@ import RatingStars from '@/Components/Social/RatingStars.vue';
 import CommentSection from '@/Components/Social/CommentSection.vue';
 import FavoriteButton from '@/Components/Social/FavoriteButton.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 
 const props = defineProps({
     recipe: Object,
@@ -52,17 +51,18 @@ function deleteRecipe() {
                     <Link
                         v-if="canEdit"
                         :href="route('recipes.edit', recipe.slug)"
-                        class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                     >
-                        Modifier
+                        <PrimaryButton>
+                            Modifier
+                        </PrimaryButton>
                     </Link>
-                    <button
+                    <PrimaryButton
                         v-if="canDelete"
                         @click="confirmDeleteRecipe"
-                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                        variant="danger"
                     >
                         Supprimer
-                    </button>
+                    </PrimaryButton>
                 </div>
             </div>
         </template>
@@ -173,11 +173,10 @@ function deleteRecipe() {
                             <h3 class="text-xl font-semibold text-gray-900 mb-4">Votre avis</h3>
                             <div v-if="!$page.props.auth.user" class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
                                 <p class="text-gray-700 mb-3">Connectez-vous pour noter cette recette</p>
-                                <Link
-                                    :href="route('login')"
-                                    class="inline-block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                                >
-                                    Se connecter
+                                <Link :href="route('login')">
+                                    <PrimaryButton>
+                                        Se connecter
+                                    </PrimaryButton>
                                 </Link>
                             </div>
                             <RatingStars
@@ -240,16 +239,17 @@ function deleteRecipe() {
             </template>
 
             <template #footer>
-                <SecondaryButton @click="confirmingDeletion = false">
+                <PrimaryButton variant="secondary" @click="confirmingDeletion = false">
                     Annuler
-                </SecondaryButton>
+                </PrimaryButton>
 
-                <DangerButton
+                <PrimaryButton
+                    variant="danger"
                     class="ms-3"
                     @click="deleteRecipe"
                 >
                     Supprimer
-                </DangerButton>
+                </PrimaryButton>
             </template>
         </ConfirmationModal>
     </component>

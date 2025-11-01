@@ -2,6 +2,10 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useForm, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import FormInput from '@/Components/Common/FormInput.vue';
+import FormTextarea from '@/Components/Common/FormTextarea.vue';
+import FormCheckbox from '@/Components/Common/FormCheckbox.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 
 const props = defineProps({
     collections: Array,
@@ -16,7 +20,6 @@ const form = useForm({
 
 function submitCollection() {
     form.post(route('collections.store'), {
-        preserveScroll: true,
         onSuccess: () => {
             form.reset();
             showForm.value = false;
@@ -32,60 +35,46 @@ function submitCollection() {
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Mes collections
                 </h2>
-                <button
+                <PrimaryButton
                     @click="showForm = !showForm"
-                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    :variant="showForm ? 'secondary' : 'primary'"
                 >
                     {{ showForm ? 'Annuler' : 'Nouvelle collection' }}
-                </button>
+                </PrimaryButton>
             </div>
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8 space-y-6">
                 <div v-if="showForm" class="bg-white rounded-lg shadow p-6">
                     <form @submit.prevent="submitCollection" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Nom de la collection *
-                            </label>
-                            <input
-                                v-model="form.name"
-                                type="text"
-                                required
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
-                            />
-                        </div>
+                        <FormInput
+                            v-model="form.name"
+                            label="Nom de la collection"
+                            type="text"
+                            required
+                            :error="form.errors.name"
+                        />
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Description
-                            </label>
-                            <textarea
-                                v-model="form.description"
-                                rows="3"
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
-                            ></textarea>
-                        </div>
+                        <FormTextarea
+                            v-model="form.description"
+                            label="Description"
+                            rows="3"
+                            :error="form.errors.description"
+                        />
 
-                        <div class="flex items-center">
-                            <input
-                                v-model="form.is_public"
-                                type="checkbox"
-                                class="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                            />
-                            <label class="ml-2 text-sm text-gray-700">
-                                Collection publique
-                            </label>
-                        </div>
+                        <FormCheckbox
+                            v-model="form.is_public"
+                            id="is_public"
+                            label="Collection publique"
+                        />
 
-                        <button
+                        <PrimaryButton
                             type="submit"
-                            :disabled="form.processing"
-                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+                            :loading="form.processing"
                         >
                             Créer
-                        </button>
+                        </PrimaryButton>
                     </form>
                 </div>
 

@@ -16,28 +16,33 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = $request->input('q');
+        $page = (int) $request->input('page', 1);
+        $perPage = 20;
         $products = [];
+        $hasMore = false;
 
         if ($query && strlen($query) >= 2) {
-            $results = $this->ingredientService->searchIngredients($query);
+            $limit = $perPage * $page;
+            $results = $this->ingredientService->searchIngredients($query, $limit + 1);
 
-            $products = collect($results)->map(function ($ingredient) {
-                return [
-                    'id' => $ingredient->id,
-                    'name' => $ingredient->name,
-                    'barcode' => $ingredient->barcode,
-                    'brands' => $ingredient->brands,
-                    'category' => $ingredient->category,
-                    'image_url' => $ingredient->image_url,
-                    'nutritional_info' => $ingredient->nutritional_info,
-                    'labels' => $ingredient->labels,
-                ];
+            $hasMore = $results->count() > $limit;
+
+            $products = $results->take($limit)->map(function ($ingredient) {
+                if (!$ingredient->exists) {
+                    $ingredient = $this->ingredientService->findOrCreateByName($ingredient->name);
+                }
+
+                $data = $this->ingredientService->transformToArray($ingredient);
+                $data['exists'] = true;
+                return $data;
             })->values()->all();
         }
 
         return Inertia::render('Products/Index', [
             'products' => $products,
             'query' => $query,
+            'currentPage' => $page,
+            'hasMore' => $hasMore,
         ]);
     }
 }

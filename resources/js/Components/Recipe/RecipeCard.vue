@@ -1,6 +1,6 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { useDifficultyLabels } from '@/composables/useDifficultyLabels';
+import { useDifficultyLabels } from '@/composables/useEnumLabels';
 import { computed } from 'vue';
 import { ClockIcon, UserIcon, StarIcon } from '@heroicons/vue/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/vue/24/solid';
@@ -13,20 +13,11 @@ const props = defineProps({
     }
 });
 
-const { getDifficultyLabel } = useDifficultyLabels();
+const { getDifficultyLabel, getDifficultyClasses } = useDifficultyLabels();
 
 const recipeUrl = computed(() => {
     const params = props.fromMyRecipes ? { from: 'my' } : {};
     return route('recipes.show', [props.recipe.slug, params]);
-});
-
-const difficultyColor = computed(() => {
-    const colors = {
-        easy: 'bg-green-100 text-green-700 border-green-200',
-        medium: 'bg-orange-100 text-orange-700 border-orange-200',
-        hard: 'bg-red-100 text-red-700 border-red-200',
-    };
-    return colors[props.recipe.difficulty] || 'bg-gray-100 text-gray-700 border-gray-200';
 });
 </script>
 
@@ -49,7 +40,7 @@ const difficultyColor = computed(() => {
                 </svg>
             </div>
 
-            <div v-if="recipe.difficulty" :class="['absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm bg-white/90', difficultyColor]">
+            <div v-if="recipe.difficulty" :class="['absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm', getDifficultyClasses(recipe.difficulty)]">
                 {{ getDifficultyLabel(recipe.difficulty) }}
             </div>
         </div>

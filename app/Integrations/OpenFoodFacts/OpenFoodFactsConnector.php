@@ -11,7 +11,7 @@ class OpenFoodFactsConnector extends Connector
 
     public function resolveBaseUrl(): string
     {
-        return 'https://world.openfoodfacts.org';
+        return 'https://world.openfoodfacts.net';
     }
 
     protected function defaultHeaders(): array
@@ -25,7 +25,8 @@ class OpenFoodFactsConnector extends Connector
     {
         return [
             'timeout' => 30,
-            'verify' => false,
+            'connect_timeout' => 10,
+            'verify' => config('app.env') === 'production',
         ];
     }
 }

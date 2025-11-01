@@ -32,4 +32,19 @@ class MealPlan extends Model
     {
         return $this->hasMany(ShoppingList::class);
     }
+
+    public function scopeForWeek($query, $weekStart)
+    {
+        return $query->where('week_start', $weekStart);
+    }
+
+    public function scopeForUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function scopeWithRecipes($query)
+    {
+        return $query->with(['mealPlanRecipes.recipe.media', 'mealPlanRecipes.recipe.author']);
+    }
 }

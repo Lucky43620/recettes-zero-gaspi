@@ -1,22 +1,74 @@
 <template>
-    <DialogModal :show="true" @close="$emit('close')">
-        <template #title>
-            Ajouter un article au garde-manger
-        </template>
+    <div class="fixed inset-0 z-50 overflow-y-auto" @click.self="$emit('close')">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-black opacity-50"></div>
 
-        <template #content>
-            <form @submit.prevent="submit">
-                <div class="space-y-4">
+            <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        Ajouter un article au garde-manger
+                    </h3>
+                    <button
+                        @click="$emit('close')"
+                        class="text-gray-400 hover:text-gray-600"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form @submit.prevent="submit" class="space-y-4">
                     <div>
-                        <IngredientSearchInput
-                            label="Ingrédient"
-                            placeholder="Rechercher ou scanner un code-barres..."
-                            :show-barcode-button="true"
-                            @select="selectIngredient"
-                            @scan="openBarcodeScanner"
-                        />
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Rechercher un ingrédient
+                        </label>
+                        <div class="relative">
+                            <input
+                                v-model="searchQuery"
+                                @input="handleSearch"
+                                type="text"
+                                placeholder="Rechercher un produit..."
+                                class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
+                            >
+                        </div>
 
-                        <div v-if="form.ingredient_id && selectedIngredient" class="mt-2 p-3 bg-green-50 border border-green-200 rounded-md flex items-center gap-3">
+                        <div v-if="isSearching" class="mt-2 p-4 text-center text-gray-500">
+                            <svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+
+                        <div v-else-if="searchResults.length > 0" class="mt-2 max-h-64 overflow-y-auto border border-gray-200 rounded-md bg-white shadow-lg">
+                            <button
+                                v-for="ingredient in searchResults"
+                                :key="ingredient.id"
+                                type="button"
+                                @click="selectIngredient(ingredient)"
+                                class="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 border-b border-gray-100 last:border-b-0"
+                            >
+                                <div class="flex-shrink-0">
+                                    <img
+                                        v-if="ingredient.image_url"
+                                        :src="ingredient.image_url"
+                                        :alt="ingredient.name"
+                                        class="w-12 h-12 object-cover rounded"
+                                    >
+                                    <div v-else class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-medium text-gray-900 truncate">{{ ingredient.name }}</p>
+                                    <p v-if="ingredient.brands" class="text-sm text-gray-500 truncate">{{ ingredient.brands }}</p>
+                                </div>
+                            </button>
+                        </div>
+
+                        <div v-if="form.ingredient_id && selectedIngredient" class="mt-3 p-3 bg-green-50 border border-green-200 rounded-md flex items-center gap-3">
                             <img
                                 v-if="selectedIngredient.image_url"
                                 :src="selectedIngredient.image_url"
@@ -25,6 +77,7 @@
                             >
                             <div class="flex-1">
                                 <p class="font-medium text-gray-900">{{ selectedIngredient.name }}</p>
+                                <p v-if="selectedIngredient.brands" class="text-sm text-gray-600">{{ selectedIngredient.brands }}</p>
                             </div>
                             <button
                                 type="button"
@@ -37,73 +90,51 @@
                             </button>
                         </div>
 
-                        <InputError :message="form.errors.ingredient_id" class="mt-2" />
+                        <p v-if="form.errors.ingredient_id" class="mt-2 text-sm text-red-600">{{ form.errors.ingredient_id }}</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Quantité
-                            </label>
-                            <input
-                                v-model="form.quantity"
-                                type="number"
-                                step="0.01"
-                                min="0.01"
-                                required
-                                class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
-                            >
-                            <InputError :message="form.errors.quantity" class="mt-2" />
-                        </div>
+                        <FormInput
+                            v-model="form.quantity"
+                            label="Quantité"
+                            type="number"
+                            step="0.01"
+                            min="0.01"
+                            required
+                            :error="form.errors.quantity"
+                        />
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Unité
-                            </label>
-                            <select
-                                v-model="form.unit_code"
-                                required
-                                class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
-                            >
-                                <option value="">Sélectionner</option>
-                                <option v-for="unit in units" :key="unit.code" :value="unit.code">
-                                    {{ unit.name }}
-                                </option>
-                            </select>
-                            <InputError :message="form.errors.unit_code" class="mt-2" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Date de péremption
-                        </label>
-                        <input
-                            v-model="form.expiration_date"
-                            type="date"
-                            :min="today"
-                            class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
+                        <FormSelect
+                            v-model="form.unit_code"
+                            label="Unité"
+                            placeholder="Sélectionner"
+                            required
+                            :error="form.errors.unit_code"
                         >
-                        <InputError :message="form.errors.expiration_date" class="mt-2" />
+                            <option v-for="unit in units" :key="unit.code" :value="unit.code">
+                                {{ unit.name }}
+                            </option>
+                        </FormSelect>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Emplacement de stockage
-                        </label>
-                        <select
-                            v-model="form.storage_location"
-                            class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
-                        >
-                            <option value="">Sélectionner un emplacement</option>
-                            <option value="Réfrigérateur">Réfrigérateur</option>
-                            <option value="Congélateur">Congélateur</option>
-                            <option value="Placard">Placard</option>
-                            <option value="Cave">Cave</option>
-                            <option value="Garde-manger">Garde-manger</option>
-                        </select>
-                        <InputError :message="form.errors.storage_location" class="mt-2" />
-                    </div>
+                    <FormInput
+                        v-model="form.expiration_date"
+                        label="Date de péremption"
+                        type="date"
+                        :min="today"
+                        :error="form.errors.expiration_date"
+                    />
+
+                    <FormSelect
+                        v-model="form.storage_location"
+                        label="Emplacement de stockage"
+                        placeholder="Sélectionner un emplacement"
+                        :error="form.errors.storage_location"
+                    >
+                        <option v-for="option in storageLocationOptions" :key="option.value" :value="option.value">
+                            {{ option.label }}
+                        </option>
+                    </FormSelect>
 
                     <div class="flex items-center">
                         <input
@@ -116,37 +147,35 @@
                             Article déjà ouvert
                         </label>
                     </div>
-                </div>
-            </form>
-        </template>
 
-        <template #footer>
-            <button
-                type="button"
-                @click="$emit('close')"
-                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
-            >
-                Annuler
-            </button>
+                    <div class="flex justify-end gap-3 pt-4 border-t">
+                        <SecondaryButton @click="$emit('close')">
+                            Annuler
+                        </SecondaryButton>
 
-            <button
-                @click="submit"
-                :disabled="form.processing || !form.ingredient_id"
-                class="ml-3 inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
-            >
-                <span v-if="form.processing">Ajout en cours...</span>
-                <span v-else>Ajouter</span>
-            </button>
-        </template>
-    </DialogModal>
+                        <PrimaryButton
+                            type="submit"
+                            :disabled="!form.ingredient_id"
+                            :loading="form.processing"
+                        >
+                            Ajouter
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import DialogModal from '@/Components/DialogModal.vue';
-import InputError from '@/Components/InputError.vue';
-import IngredientSearchInput from '@/Components/Ingredients/IngredientSearchInput.vue';
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import axios from 'axios';
+import FormInput from '@/Components/Common/FormInput.vue';
+import FormSelect from '@/Components/Common/FormSelect.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import SecondaryButton from '@/Components/Common/SecondaryButton.vue';
+import { useStorageLocationLabels } from '@/composables/useEnumLabels';
 
 const props = defineProps({
     units: Array,
@@ -163,24 +192,54 @@ const form = useForm({
     opened: false,
 });
 
+const searchQuery = ref('');
+const searchResults = ref([]);
+const isSearching = ref(false);
 const selectedIngredient = ref(null);
+let searchTimeout = null;
+
+const { storageLocationOptions } = useStorageLocationLabels();
 
 const today = computed(() => {
     return new Date().toISOString().split('T')[0];
 });
 
+const handleSearch = () => {
+    if (searchTimeout) {
+        clearTimeout(searchTimeout);
+    }
+
+    if (searchQuery.value.length < 2) {
+        searchResults.value = [];
+        return;
+    }
+
+    isSearching.value = true;
+
+    searchTimeout = setTimeout(async () => {
+        try {
+            const response = await axios.get('/api/ingredients/search', {
+                params: { q: searchQuery.value }
+            });
+            searchResults.value = response.data.data || [];
+        } catch (error) {
+            searchResults.value = [];
+        } finally {
+            isSearching.value = false;
+        }
+    }, 300);
+};
+
 const selectIngredient = (ingredient) => {
     form.ingredient_id = ingredient.id;
     selectedIngredient.value = ingredient;
+    searchResults.value = [];
+    searchQuery.value = '';
 };
 
 const clearSelection = () => {
     form.ingredient_id = null;
     selectedIngredient.value = null;
-};
-
-const openBarcodeScanner = () => {
-    alert('Scanner de code-barres à implémenter');
 };
 
 const submit = () => {

@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -29,18 +30,18 @@ function deleteCollection() {
                         {{ collection.description }}
                     </p>
                 </div>
-                <button
+                <PrimaryButton
                     v-if="canEdit"
                     @click="deleteCollection"
-                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    variant="danger"
                 >
                     Supprimer
-                </button>
+                </PrimaryButton>
             </div>
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
                 <div class="mb-6 flex items-center justify-between">
                     <div class="text-sm text-gray-600">
                         {{ collection.recipes.length }} recettes •

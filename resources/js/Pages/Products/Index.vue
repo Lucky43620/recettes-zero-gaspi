@@ -1,7 +1,7 @@
 <template>
     <PublicLayout title="Recherche de Produits">
         <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8 p-8">
                     <div class="text-center mb-8">
                         <h1 class="text-4xl font-bold text-gray-900 mb-4">
@@ -19,26 +19,14 @@
                                 @keyup.enter="performSearch(searchQuery)"
                                 type="text"
                                 placeholder="Rechercher un produit par nom, marque ou code-barres..."
-                                class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm pr-20"
+                                class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm pr-32 py-3"
                             >
-                            <button
+                            <PrimaryButton
                                 @click="performSearch(searchQuery)"
-                                class="absolute right-2 top-2 px-4 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                                class="absolute right-2 top-1/2 -translate-y-1/2"
                             >
                                 Rechercher
-                            </button>
-                        </div>
-
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <span class="text-sm text-gray-600">Recherches populaires:</span>
-                            <button
-                                v-for="term in popularSearches"
-                                :key="term"
-                                @click="quickSearch(term)"
-                                class="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
-                            >
-                                {{ term }}
-                            </button>
+                            </PrimaryButton>
                         </div>
                     </div>
                 </div>
@@ -51,19 +39,25 @@
                     <p class="mt-4 text-gray-600">Recherche en cours...</p>
                 </div>
 
-                <div v-else-if="products.length > 0">
+                <div v-else-if="allProducts.length > 0">
                     <div class="mb-6 flex items-center justify-between">
                         <p class="text-gray-600">
-                            <span class="font-semibold text-gray-900">{{ products.length }}</span> produit(s) trouvé(s)
+                            <span class="font-semibold text-gray-900">{{ allProducts.length }}</span> produit(s) trouvé(s)
                         </p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         <ProductCard
-                            v-for="product in products"
+                            v-for="product in allProducts"
                             :key="product.id"
                             :product="product"
                         />
+                    </div>
+
+                    <div v-if="hasMore" class="mt-8 flex justify-center">
+                        <PrimaryButton variant="secondary" @click="loadMore" :loading="isSearching">
+                            Afficher plus
+                        </PrimaryButton>
                     </div>
                 </div>
 
@@ -129,6 +123,7 @@
 <script setup>
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import ProductCard from '@/Components/Ingredients/ProductCard.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 
@@ -141,28 +136,54 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    currentPage: {
+        type: Number,
+        default: 1,
+    },
+    hasMore: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const searchQuery = ref(props.query || '');
 const isSearching = ref(false);
 const hasSearched = ref(props.products.length > 0 || props.query);
-
-const popularSearches = ['Nutella', 'Coca-Cola', 'Pain', 'Lait', 'Yaourt', 'Fromage'];
-
-const quickSearch = (term) => {
-    searchQuery.value = term;
-    performSearch(term);
-};
+const allProducts = ref([...props.products]);
 
 const performSearch = (query) => {
     if (!query || query.length < 2) return;
 
     isSearching.value = true;
     hasSearched.value = true;
+    allProducts.value = [];
 
     router.get(route('products.index'), { q: query }, {
         preserveState: true,
         preserveScroll: false,
+        onSuccess: (page) => {
+            allProducts.value = page.props.products;
+        },
+        onFinish: () => {
+            isSearching.value = false;
+        },
+    });
+};
+
+const loadMore = () => {
+    isSearching.value = true;
+
+    router.get(route('products.index'), {
+        q: props.query,
+        page: props.currentPage + 1
+    }, {
+        only: ['products', 'currentPage', 'hasMore'],
+        preserveState: true,
+        preserveScroll: true,
+        onSuccess: (page) => {
+            const newProducts = page.props.products || [];
+            allProducts.value = [...allProducts.value, ...newProducts];
+        },
         onFinish: () => {
             isSearching.value = false;
         },

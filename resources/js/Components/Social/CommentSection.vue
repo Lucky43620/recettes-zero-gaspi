@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import { useForm, Link } from '@inertiajs/vue3';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import { useDateFormat } from '@/composables/useDateFormat';
 
 const props = defineProps({
     recipe: Object,
@@ -68,6 +68,8 @@ function vote(commentId, type) {
 function getUserVote(commentId) {
     return props.commentVotes[commentId] || 0;
 }
+
+const { formatRelativeTime } = useDateFormat();
 </script>
 
 <template>
@@ -78,11 +80,10 @@ function getUserVote(commentId) {
 
         <div v-if="!$page.props.auth.user" class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
             <p class="text-gray-700 mb-4">Connectez-vous pour laisser un commentaire</p>
-            <Link
-                :href="route('login')"
-                class="inline-block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-            >
-                Se connecter
+            <Link :href="route('login')">
+                <PrimaryButton>
+                    Se connecter
+                </PrimaryButton>
             </Link>
         </div>
 
@@ -97,21 +98,17 @@ function getUserVote(commentId) {
                 ></textarea>
             </div>
             <div class="flex gap-2">
-                <button
-                    type="submit"
-                    :disabled="form.processing"
-                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
-                >
+                <PrimaryButton type="submit" :loading="form.processing">
                     Publier
-                </button>
-                <button
+                </PrimaryButton>
+                <PrimaryButton
                     v-if="replyingTo"
                     type="button"
                     @click="cancelReply"
-                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                    variant="secondary"
                 >
                     Annuler
-                </button>
+                </PrimaryButton>
             </div>
         </form>
 
@@ -131,7 +128,7 @@ function getUserVote(commentId) {
                         <div class="flex items-center gap-2 mb-1">
                             <span class="font-medium text-gray-900">{{ comment.user.name }}</span>
                             <span class="text-sm text-gray-500">
-                                {{ new Date(comment.created_at).toLocaleDateString('fr-FR') }}
+                                {{ formatRelativeTime(comment.created_at) }}
                             </span>
                         </div>
                         <p class="text-gray-700 mb-2">{{ comment.content }}</p>
@@ -189,20 +186,17 @@ function getUserVote(commentId) {
                                     required
                                 ></textarea>
                                 <div class="flex gap-2">
-                                    <button
-                                        type="submit"
-                                        :disabled="form.processing"
-                                        class="px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700"
-                                    >
+                                    <PrimaryButton type="submit" :loading="form.processing" size="sm">
                                         Répondre
-                                    </button>
-                                    <button
+                                    </PrimaryButton>
+                                    <PrimaryButton
                                         type="button"
                                         @click="cancelReply"
-                                        class="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300"
+                                        variant="secondary"
+                                        size="sm"
                                     >
                                         Annuler
-                                    </button>
+                                    </PrimaryButton>
                                 </div>
                             </form>
                         </div>
@@ -222,7 +216,7 @@ function getUserVote(commentId) {
                                     <div class="flex items-center gap-2 mb-1">
                                         <span class="font-medium text-gray-900">{{ reply.user.name }}</span>
                                         <span class="text-sm text-gray-500">
-                                            {{ new Date(reply.created_at).toLocaleDateString('fr-FR') }}
+                                            {{ formatRelativeTime(reply.created_at) }}
                                         </span>
                                     </div>
                                     <p class="text-gray-700 text-sm">{{ reply.content }}</p>
@@ -252,16 +246,17 @@ function getUserVote(commentId) {
             </template>
 
             <template #footer>
-                <SecondaryButton @click="confirmingDeletion = false">
+                <PrimaryButton variant="secondary" @click="confirmingDeletion = false">
                     Annuler
-                </SecondaryButton>
+                </PrimaryButton>
 
-                <DangerButton
+                <PrimaryButton
+                    variant="danger"
                     class="ms-3"
                     @click="deleteComment"
                 >
                     Supprimer
-                </DangerButton>
+                </PrimaryButton>
             </template>
         </ConfirmationModal>
     </div>

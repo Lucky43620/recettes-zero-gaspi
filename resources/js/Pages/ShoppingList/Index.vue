@@ -1,8 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -53,17 +52,14 @@ const closeDeleteModal = () => {
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Mes listes de courses
                 </h2>
-                <button
-                    @click="showCreateModal = true"
-                    class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-                >
+                <PrimaryButton @click="showCreateModal = true">
                     Nouvelle liste
-                </button>
+                </PrimaryButton>
             </div>
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
                 <div v-if="shoppingLists.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div
                         v-for="list in shoppingLists"
@@ -85,22 +81,18 @@ const closeDeleteModal = () => {
                             <p>{{ list.items.length }} article{{ list.items.length > 1 ? 's' : '' }}</p>
                             <p>{{ list.items.filter(item => item.is_checked).length }} coché{{ list.items.filter(item => item.is_checked).length > 1 ? 's' : '' }}</p>
                         </div>
-                        <Link
-                            :href="route('shopping-lists.show', list.id)"
-                            class="block w-full text-center bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-                        >
-                            Voir la liste
+                        <Link :href="route('shopping-lists.show', list.id)" class="block">
+                            <PrimaryButton class="w-full">
+                                Voir la liste
+                            </PrimaryButton>
                         </Link>
                     </div>
                 </div>
                 <div v-else class="text-center py-12">
                     <p class="text-gray-500 mb-4">Aucune liste de courses</p>
-                    <button
-                        @click="showCreateModal = true"
-                        class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-                    >
+                    <PrimaryButton @click="showCreateModal = true">
                         Créer ma première liste
-                    </button>
+                    </PrimaryButton>
                 </div>
             </div>
         </div>
@@ -125,18 +117,12 @@ const closeDeleteModal = () => {
                     />
                 </div>
                 <div class="flex gap-3 justify-end">
-                    <button
-                        @click="showCreateModal = false"
-                        class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                    >
+                    <PrimaryButton variant="secondary" @click="showCreateModal = false">
                         Annuler
-                    </button>
-                    <button
-                        @click="createList"
-                        class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                    >
+                    </PrimaryButton>
+                    <PrimaryButton @click="createList">
                         Créer
-                    </button>
+                    </PrimaryButton>
                 </div>
             </div>
         </div>
@@ -151,16 +137,17 @@ const closeDeleteModal = () => {
             </template>
 
             <template #footer>
-                <SecondaryButton @click="closeDeleteModal">
+                <PrimaryButton variant="secondary" @click="closeDeleteModal">
                     Annuler
-                </SecondaryButton>
+                </PrimaryButton>
 
-                <DangerButton
+                <PrimaryButton
+                    variant="danger"
                     class="ms-3"
                     @click="deleteList"
                 >
                     Supprimer
-                </DangerButton>
+                </PrimaryButton>
             </template>
         </ConfirmationModal>
     </AppLayout>

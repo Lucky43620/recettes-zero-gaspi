@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -17,7 +18,7 @@ const props = defineProps({
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
                 <div v-if="favorites.data.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <RecipeCard
                         v-for="recipe in favorites.data"
@@ -30,11 +31,10 @@ const props = defineProps({
                     <p class="text-gray-600 mb-4">
                         Vous n'avez pas encore de recettes favorites
                     </p>
-                    <Link
-                        :href="route('home')"
-                        class="inline-block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                    >
-                        Découvrir des recettes
+                    <Link :href="route('home')">
+                        <PrimaryButton>
+                            Découvrir des recettes
+                        </PrimaryButton>
                     </Link>
                 </div>
 

@@ -14,7 +14,7 @@ defineProps({
 <template>
     <PublicLayout title="Recettes">
         <div class="py-8">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 min-h-[60vh]">
+            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8 min-h-[60vh]">
                 <PageHeader
                     title="Toutes les recettes"
                     subtitle="Découvrez toutes les recettes partagées par notre communauté"

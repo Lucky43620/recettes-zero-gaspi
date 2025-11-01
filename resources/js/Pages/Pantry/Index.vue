@@ -5,21 +5,17 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Mon Garde-Manger
                 </h2>
-                <button
-                    @click="handleAddClick"
-                    type="button"
-                    class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                >
+                <PrimaryButton @click="openAddModal" type="button">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
                     Ajouter un article
-                </button>
+                </PrimaryButton>
             </div>
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <div class="flex items-center">
@@ -103,13 +99,9 @@
                     </svg>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun article dans votre garde-manger</h3>
                     <p class="text-gray-500 mb-4">Commencez à ajouter des ingrédients pour suivre vos stocks et dates de péremption.</p>
-                    <button
-                        @click="handleAddClick"
-                        type="button"
-                        class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700"
-                    >
+                    <PrimaryButton @click="openAddModal" type="button">
                         Ajouter mon premier article
-                    </button>
+                    </PrimaryButton>
                 </div>
 
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -117,7 +109,7 @@
                         v-for="item in items"
                         :key="item.id"
                         :item="item"
-                        @edit="editItem"
+                        @edit="openEditModal"
                         @delete="deleteItem"
                     />
                 </div>
@@ -127,15 +119,39 @@
         <AddPantryItemModal
             v-if="showAddModal"
             :units="units"
-            @close="showAddModal = false"
+            @close="closeAddModal"
         />
 
         <EditPantryItemModal
-            v-if="showEditModal"
+            v-if="showEditModal && editingItem"
             :item="editingItem"
             :units="units"
-            @close="showEditModal = false"
+            @close="closeEditModal"
         />
+
+        <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
+            <template #title>
+                Supprimer l'article
+            </template>
+
+            <template #content>
+                Êtes-vous sûr de vouloir supprimer cet article de votre garde-manger ? Cette action est irréversible.
+            </template>
+
+            <template #footer>
+                <PrimaryButton variant="secondary" @click="confirmingDeletion = false">
+                    Annuler
+                </PrimaryButton>
+
+                <PrimaryButton
+                    variant="danger"
+                    class="ms-3"
+                    @click="confirmDelete"
+                >
+                    Supprimer
+                </PrimaryButton>
+            </template>
+        </ConfirmationModal>
     </AppLayout>
 </template>
 
@@ -144,6 +160,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import PantryItemCard from '@/Components/Pantry/PantryItemCard.vue';
 import AddPantryItemModal from '@/Components/Pantry/AddPantryItemModal.vue';
 import EditPantryItemModal from '@/Components/Pantry/EditPantryItemModal.vue';
+import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 
@@ -157,16 +175,30 @@ const props = defineProps({
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const editingItem = ref(null);
+const confirmingDeletion = ref(false);
+const itemToDelete = ref(null);
 
 const filters = ref({
     status: '',
     storage: '',
 });
 
-const handleAddClick = () => {
-    console.log('Button clicked, opening modal');
+const openAddModal = () => {
     showAddModal.value = true;
-    console.log('showAddModal is now:', showAddModal.value);
+};
+
+const closeAddModal = () => {
+    showAddModal.value = false;
+};
+
+const openEditModal = (item) => {
+    editingItem.value = item;
+    showEditModal.value = true;
+};
+
+const closeEditModal = () => {
+    editingItem.value = null;
+    showEditModal.value = false;
 };
 
 const applyFilters = () => {
@@ -179,16 +211,18 @@ const applyFilters = () => {
     });
 };
 
-const editItem = (item) => {
-    editingItem.value = item;
-    showEditModal.value = true;
+const deleteItem = (item) => {
+    itemToDelete.value = item;
+    confirmingDeletion.value = true;
 };
 
-const deleteItem = (item) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
-        router.delete(route('pantry.destroy', item.id), {
-            preserveScroll: true,
-        });
-    }
+const confirmDelete = () => {
+    router.delete(route('pantry.destroy', itemToDelete.value.id), {
+        preserveScroll: true,
+        onFinish: () => {
+            confirmingDeletion.value = false;
+            itemToDelete.value = null;
+        },
+    });
 };
 </script>

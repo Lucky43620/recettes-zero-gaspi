@@ -23,11 +23,16 @@ class IngredientController extends Controller
         $results = $this->ingredientService->searchIngredients(
             $request->input('q'),
             $request->input('limit', 20),
-            true
+            false
         );
 
         return response()->json([
-            'data' => $results,
+            'data' => $results->map(function ($ingredient) {
+                if (!$ingredient->exists) {
+                    $ingredient = $this->ingredientService->findOrCreateByName($ingredient->name);
+                }
+                return $this->ingredientService->transformToArray($ingredient);
+            }),
             'count' => $results->count(),
         ]);
     }

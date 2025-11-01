@@ -12,7 +12,7 @@ const props = defineProps({
 <template>
     <PublicLayout :title="`Abonnés de ${profileUser.name}`">
         <div class="py-8">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <BackButton
                     :href="`/profile/${profileUser.id}`"
                     label="Retour au profil"

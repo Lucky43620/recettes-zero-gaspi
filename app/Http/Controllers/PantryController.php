@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\StorageLocation;
 use App\Models\PantryItem;
 use App\Models\Unit;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PantryController extends Controller
 {
+    use AuthorizesRequests;
     public function index(Request $request)
     {
         $query = $request->user()->pantryItems()
@@ -18,10 +21,9 @@ class PantryController extends Controller
         if ($request->has('filter')) {
             $filter = $request->filter;
             if ($filter === 'expiring') {
-                $query->where('expiration_date', '<=', now()->addDays(3))
-                      ->where('expiration_date', '>=', now());
+                $query->expiringSoon();
             } elseif ($filter === 'expired') {
-                $query->where('expiration_date', '<', now());
+                $query->expired();
             }
         }
 
@@ -53,13 +55,8 @@ class PantryController extends Controller
 
         $stats = [
             'total' => $request->user()->pantryItems()->count(),
-            'expiring_soon' => $request->user()->pantryItems()
-                ->where('expiration_date', '<=', now()->addDays(3))
-                ->where('expiration_date', '>=', now())
-                ->count(),
-            'expired' => $request->user()->pantryItems()
-                ->where('expiration_date', '<', now())
-                ->count(),
+            'expiring_soon' => $request->user()->pantryItems()->expiringSoon()->count(),
+            'expired' => $request->user()->pantryItems()->expired()->count(),
         ];
 
         $storageLocations = $request->user()->pantryItems()
@@ -72,7 +69,7 @@ class PantryController extends Controller
         return Inertia::render('Pantry/Index', [
             'items' => $items->values()->all(),
             'stats' => $stats,
-            'storageLocations' => $storageLocations,
+            'storageLocations' => StorageLocation::values(),
             'units' => Unit::all()->values()->all(),
         ]);
     }

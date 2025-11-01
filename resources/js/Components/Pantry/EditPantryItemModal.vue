@@ -1,92 +1,88 @@
 <template>
-    <DialogModal :show="true" @close="$emit('close')">
-        <template #title>
-            Modifier l'article
-        </template>
+    <div class="fixed inset-0 z-50 overflow-y-auto" @click.self="$emit('close')">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-black opacity-50"></div>
 
-        <template #content>
-            <form @submit.prevent="submit">
-                <div class="space-y-4">
+            <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        Modifier l'article
+                    </h3>
+                    <button
+                        @click="$emit('close')"
+                        class="text-gray-400 hover:text-gray-600"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form @submit.prevent="submit" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Ingrédient
                         </label>
                         <div class="p-3 bg-gray-50 border border-gray-200 rounded-md flex items-center gap-3">
                             <img
-                                v-if="item.ingredient.image_url"
+                                v-if="item.ingredient?.image_url"
                                 :src="item.ingredient.image_url"
-                                :alt="item.ingredient.name"
+                                :alt="item.ingredient?.name"
                                 class="w-12 h-12 object-cover rounded"
                             >
+                            <div v-else class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            </div>
                             <div class="flex-1">
-                                <p class="font-medium text-gray-900">{{ item.ingredient.name }}</p>
+                                <p class="font-medium text-gray-900">{{ item.ingredient?.name }}</p>
+                                <p v-if="item.ingredient?.brands" class="text-sm text-gray-600">{{ item.ingredient.brands }}</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Quantité
-                            </label>
-                            <input
-                                v-model="form.quantity"
-                                type="number"
-                                step="0.01"
-                                min="0.01"
-                                required
-                                class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
-                            >
-                            <InputError :message="form.errors.quantity" class="mt-2" />
-                        </div>
+                        <FormInput
+                            v-model="form.quantity"
+                            label="Quantité"
+                            type="number"
+                            step="0.01"
+                            min="0.01"
+                            required
+                            :error="form.errors.quantity"
+                        />
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Unité
-                            </label>
-                            <select
-                                v-model="form.unit_code"
-                                required
-                                class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
-                            >
-                                <option value="">Sélectionner</option>
-                                <option v-for="unit in units" :key="unit.code" :value="unit.code">
-                                    {{ unit.name }}
-                                </option>
-                            </select>
-                            <InputError :message="form.errors.unit_code" class="mt-2" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Date de péremption
-                        </label>
-                        <input
-                            v-model="form.expiration_date"
-                            type="date"
-                            class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
+                        <FormSelect
+                            v-model="form.unit_code"
+                            label="Unité"
+                            placeholder="Sélectionner"
+                            required
+                            :error="form.errors.unit_code"
                         >
-                        <InputError :message="form.errors.expiration_date" class="mt-2" />
+                            <option v-for="unit in units" :key="unit.code" :value="unit.code">
+                                {{ unit.name }}
+                            </option>
+                        </FormSelect>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Emplacement de stockage
-                        </label>
-                        <select
-                            v-model="form.storage_location"
-                            class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
-                        >
-                            <option value="">Sélectionner un emplacement</option>
-                            <option value="Réfrigérateur">Réfrigérateur</option>
-                            <option value="Congélateur">Congélateur</option>
-                            <option value="Placard">Placard</option>
-                            <option value="Cave">Cave</option>
-                            <option value="Garde-manger">Garde-manger</option>
-                        </select>
-                        <InputError :message="form.errors.storage_location" class="mt-2" />
-                    </div>
+                    <FormInput
+                        v-model="form.expiration_date"
+                        label="Date de péremption"
+                        type="date"
+                        :error="form.errors.expiration_date"
+                    />
+
+                    <FormSelect
+                        v-model="form.storage_location"
+                        label="Emplacement de stockage"
+                        placeholder="Sélectionner un emplacement"
+                        :error="form.errors.storage_location"
+                    >
+                        <option v-for="option in storageLocationOptions" :key="option.value" :value="option.value">
+                            {{ option.label }}
+                        </option>
+                    </FormSelect>
 
                     <div class="flex items-center">
                         <input
@@ -99,49 +95,54 @@
                             Article déjà ouvert
                         </label>
                     </div>
-                </div>
-            </form>
-        </template>
 
-        <template #footer>
-            <button
-                type="button"
-                @click="$emit('close')"
-                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
-            >
-                Annuler
-            </button>
+                    <div class="flex justify-end gap-3 pt-4 border-t">
+                        <SecondaryButton @click="$emit('close')">
+                            Annuler
+                        </SecondaryButton>
 
-            <button
-                @click="submit"
-                :disabled="form.processing"
-                class="ml-3 inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
-            >
-                <span v-if="form.processing">Enregistrement...</span>
-                <span v-else>Enregistrer</span>
-            </button>
-        </template>
-    </DialogModal>
+                        <PrimaryButton
+                            type="submit"
+                            :loading="form.processing"
+                        >
+                            Enregistrer
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import DialogModal from '@/Components/DialogModal.vue';
-import InputError from '@/Components/InputError.vue';
 import { useForm } from '@inertiajs/vue3';
+import FormInput from '@/Components/Common/FormInput.vue';
+import FormSelect from '@/Components/Common/FormSelect.vue';
+import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import SecondaryButton from '@/Components/Common/SecondaryButton.vue';
+import { useStorageLocationLabels } from '@/composables/useEnumLabels';
 
 const props = defineProps({
-    item: Object,
-    units: Array,
+    item: {
+        type: Object,
+        required: true
+    },
+    units: {
+        type: Array,
+        required: true
+    },
 });
 
 const emit = defineEmits(['close']);
 
+const { storageLocationOptions } = useStorageLocationLabels();
+
 const form = useForm({
     quantity: props.item.quantity,
-    unit_code: props.item.unit.code,
+    unit_code: props.item.unit?.code || props.item.unit_code,
     expiration_date: props.item.expiration_date || '',
     storage_location: props.item.storage_location || '',
-    opened: props.item.opened,
+    opened: props.item.opened || false,
 });
 
 const submit = () => {
