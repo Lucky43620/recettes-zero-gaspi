@@ -7,12 +7,14 @@ Application web de recettes anti-gaspillage avec planning de repas, liste de cou
 ```bash
 git clone <repo>
 cd recettes-zero-gaspi
+cp .env.example .env
 docker-compose up -d --build
 ```
 
 Attendre que les containers démarrent, puis :
 
 ```bash
+docker-compose exec laravel.test php artisan key:generate
 docker-compose exec laravel.test php artisan migrate --seed
 docker-compose exec laravel.test npm install
 docker-compose exec laravel.test npm run build
