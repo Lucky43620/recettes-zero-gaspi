@@ -29,7 +29,7 @@
             </Link>
           </div>
 
-          <div v-if="notifications.data.length === 0" class="p-12 text-center">
+          <div v-if="!notifications || !notifications.data || notifications.data.length === 0" class="p-12 text-center">
             <BellIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <p class="text-gray-500 text-lg">Aucune notification</p>
           </div>

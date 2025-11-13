@@ -189,5 +189,27 @@
     "reports": "Berichte",
     "badges": "Abzeichen",
     "back_to_site": "Zurück zur Seite"
+  },
+  "home": {
+    "hero_title": "Kochen ohne",
+    "hero_title_highlight": "Verschwendung",
+    "hero_description": "Entdecken Sie köstliche Rezepte, planen Sie Ihre Mahlzeiten und nutzen Sie jede Zutat, um Lebensmittelverschwendung zu reduzieren",
+    "explore_recipes": "Rezepte erkunden",
+    "join_community": "Der Community beitreten",
+    "feature_zero_waste_title": "Null Verschwendung",
+    "feature_zero_waste_desc": "Nutzen Sie Ihre Zutaten, bevor sie ablaufen, dank unserer intelligenten Vorschläge",
+    "feature_easy_planning_title": "Einfache Planung",
+    "feature_easy_planning_desc": "Planen Sie Ihre Mahlzeiten für die Woche und erstellen Sie automatisch Ihre Einkaufsliste",
+    "feature_active_community_title": "Aktive Community",
+    "feature_active_community_desc": "Teilen Sie Ihre Rezepte und entdecken Sie die anderer Kochbegeisterter",
+    "feature_personalized_title": "Personalisierte Rezepte",
+    "feature_personalized_desc": "Finden Sie Rezepte, die Ihrem Geschmack, Ihrer Ernährung und Ihren verfügbaren Zutaten entsprechen",
+    "popular_recipes": "Beliebte Rezepte",
+    "popular_recipes_desc": "Entdecken Sie die beliebtesten Rezepte unserer Community",
+    "no_recipes": "Momentan sind keine Rezepte verfügbar",
+    "view_all_recipes": "Alle Rezepte anzeigen",
+    "ready_title": "Bereit, Verschwendung zu reduzieren?",
+    "ready_desc": "Treten Sie unserer Community bei und beginnen Sie heute verantwortungsbewusster zu kochen",
+    "create_account": "Kostenloses Konto erstellen"
   }
 }

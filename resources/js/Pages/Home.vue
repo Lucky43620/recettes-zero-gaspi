@@ -1,8 +1,12 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+import { computed } from 'vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import RecipeGrid from '@/Components/Recipe/RecipeGrid.vue';
 import { SparklesIcon, HeartIcon, ClockIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
+
+const { t } = useI18n();
 
 defineProps({
     canLogin: Boolean,
@@ -10,28 +14,28 @@ defineProps({
     featuredRecipes: Array,
 });
 
-const features = [
+const features = computed(() => [
     {
         icon: HeartIcon,
-        title: 'Zéro Gaspillage',
-        description: 'Utilisez vos ingrédients avant qu\'ils ne se périment grâce à nos suggestions intelligentes'
+        title: t('home.feature_zero_waste_title'),
+        description: t('home.feature_zero_waste_desc')
     },
     {
         icon: ClockIcon,
-        title: 'Planning Facile',
-        description: 'Planifiez vos repas de la semaine et générez automatiquement votre liste de courses'
+        title: t('home.feature_easy_planning_title'),
+        description: t('home.feature_easy_planning_desc')
     },
     {
         icon: UserGroupIcon,
-        title: 'Communauté Active',
-        description: 'Partagez vos recettes et découvrez celles des autres passionnés de cuisine'
+        title: t('home.feature_active_community_title'),
+        description: t('home.feature_active_community_desc')
     },
     {
         icon: SparklesIcon,
-        title: 'Recettes Personnalisées',
-        description: 'Trouvez des recettes adaptées à vos goûts, régimes et ingrédients disponibles'
+        title: t('home.feature_personalized_title'),
+        description: t('home.feature_personalized_desc')
     }
-];
+]);
 </script>
 
 <template>
@@ -42,11 +46,11 @@ const features = [
             <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 relative">
                 <div class="text-center">
                     <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
-                        Cuisinez sans
-                        <span class="block text-orange-300">gaspiller</span>
+                        {{ $t('home.hero_title') }}
+                        <span class="block text-orange-300">{{ $t('home.hero_title_highlight') }}</span>
                     </h1>
                     <p class="text-xl md:text-2xl text-white/95 mb-10 max-w-3xl mx-auto leading-relaxed">
-                        Découvrez des recettes délicieuses, planifiez vos repas et utilisez chaque ingrédient pour réduire le gaspillage alimentaire
+                        {{ $t('home.hero_description') }}
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
                         <Link
@@ -54,14 +58,14 @@ const features = [
                             class="inline-flex items-center px-8 py-4 bg-white text-green-700 font-bold text-lg rounded-xl hover:bg-green-50 transition-all shadow-2xl hover:shadow-xl hover:scale-105 transform"
                         >
                             <SparklesIcon class="h-6 w-6 mr-2" />
-                            Explorer les recettes
+                            {{ $t('home.explore_recipes') }}
                         </Link>
                         <Link
                             v-if="canRegister"
                             :href="route('register')"
                             class="inline-flex items-center px-8 py-4 bg-green-800/30 backdrop-blur-sm text-white font-bold text-lg rounded-xl hover:bg-green-800/50 transition-all border-2 border-white/30"
                         >
-                            Rejoindre la communauté
+                            {{ $t('home.join_community') }}
                         </Link>
                     </div>
                 </div>
@@ -84,16 +88,16 @@ const features = [
             <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
                     <h2 class="text-4xl font-bold text-gray-900 mb-4">
-                        Recettes populaires
+                        {{ $t('home.popular_recipes') }}
                     </h2>
                     <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Découvrez les recettes les plus appréciées par notre communauté
+                        {{ $t('home.popular_recipes_desc') }}
                     </p>
                 </div>
 
                 <RecipeGrid
                     :recipes="featuredRecipes"
-                    empty-message="Aucune recette disponible pour le moment"
+                    :empty-message="$t('home.no_recipes')"
                 />
 
                 <div v-if="featuredRecipes && featuredRecipes.length > 0" class="text-center mt-12">
@@ -101,7 +105,7 @@ const features = [
                         :href="route('recipes.index')"
                         class="inline-block px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-md"
                     >
-                        Voir toutes les recettes
+                        {{ $t('home.view_all_recipes') }}
                     </Link>
                 </div>
             </div>
@@ -110,24 +114,24 @@ const features = [
         <div class="bg-gradient-to-r from-green-600 to-green-700 py-16">
             <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
-                    Prêt à réduire le gaspillage ?
+                    {{ $t('home.ready_title') }}
                 </h2>
                 <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                    Rejoignez notre communauté et commencez à cuisiner de manière plus responsable dès aujourd'hui
+                    {{ $t('home.ready_desc') }}
                 </p>
                 <Link
                     v-if="canRegister"
                     :href="route('register')"
                     class="inline-block px-10 py-4 bg-white text-green-700 font-bold text-lg rounded-xl hover:bg-green-50 transition-all shadow-lg"
                 >
-                    Créer un compte gratuit
+                    {{ $t('home.create_account') }}
                 </Link>
                 <Link
                     v-else-if="canLogin"
                     :href="route('login')"
                     class="inline-block px-10 py-4 bg-white text-green-700 font-bold text-lg rounded-xl hover:bg-green-50 transition-all shadow-lg"
                 >
-                    Se connecter
+                    {{ $t('auth.login') }}
                 </Link>
             </div>
         </div>

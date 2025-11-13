@@ -187,7 +187,7 @@ const getRecipeImage = (recipe) => {
                     <div class="lg:col-span-1">
                         <div class="bg-white rounded-lg shadow p-4 mb-6">
                             <h3 class="font-semibold text-lg mb-4">Mes recettes</h3>
-                            <p v-if="!userRecipes.length" class="text-sm text-gray-500 mb-4">
+                            <p v-if="!userRecipes || !userRecipes.length" class="text-sm text-gray-500 mb-4">
                                 Vous n'avez pas encore de recettes publiques.
                                 <Link :href="route('recipes.create')" class="text-green-600 hover:underline">
                                     Créer une recette
@@ -219,7 +219,7 @@ const getRecipeImage = (recipe) => {
                             </div>
                         </div>
 
-                        <div v-if="favoriteRecipes.length" class="bg-white rounded-lg shadow p-4">
+                        <div v-if="favoriteRecipes && favoriteRecipes.length" class="bg-white rounded-lg shadow p-4">
                             <h3 class="font-semibold text-lg mb-4">Mes favoris</h3>
                             <p class="text-sm text-gray-500 mb-4">
                                 Glissez-déposez vos recettes favorites dans le planning

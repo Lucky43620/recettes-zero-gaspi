@@ -323,6 +323,28 @@
     "feature_community": "Communauté",
     "feature_community_desc": "Partagez vos recettes et connectez-vous avec d'autres cuisiniers"
   },
+  "home": {
+    "hero_title": "Cuisinez sans",
+    "hero_title_highlight": "gaspiller",
+    "hero_description": "Découvrez des recettes délicieuses, planifiez vos repas et utilisez chaque ingrédient pour réduire le gaspillage alimentaire",
+    "explore_recipes": "Explorer les recettes",
+    "join_community": "Rejoindre la communauté",
+    "feature_zero_waste_title": "Zéro Gaspillage",
+    "feature_zero_waste_desc": "Utilisez vos ingrédients avant qu'ils ne se périment grâce à nos suggestions intelligentes",
+    "feature_easy_planning_title": "Planning Facile",
+    "feature_easy_planning_desc": "Planifiez vos repas de la semaine et générez automatiquement votre liste de courses",
+    "feature_active_community_title": "Communauté Active",
+    "feature_active_community_desc": "Partagez vos recettes et découvrez celles des autres passionnés de cuisine",
+    "feature_personalized_title": "Recettes Personnalisées",
+    "feature_personalized_desc": "Trouvez des recettes adaptées à vos goûts, régimes et ingrédients disponibles",
+    "popular_recipes": "Recettes populaires",
+    "popular_recipes_desc": "Découvrez les recettes les plus appréciées par notre communauté",
+    "no_recipes": "Aucune recette disponible pour le moment",
+    "view_all_recipes": "Voir toutes les recettes",
+    "ready_title": "Prêt à réduire le gaspillage ?",
+    "ready_desc": "Rejoignez notre communauté et commencez à cuisiner de manière plus responsable dès aujourd'hui",
+    "create_account": "Créer un compte gratuit"
+  },
   "cook": {
     "title": "Mode cuisine",
     "ingredients": "Ingrédients",

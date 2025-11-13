@@ -19,7 +19,7 @@ const props = defineProps({
 
         <div class="py-12">
             <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
-                <div v-if="favorites.data.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div v-if="favorites && favorites.data && favorites.data.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <RecipeCard
                         v-for="recipe in favorites.data"
                         :key="recipe.id"
@@ -38,7 +38,7 @@ const props = defineProps({
                     </Link>
                 </div>
 
-                <div v-if="favorites.data.length && favorites.last_page > 1" class="mt-6 flex justify-center gap-2">
+                <div v-if="favorites && favorites.data && favorites.data.length && favorites.last_page > 1" class="mt-6 flex justify-center gap-2">
                     <component
                         v-for="(link, index) in favorites.links"
                         :key="index"

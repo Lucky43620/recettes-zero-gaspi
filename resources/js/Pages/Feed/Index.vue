@@ -19,7 +19,7 @@ const props = defineProps({
 
         <div class="py-12">
             <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
-                <div v-if="feed.data.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div v-if="feed && feed.data && feed.data.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <RecipeCard
                         v-for="recipe in feed.data"
                         :key="recipe.id"

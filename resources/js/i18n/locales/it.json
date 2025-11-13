@@ -189,5 +189,27 @@
     "reports": "Rapporti",
     "badges": "Badge",
     "back_to_site": "Torna al Sito"
+  },
+  "home": {
+    "hero_title": "Cucina senza",
+    "hero_title_highlight": "sprechi",
+    "hero_description": "Scopri ricette deliziose, pianifica i tuoi pasti e usa ogni ingrediente per ridurre gli sprechi alimentari",
+    "explore_recipes": "Esplora le ricette",
+    "join_community": "Unisciti alla comunità",
+    "feature_zero_waste_title": "Zero Sprechi",
+    "feature_zero_waste_desc": "Usa i tuoi ingredienti prima che scadano grazie ai nostri suggerimenti intelligenti",
+    "feature_easy_planning_title": "Pianificazione Facile",
+    "feature_easy_planning_desc": "Pianifica i tuoi pasti della settimana e genera automaticamente la tua lista della spesa",
+    "feature_active_community_title": "Comunità Attiva",
+    "feature_active_community_desc": "Condividi le tue ricette e scopri quelle di altri appassionati di cucina",
+    "feature_personalized_title": "Ricette Personalizzate",
+    "feature_personalized_desc": "Trova ricette adatte ai tuoi gusti, diete e ingredienti disponibili",
+    "popular_recipes": "Ricette popolari",
+    "popular_recipes_desc": "Scopri le ricette più apprezzate dalla nostra comunità",
+    "no_recipes": "Nessuna ricetta disponibile al momento",
+    "view_all_recipes": "Visualizza tutte le ricette",
+    "ready_title": "Pronto a ridurre gli sprechi?",
+    "ready_desc": "Unisciti alla nostra comunità e inizia a cucinare in modo più responsabile oggi",
+    "create_account": "Crea un account gratuito"
   }
 }

@@ -323,6 +323,28 @@
     "feature_community": "Community",
     "feature_community_desc": "Share your recipes and connect with other cooks"
   },
+  "home": {
+    "hero_title": "Cook without",
+    "hero_title_highlight": "waste",
+    "hero_description": "Discover delicious recipes, plan your meals and use every ingredient to reduce food waste",
+    "explore_recipes": "Explore recipes",
+    "join_community": "Join the community",
+    "feature_zero_waste_title": "Zero Waste",
+    "feature_zero_waste_desc": "Use your ingredients before they expire with our smart suggestions",
+    "feature_easy_planning_title": "Easy Planning",
+    "feature_easy_planning_desc": "Plan your weekly meals and automatically generate your shopping list",
+    "feature_active_community_title": "Active Community",
+    "feature_active_community_desc": "Share your recipes and discover those from other cooking enthusiasts",
+    "feature_personalized_title": "Personalized Recipes",
+    "feature_personalized_desc": "Find recipes tailored to your tastes, diets and available ingredients",
+    "popular_recipes": "Popular recipes",
+    "popular_recipes_desc": "Discover the most appreciated recipes by our community",
+    "no_recipes": "No recipes available at the moment",
+    "view_all_recipes": "View all recipes",
+    "ready_title": "Ready to reduce waste?",
+    "ready_desc": "Join our community and start cooking more responsibly today",
+    "create_account": "Create a free account"
+  },
   "cook": {
     "title": "Cook Mode",
     "ingredients": "Ingredients",
