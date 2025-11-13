@@ -109,7 +109,21 @@
     "confirm_cancel_button": "Sì, Cancella",
     "confirm_resume": "Conferma Riattivazione",
     "resume_confirmation_message": "Sei sicuro di voler riattivare il tuo abbonamento? Ti verrà addebitato secondo il tuo piano corrente.",
-    "confirm_resume_button": "Sì, Riattiva"
+    "confirm_resume_button": "Sì, Riattiva",
+    "upgrade": {
+      "required": "Funzionalità Premium Richiesta",
+      "barcode_scanner": "Scanner di Codici a Barre",
+      "barcode_scanner_desc": "Scansiona i codici a barre per aggiungere rapidamente prodotti alla tua dispensa con tutte le informazioni nutrizionali.",
+      "anti_waste": "Ricette Anti-Spreco",
+      "anti_waste_desc": "Scopri ricette personalizzate per utilizzare i tuoi ingredienti prima che scadano.",
+      "advanced_stats": "Statistiche Avanzate",
+      "advanced_stats_desc": "Accedi a statistiche dettagliate sulle tue ricette, impatto ambientale e risparmi.",
+      "unlimited_pantry": "Dispensa Illimitata",
+      "unlimited_meal_plans": "Pianificazione Illimitata",
+      "free_limit_reached": "Limite Gratuito Raggiunto",
+      "pantry_limit": "Limite di {limit} articoli raggiunto per utenti gratuiti",
+      "meal_plan_limit": "Limite di {limit} ricette a settimana per utenti gratuiti"
+    }
   },
   "common": {
     "free": "Gratuito",

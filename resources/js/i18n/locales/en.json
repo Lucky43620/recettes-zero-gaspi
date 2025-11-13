@@ -423,6 +423,20 @@
     "confirm_cancel_button": "Yes, Cancel",
     "confirm_resume": "Confirm Reactivation",
     "resume_confirmation_message": "Are you sure you want to reactivate your subscription? You will be charged according to your current plan.",
-    "confirm_resume_button": "Yes, Reactivate"
+    "confirm_resume_button": "Yes, Reactivate",
+    "upgrade": {
+      "required": "Premium Feature Required",
+      "barcode_scanner": "Barcode Scanner",
+      "barcode_scanner_desc": "Scan barcodes to quickly add products to your pantry with all nutritional information.",
+      "anti_waste": "Anti-Waste Recipes",
+      "anti_waste_desc": "Discover personalized recipes to use your ingredients before they expire.",
+      "advanced_stats": "Advanced Statistics",
+      "advanced_stats_desc": "Access detailed statistics about your recipes, environmental impact, and savings.",
+      "unlimited_pantry": "Unlimited Pantry",
+      "unlimited_meal_plans": "Unlimited Meal Plans",
+      "free_limit_reached": "Free Limit Reached",
+      "pantry_limit": "Limit of {limit} items reached for free users",
+      "meal_plan_limit": "Limit of {limit} recipes per week for free users"
+    }
   }
 }

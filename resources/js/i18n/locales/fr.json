@@ -423,6 +423,20 @@
     "confirm_cancel_button": "Oui, annuler",
     "confirm_resume": "Confirmer la réactivation",
     "resume_confirmation_message": "Êtes-vous sûr de vouloir réactiver votre abonnement ? Vous serez facturé selon votre plan actuel.",
-    "confirm_resume_button": "Oui, réactiver"
+    "confirm_resume_button": "Oui, réactiver",
+    "upgrade": {
+      "required": "Fonctionnalité Premium requise",
+      "barcode_scanner": "Scanner de code-barres",
+      "barcode_scanner_desc": "Scannez les codes-barres pour ajouter rapidement des produits à votre garde-manger avec toutes les informations nutritionnelles.",
+      "anti_waste": "Recettes anti-gaspi",
+      "anti_waste_desc": "Découvrez des recettes personnalisées pour utiliser vos ingrédients avant qu'ils ne périment.",
+      "advanced_stats": "Statistiques avancées",
+      "advanced_stats_desc": "Accédez à des statistiques détaillées sur vos recettes, votre impact environnemental et vos économies.",
+      "unlimited_pantry": "Garde-manger illimité",
+      "unlimited_meal_plans": "Plans de repas illimités",
+      "free_limit_reached": "Limite gratuite atteinte",
+      "pantry_limit": "Limite de {limit} articles atteinte pour les utilisateurs gratuits",
+      "meal_plan_limit": "Limite de {limit} recettes par semaine pour les utilisateurs gratuits"
+    }
   }
 }

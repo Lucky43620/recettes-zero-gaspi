@@ -48,12 +48,21 @@ class MealPlanController extends Controller
             'weekStart' => $weekStart->format('Y-m-d'),
             'userRecipes' => $userRecipes,
             'favoriteRecipes' => $favoriteRecipes,
+            'isPremium' => Auth::user()->isPremium(),
+            'recipeLimit' => Auth::user()->isPremium() ? null : 3,
         ]);
     }
 
     public function addRecipe(StoreMealPlanRequest $request, MealPlan $mealPlan)
     {
         $this->authorize('update', $mealPlan);
+
+        $user = $request->user();
+
+        // Limit for free users: 3 recipes per week max
+        if (! $user->isPremium() && $mealPlan->mealPlanRecipes()->count() >= 3) {
+            return redirect()->back()->with('error', 'Limite atteinte. Passez à Premium pour des plans de repas illimités.');
+        }
 
         $validated = $request->validated();
 

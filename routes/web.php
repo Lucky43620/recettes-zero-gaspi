@@ -141,7 +141,7 @@ Route::middleware([
 
     Route::get('/anti-waste', function () {
         return Inertia::render('AntiWaste/Index');
-    })->name('anti-waste.index');
+    })->name('anti-waste.index')->middleware('premium');
 
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
     Route::put('/events/{event:slug}', [EventController::class, 'update'])->name('events.update');
@@ -163,7 +163,7 @@ Route::middleware([
     Route::delete('/gdpr/delete-account', [GdprController::class, 'deleteAccount'])->name('gdpr.delete');
 
     Route::post('/barcode/lookup', [\App\Http\Controllers\BarcodeController::class, 'lookup'])
-        ->middleware('throttle:60,1')
+        ->middleware(['premium', 'throttle:60,1'])
         ->name('barcode.lookup');
 
     // Subscription routes

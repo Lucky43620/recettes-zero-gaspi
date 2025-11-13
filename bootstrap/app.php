@@ -24,6 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
+
+        $middleware->alias([
+            'premium' => \App\Http\Middleware\EnsurePremium::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

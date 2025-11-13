@@ -109,7 +109,21 @@
     "confirm_cancel_button": "Ja, kündigen",
     "confirm_resume": "Reaktivierung bestätigen",
     "resume_confirmation_message": "Sind Sie sicher, dass Sie Ihr Abonnement reaktivieren möchten? Ihnen wird gemäß Ihrem aktuellen Plan berechnet.",
-    "confirm_resume_button": "Ja, reaktivieren"
+    "confirm_resume_button": "Ja, reaktivieren",
+    "upgrade": {
+      "required": "Premium-Funktion erforderlich",
+      "barcode_scanner": "Barcode-Scanner",
+      "barcode_scanner_desc": "Scannen Sie Barcodes, um Produkte schnell zu Ihrer Vorratskammer mit allen Nährwertinformationen hinzuzufügen.",
+      "anti_waste": "Anti-Verschwendungs-Rezepte",
+      "anti_waste_desc": "Entdecken Sie personalisierte Rezepte, um Ihre Zutaten zu verwenden, bevor sie ablaufen.",
+      "advanced_stats": "Erweiterte Statistiken",
+      "advanced_stats_desc": "Zugriff auf detaillierte Statistiken über Ihre Rezepte, Umweltauswirkungen und Einsparungen.",
+      "unlimited_pantry": "Unbegrenzte Vorratskammer",
+      "unlimited_meal_plans": "Unbegrenzte Essensplanung",
+      "free_limit_reached": "Kostenloses Limit erreicht",
+      "pantry_limit": "Limit von {limit} Artikeln für kostenlose Benutzer erreicht",
+      "meal_plan_limit": "Limit von {limit} Rezepten pro Woche für kostenlose Benutzer"
+    }
   },
   "common": {
     "free": "Kostenlos",
