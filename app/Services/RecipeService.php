@@ -146,10 +146,24 @@ class RecipeService
                  FROM recipe_ingredients
                  WHERE recipe_ingredients.recipe_id = recipes.id) as total_ingredients_count
             ')
+            ->selectRaw("
+                ((SELECT COUNT(DISTINCT ingredient_id)
+                  FROM recipe_ingredients
+                  WHERE recipe_ingredients.recipe_id = recipes.id
+                  AND ingredient_id IN ({$placeholders})) * 100.0 /
+                 NULLIF((SELECT COUNT(DISTINCT ingredient_id)
+                        FROM recipe_ingredients
+                        WHERE recipe_ingredients.recipe_id = recipes.id), 0)) as match_percentage
+            ", $pantryIngredientIds)
             ->groupBy('recipes.id')
-            ->havingRaw('matching_ingredients_count > 0')
+            ->havingRaw("
+                (SELECT COUNT(DISTINCT ingredient_id)
+                 FROM recipe_ingredients
+                 WHERE recipe_ingredients.recipe_id = recipes.id
+                 AND ingredient_id IN ({$placeholders})) > 0
+            ", $pantryIngredientIds)
             ->orderByDesc('matching_ingredients_count')
-            ->orderByRaw('(matching_ingredients_count * 100.0 / NULLIF(total_ingredients_count, 0)) DESC')
+            ->orderByDesc('match_percentage')
             ->limit(50)
             ->get();
     }

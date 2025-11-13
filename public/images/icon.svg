@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" fill="#059669" rx="128"/>
+  <g transform="translate(128, 128)">
+    <path d="M128 32C83.817 32 48 67.817 48 112c0 37.5 24.5 69.5 58.5 80.5V224c0 17.673 14.327 32 32 32s32-14.327 32-32v-31.5C204.5 181.5 229 149.5 229 112c0-44.183-35.817-80-80-80zm0 128c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48z" fill="#ffffff" opacity="0.9"/>
+    <path d="M192 96c0-8.837-7.163-16-16-16s-16 7.163-16 16v96c0 8.837 7.163 16 16 16s16-7.163 16-16V96z" fill="#ffffff"/>
+    <path d="M96 96c0-8.837-7.163-16-16-16s-16 7.163-16 16v32c0 8.837 7.163 16 16 16s16-7.163 16-16V96z" fill="#ffffff"/>
+  </g>
+  <text x="256" y="440" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="bold" fill="#ffffff">Zéro Gaspi</text>
+</svg>

@@ -8,6 +8,7 @@ import { router } from '@inertiajs/vue3';
 import { useDifficultyLabels } from '@/composables/useDifficultyLabels';
 import RatingStars from '@/Components/Social/RatingStars.vue';
 import CommentSection from '@/Components/Social/CommentSection.vue';
+import CooksnapSection from '@/Components/Social/CooksnapSection.vue';
 import FavoriteButton from '@/Components/Social/FavoriteButton.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
@@ -229,6 +230,10 @@ function deleteRecipe() {
                                     </p>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-gray-200 mb-6">
+                            <CooksnapSection :recipe="recipe" :cooksnaps="recipe.cooksnaps" />
                         </div>
 
                         <div class="pt-6 border-t border-gray-200">

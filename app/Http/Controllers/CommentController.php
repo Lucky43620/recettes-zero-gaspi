@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
 use App\Models\Recipe;
+use App\Notifications\CommentNotification;
 use App\Notifications\CommentReplyNotification;
+use App\Notifications\ReplyNotification;
 use App\Services\CommentVoteService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +30,11 @@ class CommentController extends Controller
         if ($comment->parent_id) {
             $parentComment = Comment::find($comment->parent_id);
             if ($parentComment && $parentComment->user_id !== Auth::id()) {
-                $parentComment->user->notify(new CommentReplyNotification($comment));
+                $parentComment->user->notify(new ReplyNotification($comment, $parentComment));
+            }
+        } else {
+            if ($recipe->author_id !== Auth::id()) {
+                $recipe->author->notify(new CommentNotification($comment, $recipe));
             }
         }
 

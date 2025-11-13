@@ -1,10 +1,14 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import LanguageSwitcher from '@/Components/Common/LanguageSwitcher.vue';
 
 defineProps({
     title: String,
 });
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -29,7 +33,7 @@ defineProps({
                                     route().current('home') ? 'font-semibold text-gray-900' : ''
                                 ]"
                             >
-                                Accueil
+                                {{ t('nav.home') }}
                             </Link>
                             <Link
                                 :href="route('recipes.index')"
@@ -38,7 +42,7 @@ defineProps({
                                     route().current('recipes.*') ? 'font-semibold text-gray-900' : ''
                                 ]"
                             >
-                                Recettes
+                                {{ t('nav.recipes') }}
                             </Link>
                             <Link
                                 :href="route('products.index')"
@@ -47,16 +51,18 @@ defineProps({
                                     route().current('products.*') ? 'font-semibold text-gray-900' : ''
                                 ]"
                             >
-                                Produits
+                                {{ t('nav.products') }}
                             </Link>
 
-                            <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-4">
+                                <LanguageSwitcher />
+
                                 <template v-if="$page.props.auth.user">
                                     <Link
                                         :href="route('dashboard')"
                                         class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
                                     >
-                                        Mon espace
+                                        {{ t('nav.dashboard') }}
                                     </Link>
                                 </template>
                                 <template v-else>
@@ -64,13 +70,13 @@ defineProps({
                                         :href="route('login')"
                                         class="text-gray-700 hover:text-gray-900 transition"
                                     >
-                                        Connexion
+                                        {{ t('auth.login') }}
                                     </Link>
                                     <Link
                                         :href="route('register')"
                                         class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
                                     >
-                                        Inscription
+                                        {{ t('auth.register') }}
                                     </Link>
                                 </template>
                             </div>
@@ -85,7 +91,7 @@ defineProps({
 
             <footer class="bg-white border-t border-gray-200 py-8 mt-12">
                 <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
-                    <p>© 2025 Recettes Zéro Gaspi. Tous droits réservés.</p>
+                    <p>© 2025 {{ t('app.name') }}. {{ t('common.all_rights_reserved') }}</p>
                 </div>
             </footer>
         </div>

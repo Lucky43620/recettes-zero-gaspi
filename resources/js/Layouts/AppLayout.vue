@@ -1,17 +1,20 @@
 <script setup>
 import { ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Banner from '@/Components/Banner.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import LanguageSwitcher from '@/Components/Common/LanguageSwitcher.vue';
 
 defineProps({
     title: String,
 });
 
+const { t } = useI18n();
 const showingNavigationDropdown = ref(false);
 
 const logout = () => {
@@ -39,36 +42,38 @@ const logout = () => {
 
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Mon espace
+                                    {{ t('nav.dashboard') }}
                                 </NavLink>
                                 <NavLink :href="route('feed.index')" :active="route().current('feed.index')">
-                                    Mon flux
+                                    {{ t('nav.feed') }}
                                 </NavLink>
                                 <NavLink :href="route('recipes.my')" :active="route().current('recipes.my')">
-                                    Mes recettes
+                                    {{ t('nav.my_recipes') }}
                                 </NavLink>
                                 <NavLink :href="route('pantry.index')" :active="route().current('pantry.*')">
-                                    Garde-manger
+                                    {{ t('nav.pantry') }}
                                 </NavLink>
                                 <NavLink :href="route('anti-waste.index')" :active="route().current('anti-waste.*')">
-                                    Recettes anti-gaspi
+                                    {{ t('nav.anti_waste') }}
                                 </NavLink>
                                 <NavLink :href="route('meal-plans.index')" :active="route().current('meal-plans.*')">
-                                    Planning
+                                    {{ t('nav.meal_plans') }}
                                 </NavLink>
                                 <NavLink :href="route('shopping-lists.index')" :active="route().current('shopping-lists.*')">
-                                    Courses
+                                    {{ t('nav.shopping') }}
                                 </NavLink>
                                 <NavLink :href="route('favorites.index')" :active="route().current('favorites.index')">
-                                    Favoris
+                                    {{ t('nav.favorites') }}
                                 </NavLink>
                                 <NavLink :href="route('collections.index')" :active="route().current('collections.*')">
-                                    Collections
+                                    {{ t('nav.collections') }}
                                 </NavLink>
                             </div>
                         </div>
 
-                        <div v-if="$page.props.auth.user" class="hidden sm:flex sm:items-center sm:ms-6">
+                        <div v-if="$page.props.auth.user" class="hidden sm:flex sm:items-center sm:ms-6 gap-3">
+                            <!-- Language Switcher -->
+                            <LanguageSwitcher />
 
                             <!-- Settings Dropdown -->
                             <div class="ms-3 relative">
@@ -91,18 +96,24 @@ const logout = () => {
 
                                     <template #content>
                                         <DropdownLink :href="route('profile.show')">
-                                            Mon profil
+                                            {{ t('profile.title') }}
                                         </DropdownLink>
 
                                         <DropdownLink :href="`/profile/${$page.props.auth.user.id}`">
-                                            Voir mon profil public
+                                            {{ t('profile.view_public') }}
+                                        </DropdownLink>
+
+                                        <div class="border-t border-gray-200" />
+
+                                        <DropdownLink :href="route('subscription.index')">
+                                            ⭐ {{ t('subscription.title') }}
                                         </DropdownLink>
 
                                         <div class="border-t border-gray-200" />
 
                                         <form @submit.prevent="logout">
                                             <DropdownLink as="button">
-                                                Déconnexion
+                                                {{ t('auth.logout') }}
                                             </DropdownLink>
                                         </form>
                                     </template>
@@ -143,33 +154,37 @@ const logout = () => {
                 <div :class="{'block': showingNavigationDropdown, 'hidden': ! showingNavigationDropdown}" class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Mon espace
+                            {{ t('nav.dashboard') }}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('feed.index')" :active="route().current('feed.index')">
-                            Mon flux
+                            {{ t('nav.feed') }}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('recipes.my')" :active="route().current('recipes.my')">
-                            Mes recettes
+                            {{ t('nav.my_recipes') }}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('pantry.index')" :active="route().current('pantry.*')">
-                            Garde-manger
+                            {{ t('nav.pantry') }}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('meal-plans.index')" :active="route().current('meal-plans.*')">
-                            Planning
+                            {{ t('nav.meal_plans') }}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('shopping-lists.index')" :active="route().current('shopping-lists.*')">
-                            Courses
+                            {{ t('nav.shopping') }}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('favorites.index')" :active="route().current('favorites.index')">
-                            Favoris
+                            {{ t('nav.favorites') }}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('collections.index')" :active="route().current('collections.*')">
-                            Collections
+                            {{ t('nav.collections') }}
                         </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200">
+                        <div class="px-4 py-2">
+                            <LanguageSwitcher />
+                        </div>
+
                         <div class="flex items-center px-4">
                             <div v-if="$page.props.jetstream.managesProfilePhotos" class="shrink-0 me-3">
                                 <img class="size-10 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name">
@@ -187,12 +202,16 @@ const logout = () => {
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.show')" :active="route().current('profile.show')">
-                                Mon profil
+                                {{ t('profile.title') }}
+                            </ResponsiveNavLink>
+
+                            <ResponsiveNavLink :href="route('subscription.index')" :active="route().current('subscription.*')">
+                                ⭐ {{ t('subscription.title') }}
                             </ResponsiveNavLink>
 
                             <form method="POST" @submit.prevent="logout">
                                 <ResponsiveNavLink as="button">
-                                    Déconnexion
+                                    {{ t('auth.logout') }}
                                 </ResponsiveNavLink>
                             </form>
                         </div>

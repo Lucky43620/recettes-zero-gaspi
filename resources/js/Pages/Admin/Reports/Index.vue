@@ -1,0 +1,167 @@
+<script setup>
+import { ref } from 'vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { useDateFormat } from '@/composables/useDateFormat';
+
+const props = defineProps({
+    reports: Object,
+});
+
+const { formatRelativeTime } = useDateFormat();
+
+const statusForm = useForm({
+    status: '',
+    resolution_note: '',
+});
+
+const selectedReport = ref(null);
+
+const updateStatus = (report, newStatus) => {
+    statusForm.status = newStatus;
+    statusForm.put(route('reports.update', report.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            selectedReport.value = null;
+            statusForm.reset();
+        },
+    });
+};
+
+const getStatusColor = (status) => {
+    const colors = {
+        pending: 'bg-yellow-100 text-yellow-800',
+        reviewing: 'bg-blue-100 text-blue-800',
+        resolved: 'bg-green-100 text-green-800',
+        dismissed: 'bg-gray-100 text-gray-800',
+    };
+    return colors[status] || colors.pending;
+};
+
+const getStatusLabel = (status) => {
+    const labels = {
+        pending: 'En attente',
+        reviewing: 'En cours',
+        resolved: 'Résolu',
+        dismissed: 'Rejeté',
+    };
+    return labels[status] || status;
+};
+
+const getReasonLabel = (reason) => {
+    const labels = {
+        spam: 'Spam',
+        inappropriate: 'Inapproprié',
+        offensive: 'Offensant',
+        misleading: 'Trompeur',
+        copyright: 'Copyright',
+        other: 'Autre',
+    };
+    return labels[reason] || reason;
+};
+</script>
+
+<template>
+    <Head title="Administration - Signalements" />
+
+    <AdminLayout>
+        <div class="space-y-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Signalements</h1>
+                <p class="mt-2 text-gray-600">Gérer les signalements de contenu</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rapporteur</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Raison</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr v-for="report in reports.data" :key="report.id" class="hover:bg-gray-50">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        <img :src="report.reporter.profile_photo_url" :alt="report.reporter.name" class="w-8 h-8 rounded-full" />
+                                        <span class="ml-3 text-sm font-medium text-gray-900">{{ report.reporter.name }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900">
+                                    {{ report.reportable_type.split('\\').pop() }}
+                                </td>
+                                <td class="px-6 py-4 text-sm">
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
+                                        {{ getReasonLabel(report.reason) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                                    {{ report.description || '-' }}
+                                </td>
+                                <td class="px-6 py-4 text-sm">
+                                    <span :class="['px-2 py-1 rounded-full text-xs font-medium', getStatusColor(report.status)]">
+                                        {{ getStatusLabel(report.status) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ formatRelativeTime(report.created_at) }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
+                                    <button
+                                        v-if="report.status === 'pending'"
+                                        @click="updateStatus(report, 'reviewing')"
+                                        class="text-blue-600 hover:text-blue-700"
+                                    >
+                                        En cours
+                                    </button>
+                                    <button
+                                        v-if="report.status !== 'resolved'"
+                                        @click="updateStatus(report, 'resolved')"
+                                        class="text-green-600 hover:text-green-700"
+                                    >
+                                        Résoudre
+                                    </button>
+                                    <button
+                                        v-if="report.status !== 'dismissed'"
+                                        @click="updateStatus(report, 'dismissed')"
+                                        class="text-gray-600 hover:text-gray-700"
+                                    >
+                                        Rejeter
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div v-if="reports.links" class="px-6 py-4 border-t flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        {{ reports.from }} - {{ reports.to }} sur {{ reports.total }} signalements
+                    </div>
+                    <div class="flex gap-2">
+                        <Link
+                            v-for="link in reports.links"
+                            :key="link.label"
+                            :href="link.url"
+                            :class="[
+                                'px-3 py-2 rounded-lg text-sm transition',
+                                link.active
+                                    ? 'bg-green-600 text-white'
+                                    : link.url
+                                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                            ]"
+                            v-html="link.label"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </AdminLayout>
+</template>

@@ -54,14 +54,23 @@ class PantryController extends Controller
             'stats' => $stats,
             'storageLocations' => StorageLocation::values(),
             'units' => Unit::all()->values()->all(),
+            'isPremium' => $request->user()->isPremium(),
+            'itemLimit' => $request->user()->isPremium() ? null : 10,
         ]);
     }
 
     public function store(StorePantryItemRequest $request)
     {
+        $user = $request->user();
+
+        // Limit for free users: 10 items max
+        if (! $user->isPremium() && $user->pantryItems()->count() >= 10) {
+            return redirect()->back()->with('error', 'Limite atteinte. Passez à Premium pour un garde-manger illimité.');
+        }
+
         $validated = $request->validated();
 
-        $pantryItem = $request->user()->pantryItems()->create($validated);
+        $pantryItem = $user->pantryItems()->create($validated);
 
         return redirect()->back()->with('success', 'Article ajouté au garde-manger.');
     }
