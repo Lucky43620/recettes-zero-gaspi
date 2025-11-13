@@ -105,6 +105,12 @@ const logout = () => {
 
                                         <div class="border-t border-gray-200" />
 
+                                        <DropdownLink :href="route('subscription.index')">
+                                            ⭐ {{ t('subscription.title') }}
+                                        </DropdownLink>
+
+                                        <div class="border-t border-gray-200" />
+
                                         <form @submit.prevent="logout">
                                             <DropdownLink as="button">
                                                 {{ t('auth.logout') }}
@@ -197,6 +203,10 @@ const logout = () => {
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.show')" :active="route().current('profile.show')">
                                 {{ t('profile.title') }}
+                            </ResponsiveNavLink>
+
+                            <ResponsiveNavLink :href="route('subscription.index')" :active="route().current('subscription.*')">
+                                ⭐ {{ t('subscription.title') }}
                             </ResponsiveNavLink>
 
                             <form method="POST" @submit.prevent="logout">
