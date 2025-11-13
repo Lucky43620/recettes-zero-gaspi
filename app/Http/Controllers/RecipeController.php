@@ -93,6 +93,7 @@ class RecipeController extends Controller
             'comments' => function ($query) {
                 $query->with(['user', 'replies.user'])->orderBy('upvotes', 'desc')->orderBy('created_at', 'desc');
             },
+            'cooksnaps.user',
         ]);
 
         $userRating = null;

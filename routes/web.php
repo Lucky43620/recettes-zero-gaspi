@@ -2,11 +2,14 @@
 
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CooksnapController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\MealPlanController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PantryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -50,6 +53,9 @@ Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile
 Route::get('/profile/{user}/followers', [ProfileController::class, 'followers'])->name('profile.followers');
 Route::get('/profile/{user}/following', [ProfileController::class, 'following'])->name('profile.following');
 
+Route::get('/events', [EventController::class, 'index'])->name('events.index');
+Route::get('/events/{event:slug}', [EventController::class, 'show'])->name('events.show');
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -92,6 +98,9 @@ Route::middleware([
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('/comments/{comment}/vote/{type}', [CommentController::class, 'vote'])->name('comments.vote');
 
+    Route::post('/recipes/{recipe:slug}/cooksnaps', [CooksnapController::class, 'store'])->name('cooksnaps.store');
+    Route::delete('/cooksnaps/{cooksnap}', [CooksnapController::class, 'destroy'])->name('cooksnaps.destroy');
+
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('/recipes/{recipe:slug}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
@@ -127,6 +136,12 @@ Route::middleware([
     Route::get('/anti-waste', function () {
         return Inertia::render('AntiWaste/Index');
     })->name('anti-waste.index');
+
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::put('/events/{event:slug}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{event:slug}', [EventController::class, 'destroy'])->name('events.destroy');
+    Route::post('/events/{event:slug}/join', [EventController::class, 'join'])->name('events.join');
+    Route::delete('/events/{event:slug}/leave', [EventController::class, 'leave'])->name('events.leave');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');

@@ -104,6 +104,11 @@ class Recipe extends Model implements HasMedia
             ->orderBy('recipe_ingredients.position');
     }
 
+    public function cooksnaps()
+    {
+        return $this->hasMany(Cooksnap::class)->latest();
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')
