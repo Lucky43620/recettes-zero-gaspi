@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
+
+const { t } = useI18n();
 
 const props = defineProps({
     show: Boolean,
@@ -16,7 +19,7 @@ const product = ref(null);
 
 const lookupBarcode = async () => {
     if (!barcode.value || barcode.value.length < 8) {
-        error.value = 'Code-barres invalide (minimum 8 chiffres)';
+        error.value = t('pantry.barcode_invalid');
         return;
     }
 
@@ -40,10 +43,10 @@ const lookupBarcode = async () => {
             product.value = data.product;
             emit('product-found', data.product);
         } else {
-            error.value = data.message || 'Produit non trouvé';
+            error.value = data.message || t('pantry.product_not_found');
         }
     } catch (err) {
-        error.value = 'Erreur lors de la recherche du produit';
+        error.value = t('pantry.barcode_error');
     } finally {
         loading.value = false;
     }
@@ -66,7 +69,7 @@ const close = () => {
         <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">Scanner un code-barres</h2>
+                    <h2 class="text-2xl font-bold text-gray-900">{{ t('pantry.scan_barcode') }}</h2>
                     <button @click="close" class="p-2 hover:bg-gray-100 rounded-lg transition">
                         <XMarkIcon class="w-6 h-6" />
                     </button>
@@ -75,7 +78,7 @@ const close = () => {
                 <div class="space-y-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Code-barres
+                            {{ t('pantry.barcode') }}
                         </label>
                         <div class="flex gap-2">
                             <input
@@ -83,7 +86,7 @@ const close = () => {
                                 type="text"
                                 inputmode="numeric"
                                 pattern="[0-9]*"
-                                placeholder="Entrez le code-barres (8-13 chiffres)"
+                                :placeholder="t('pantry.barcode_placeholder')"
                                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                 @keyup.enter="lookupBarcode"
                             />
@@ -92,11 +95,11 @@ const close = () => {
                                 :disabled="loading || !barcode"
                                 class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {{ loading ? 'Recherche...' : 'Rechercher' }}
+                                {{ loading ? t('common.searching') : t('common.search') }}
                             </button>
                         </div>
                         <p class="mt-2 text-sm text-gray-500">
-                            Entrez manuellement le code-barres ou utilisez un scanner
+                            {{ t('pantry.barcode_hint') }}
                         </p>
                     </div>
 
@@ -115,29 +118,29 @@ const close = () => {
                             <div class="flex-1">
                                 <h3 class="text-xl font-bold text-gray-900 mb-2">{{ product.name }}</h3>
                                 <div v-if="product.brand" class="text-sm text-gray-600 mb-2">
-                                    Marque: {{ product.brand }}
+                                    {{ t('pantry.brand') }}: {{ product.brand }}
                                 </div>
                                 <div v-if="product.quantity" class="text-sm text-gray-600 mb-2">
-                                    Quantité: {{ product.quantity }}
+                                    {{ t('pantry.quantity') }}: {{ product.quantity }}
                                 </div>
                                 <div v-if="product.categories" class="text-sm text-gray-600">
-                                    Catégories: {{ product.categories }}
+                                    {{ t('pantry.categories') }}: {{ product.categories }}
                                 </div>
                             </div>
                         </div>
 
                         <div v-if="product.nutriments" class="mt-4 pt-4 border-t border-green-300">
-                            <h4 class="font-semibold text-gray-900 mb-2">Informations nutritionnelles (pour 100g)</h4>
+                            <h4 class="font-semibold text-gray-900 mb-2">{{ t('pantry.nutrition_info') }}</h4>
                             <div class="grid grid-cols-2 gap-2 text-sm">
-                                <div v-if="product.nutriments.energy">Énergie: {{ product.nutriments.energy }} kcal</div>
-                                <div v-if="product.nutriments.fat">Matières grasses: {{ product.nutriments.fat }}g</div>
-                                <div v-if="product.nutriments.carbohydrates">Glucides: {{ product.nutriments.carbohydrates }}g</div>
-                                <div v-if="product.nutriments.proteins">Protéines: {{ product.nutriments.proteins }}g</div>
+                                <div v-if="product.nutriments.energy">{{ t('pantry.energy') }}: {{ product.nutriments.energy }} kcal</div>
+                                <div v-if="product.nutriments.fat">{{ t('pantry.fat') }}: {{ product.nutriments.fat }}g</div>
+                                <div v-if="product.nutriments.carbohydrates">{{ t('pantry.carbs') }}: {{ product.nutriments.carbohydrates }}g</div>
+                                <div v-if="product.nutriments.proteins">{{ t('pantry.proteins') }}: {{ product.nutriments.proteins }}g</div>
                             </div>
                         </div>
 
                         <div class="mt-4 text-xs text-gray-500">
-                            Données fournies par OpenFoodFacts
+                            {{ t('pantry.data_source') }}
                         </div>
                     </div>
                 </div>
