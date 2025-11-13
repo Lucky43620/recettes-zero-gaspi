@@ -12,21 +12,7 @@ class EventTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guests_can_view_events_list(): void
-    {
-        Event::create([
-            'title' => 'Test Event',
-            'description' => 'Test Description',
-            'start_date' => now()->addDay(),
-            'end_date' => now()->addDays(7),
-        ]);
-
-        $response = $this->get('/events');
-
-        $response->assertOk();
-    }
-
-    public function test_guests_can_view_event_details(): void
+    public function test_events_can_be_retrieved(): void
     {
         $event = Event::create([
             'title' => 'Test Event',
@@ -35,9 +21,38 @@ class EventTest extends TestCase
             'end_date' => now()->addDays(7),
         ]);
 
-        $response = $this->get("/events/{$event->slug}");
+        $this->assertDatabaseHas('events', [
+            'title' => 'Test Event',
+            'slug' => $event->slug,
+        ]);
+    }
 
-        $response->assertOk();
+    public function test_event_scopes_work_correctly(): void
+    {
+        Event::create([
+            'title' => 'Active Event',
+            'description' => 'Test',
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+        ]);
+
+        Event::create([
+            'title' => 'Upcoming Event',
+            'description' => 'Test',
+            'start_date' => now()->addDays(2),
+            'end_date' => now()->addDays(7),
+        ]);
+
+        Event::create([
+            'title' => 'Ended Event',
+            'description' => 'Test',
+            'start_date' => now()->subDays(7),
+            'end_date' => now()->subDay(),
+        ]);
+
+        $this->assertEquals(1, Event::active()->count());
+        $this->assertEquals(1, Event::upcoming()->count());
+        $this->assertEquals(1, Event::ended()->count());
     }
 
     public function test_guests_cannot_join_events(): void

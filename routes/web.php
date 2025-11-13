@@ -7,6 +7,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\GdprController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\MealPlanController;
 use App\Http\Controllers\NotificationController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShoppingListController;
 use App\Models\MealPlanRecipe;
 use Illuminate\Foundation\Application;
@@ -147,4 +149,29 @@ Route::middleware([
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+    Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+    Route::put('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
+
+    Route::get('/gdpr/export', [GdprController::class, 'exportData'])->name('gdpr.export');
+    Route::delete('/gdpr/delete-account', [GdprController::class, 'deleteAccount'])->name('gdpr.delete');
+});
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'show'])->name('users.show');
+    Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+    Route::get('/badges', [\App\Http\Controllers\Admin\AdminBadgeController::class, 'index'])->name('badges.index');
+    Route::post('/badges', [\App\Http\Controllers\Admin\AdminBadgeController::class, 'store'])->name('badges.store');
+    Route::put('/badges/{badge}', [\App\Http\Controllers\Admin\AdminBadgeController::class, 'update'])->name('badges.update');
+    Route::delete('/badges/{badge}', [\App\Http\Controllers\Admin\AdminBadgeController::class, 'destroy'])->name('badges.destroy');
 });

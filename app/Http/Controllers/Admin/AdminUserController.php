@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class AdminUserController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%")
+                  ->orWhere('email', 'like', "%{$request->search}%");
+            });
+        }
+
+        $users = $query->withCount(['recipes', 'comments', 'followers'])
+            ->latest()
+            ->paginate(20);
+
+        return Inertia::render('Admin/Users/Index', [
+            'users' => $users,
+            'filters' => $request->only('search'),
+        ]);
+    }
+
+    public function show(User $user)
+    {
+        $user->load(['recipes', 'comments', 'ratings', 'collections', 'followers', 'following']);
+
+        $stats = [
+            'recipes_count' => $user->recipes()->count(),
+            'public_recipes' => $user->recipes()->where('is_public', true)->count(),
+            'comments_count' => $user->comments()->count(),
+            'ratings_count' => $user->ratings()->count(),
+            'followers_count' => $user->followers()->count(),
+            'following_count' => $user->following()->count(),
+            'collections_count' => $user->collections()->count(),
+        ];
+
+        return Inertia::render('Admin/Users/Show', [
+            'user' => $user,
+            'stats' => $stats,
+        ]);
+    }
+
+    public function destroy(User $user)
+    {
+        $user->recipes()->each(function ($recipe) {
+            $recipe->clearMediaCollection('images');
+            $recipe->delete();
+        });
+
+        $user->delete();
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Utilisateur supprimé');
+    }
+}
