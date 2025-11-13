@@ -189,5 +189,27 @@
     "reports": "Reportes",
     "badges": "Insignias",
     "back_to_site": "Volver al Sitio"
+  },
+  "home": {
+    "hero_title": "Cocina sin",
+    "hero_title_highlight": "desperdiciar",
+    "hero_description": "Descubre recetas deliciosas, planifica tus comidas y usa cada ingrediente para reducir el desperdicio alimentario",
+    "explore_recipes": "Explorar recetas",
+    "join_community": "Unirse a la comunidad",
+    "feature_zero_waste_title": "Cero Desperdicio",
+    "feature_zero_waste_desc": "Usa tus ingredientes antes de que caduquen gracias a nuestras sugerencias inteligentes",
+    "feature_easy_planning_title": "Planificación Fácil",
+    "feature_easy_planning_desc": "Planifica tus comidas de la semana y genera automáticamente tu lista de compras",
+    "feature_active_community_title": "Comunidad Activa",
+    "feature_active_community_desc": "Comparte tus recetas y descubre las de otros apasionados de la cocina",
+    "feature_personalized_title": "Recetas Personalizadas",
+    "feature_personalized_desc": "Encuentra recetas adaptadas a tus gustos, dietas e ingredientes disponibles",
+    "popular_recipes": "Recetas populares",
+    "popular_recipes_desc": "Descubre las recetas más apreciadas por nuestra comunidad",
+    "no_recipes": "No hay recetas disponibles por el momento",
+    "view_all_recipes": "Ver todas las recetas",
+    "ready_title": "¿Listo para reducir el desperdicio?",
+    "ready_desc": "Únete a nuestra comunidad y comienza a cocinar de manera más responsable hoy",
+    "create_account": "Crear una cuenta gratuita"
   }
 }

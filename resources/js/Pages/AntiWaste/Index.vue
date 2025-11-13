@@ -113,7 +113,7 @@
                                     </div>
                                 </div>
 
-                                <div v-if="recipe.missing_ingredients.length > 0" class="border-t pt-3 mt-3">
+                                <div v-if="recipe.missing_ingredients && recipe.missing_ingredients.length > 0" class="border-t pt-3 mt-3">
                                     <p class="text-xs font-medium text-gray-700 mb-1">À acheter :</p>
                                     <div class="flex flex-wrap gap-1">
                                         <span
@@ -124,7 +124,7 @@
                                             {{ ingredient.name }}
                                         </span>
                                         <span
-                                            v-if="recipe.missing_ingredients.length > 3"
+                                            v-if="recipe.missing_ingredients && recipe.missing_ingredients.length > 3"
                                             class="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded"
                                         >
                                             +{{ recipe.missing_ingredients.length - 3 }}
@@ -142,7 +142,7 @@
                         </div>
                     </div>
 
-                    <div v-if="filteredRecipes.length === 0 && showOnlyCompletable" class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-12 text-center mt-6">
+                    <div v-if="filteredRecipes && filteredRecipes.length === 0 && showOnlyCompletable" class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-12 text-center mt-6">
                         <p class="text-gray-600">Aucune recette réalisable entièrement avec votre garde-manger actuel.</p>
                         <p class="text-gray-500 text-sm mt-2">Désactivez le filtre pour voir les recettes partiellement réalisables.</p>
                     </div>
