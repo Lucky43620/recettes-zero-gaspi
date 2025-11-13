@@ -150,11 +150,17 @@ Route::middleware([
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
-    Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+    Route::post('/reports', [ReportController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('reports.store');
     Route::put('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
 
     Route::get('/gdpr/export', [GdprController::class, 'exportData'])->name('gdpr.export');
     Route::delete('/gdpr/delete-account', [GdprController::class, 'deleteAccount'])->name('gdpr.delete');
+
+    Route::post('/barcode/lookup', [\App\Http\Controllers\BarcodeController::class, 'lookup'])
+        ->middleware('throttle:60,1')
+        ->name('barcode.lookup');
 });
 
 Route::middleware([
