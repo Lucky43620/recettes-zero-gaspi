@@ -1,8 +1,8 @@
 <template>
-  <AppLayout title="Notifications">
+  <AppLayout :title="t('notifications.title')">
     <template #header>
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Notifications
+        {{ t('notifications.title') }}
       </h2>
     </template>
 
@@ -12,10 +12,10 @@
           <div class="p-6 border-b border-gray-200 flex items-center justify-between">
             <div>
               <h3 class="text-lg font-semibold text-gray-900">
-                Toutes les notifications
+                {{ t('notifications.all_notifications') }}
               </h3>
               <p class="text-sm text-gray-600 mt-1">
-                {{ unreadCount }} non lue{{ unreadCount > 1 ? 's' : '' }}
+                {{ t('notifications.unread_count', { count: unreadCount }) }}
               </p>
             </div>
             <Link
@@ -25,13 +25,13 @@
               as="button"
               class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
             >
-              Tout marquer comme lu
+              {{ t('notifications.mark_all_as_read') }}
             </Link>
           </div>
 
           <div v-if="!notifications || !notifications.data || notifications.data.length === 0" class="p-12 text-center">
             <BellIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p class="text-gray-500 text-lg">Aucune notification</p>
+            <p class="text-gray-500 text-lg">{{ t('notifications.no_notifications') }}</p>
           </div>
 
           <div v-else class="divide-y divide-gray-200">
@@ -71,7 +71,7 @@
                 <button
                   @click="deleteNotification(notification.id)"
                   class="flex-shrink-0 p-2 text-gray-400 hover:text-red-600 transition"
-                  title="Supprimer"
+                  :title="t('common.delete')"
                 >
                   <TrashIcon class="w-5 h-5" />
                 </button>
@@ -86,17 +86,17 @@
                 :href="notifications.prev_page_url"
                 class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
               >
-                Précédent
+                {{ t('common.previous') }}
               </Link>
               <span class="text-sm text-gray-600">
-                Page {{ notifications.current_page }} sur {{ notifications.last_page }}
+                {{ t('notifications.page_of', { current: notifications.current_page, total: notifications.last_page }) }}
               </span>
               <Link
                 v-if="notifications.next_page_url"
                 :href="notifications.next_page_url"
                 class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
               >
-                Suivant
+                {{ t('common.next') }}
               </Link>
             </div>
           </div>
@@ -111,6 +111,9 @@ import { router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/vue3'
 import { BellIcon, ChatBubbleLeftIcon, UserPlusIcon, ClockIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   notifications: Object,
@@ -124,7 +127,7 @@ const markAsRead = (notificationId) => {
 }
 
 const deleteNotification = (notificationId) => {
-  if (confirm('Supprimer cette notification ?')) {
+  if (confirm(t('notifications.delete_confirmation'))) {
     router.delete(route('notifications.destroy', notificationId), {
       preserveScroll: true
     })

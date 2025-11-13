@@ -7,6 +7,9 @@ import DialogModal from '@/Components/DialogModal.vue';
 import InputError from '@/Components/InputError.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const confirmingUserDeletion = ref(false);
 const passwordInput = ref(null);
@@ -40,32 +43,32 @@ const closeModal = () => {
 <template>
     <ActionSection>
         <template #title>
-            Supprimer le compte
+            {{ t('profile.delete_account_title') }}
         </template>
 
         <template #description>
-            Supprimez définitivement votre compte.
+            {{ t('profile.delete_account_subtitle') }}
         </template>
 
         <template #content>
             <div class="max-w-xl text-sm text-gray-600">
-                Une fois votre compte supprimé, toutes ses ressources et données seront définitivement supprimées. Avant de supprimer votre compte, veuillez télécharger toutes les données ou informations que vous souhaitez conserver.
+                {{ t('profile.delete_account_description') }}
             </div>
 
             <div class="mt-5">
                 <DangerButton @click="confirmUserDeletion">
-                    Supprimer le compte
+                    {{ t('profile.delete_account_title') }}
                 </DangerButton>
             </div>
 
             <!-- Delete Account Confirmation Modal -->
             <DialogModal :show="confirmingUserDeletion" @close="closeModal">
                 <template #title>
-                    Supprimer le compte
+                    {{ t('profile.delete_account_title') }}
                 </template>
 
                 <template #content>
-                    Êtes-vous sûr de vouloir supprimer votre compte ? Une fois votre compte supprimé, toutes ses ressources et données seront définitivement supprimées. Veuillez entrer votre mot de passe pour confirmer que vous souhaitez supprimer définitivement votre compte.
+                    {{ t('profile.delete_account_confirmation') }}
 
                     <div class="mt-4">
                         <TextInput
@@ -73,7 +76,7 @@ const closeModal = () => {
                             v-model="form.password"
                             type="password"
                             class="mt-1 block w-3/4"
-                            placeholder="Mot de passe"
+                            :placeholder="t('auth.password')"
                             autocomplete="current-password"
                             @keyup.enter="deleteUser"
                         />
@@ -84,7 +87,7 @@ const closeModal = () => {
 
                 <template #footer>
                     <SecondaryButton @click="closeModal">
-                        Annuler
+                        {{ t('common.cancel') }}
                     </SecondaryButton>
 
                     <DangerButton
@@ -93,7 +96,7 @@ const closeModal = () => {
                         :disabled="form.processing"
                         @click="deleteUser"
                     >
-                        Supprimer le compte
+                        {{ t('profile.delete_account_title') }}
                     </DangerButton>
                 </template>
             </DialogModal>

@@ -1,5 +1,5 @@
 <template>
-  <AppLayout title="Mode Cuisine">
+  <AppLayout :title="t('cook.title')">
     <div class="min-h-screen bg-gray-50 pb-20">
       <div class="max-w-4xl mx-auto px-4 py-8">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -7,14 +7,14 @@
             <div class="flex items-center justify-between">
               <div>
                 <h1 class="text-2xl font-bold text-white">{{ recipe.title }}</h1>
-                <p class="text-green-100 text-sm">Mode pas-à-pas</p>
+                <p class="text-green-100 text-sm">{{ t('cook.step_by_step_mode') }}</p>
               </div>
               <button
                 @click="exitCooking"
                 class="px-4 py-2 bg-white text-green-700 rounded-lg hover:bg-gray-100 transition flex items-center gap-2"
               >
                 <XMarkIcon class="w-5 h-5" />
-                Quitter
+                {{ t('cook.exit') }}
               </button>
             </div>
           </div>
@@ -22,10 +22,10 @@
           <div class="px-6 py-4 bg-gray-50 border-b">
             <div class="flex items-center justify-between mb-2">
               <span class="text-sm font-medium text-gray-700">
-                Étape {{ currentStepIndex + 1 }} sur {{ totalSteps }}
+                {{ t('cook.step_progress', { current: currentStepIndex + 1, total: totalSteps }) }}
               </span>
               <span class="text-sm text-gray-600">
-                {{ Math.round(progressPercentage) }}% complété
+                {{ t('cook.percent_completed', { percent: Math.round(progressPercentage) }) }}
               </span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-3">
@@ -68,7 +68,7 @@
                   :for="`step-${currentStepIndex}`"
                   class="text-sm font-medium text-gray-700 cursor-pointer"
                 >
-                  Marquer cette étape comme terminée
+                  {{ t('cook.mark_step_complete') }}
                 </label>
               </div>
             </div>
@@ -86,7 +86,7 @@
               ]"
             >
               <ChevronLeftIcon class="w-5 h-5" />
-              Précédent
+              {{ t('common.previous') }}
             </button>
 
             <button
@@ -94,7 +94,7 @@
               @click="nextStep"
               class="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition flex items-center gap-2"
             >
-              Suivant
+              {{ t('common.next') }}
               <ChevronRightIcon class="w-5 h-5" />
             </button>
 
@@ -104,7 +104,7 @@
               class="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition flex items-center gap-2"
             >
               <CheckIcon class="w-5 h-5" />
-              Terminer
+              {{ t('cook.finish') }}
             </button>
           </div>
 
@@ -112,7 +112,7 @@
             <details class="group">
               <summary class="cursor-pointer text-sm font-medium text-gray-700 hover:text-green-600 transition flex items-center gap-2">
                 <ListBulletIcon class="w-5 h-5" />
-                Voir toutes les étapes ({{ totalSteps }})
+                {{ t('cook.view_all_steps', { count: totalSteps }) }}
               </summary>
               <div class="mt-4 space-y-2">
                 <button
@@ -157,6 +157,7 @@
 
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { router } from '@inertiajs/vue3'
 import { useCookingModeStore } from '@/stores/cookingMode'
 import { storeToRefs } from 'pinia'
@@ -170,6 +171,8 @@ import {
   ListBulletIcon,
   ClockIcon
 } from '@heroicons/vue/24/outline'
+
+const { t } = useI18n()
 
 const props = defineProps({
   recipe: {
@@ -224,7 +227,7 @@ const releaseWakeLock = async () => {
 }
 
 const exitCooking = () => {
-  if (confirm('Voulez-vous vraiment quitter le mode cuisine ?')) {
+  if (confirm(t('cook.exit_confirmation'))) {
     releaseWakeLock()
     exitStore()
     router.visit(`/recipes/${props.recipe.slug}`)
@@ -236,7 +239,7 @@ const finishCooking = () => {
   exitStore()
   router.visit(`/recipes/${props.recipe.slug}`, {
     onSuccess: () => {
-      alert('Félicitations ! Vous avez terminé la recette 🎉')
+      alert(t('cook.congratulations_message'))
     }
   })
 }

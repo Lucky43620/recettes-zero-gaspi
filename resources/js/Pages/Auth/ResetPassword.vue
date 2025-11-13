@@ -1,11 +1,14 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+
+const { t } = useI18n();
 
 const props = defineProps({
     email: String,
@@ -27,7 +30,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Réinitialiser le mot de passe" />
+    <Head :title="t('auth.reset_password')" />
 
     <AuthenticationCard>
         <template #logo>
@@ -35,13 +38,13 @@ const submit = () => {
         </template>
 
         <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-900 mb-2">Nouveau mot de passe</h1>
-            <p class="text-gray-600">Choisissez un nouveau mot de passe sécurisé</p>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ t('auth.new_password_title') }}</h1>
+            <p class="text-gray-600">{{ t('auth.new_password_description') }}</p>
         </div>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="t('auth.email')" />
                 <TextInput
                     id="email"
                     v-model="form.email"
@@ -55,7 +58,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Nouveau mot de passe" />
+                <InputLabel for="password" :value="t('auth.new_password')" />
                 <TextInput
                     id="password"
                     v-model="form.password"
@@ -68,7 +71,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirmer le mot de passe" />
+                <InputLabel for="password_confirmation" :value="t('auth.password_confirmation')" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
@@ -81,7 +84,7 @@ const submit = () => {
             </div>
 
             <PrimaryButton class="w-full justify-center mt-6 bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Réinitialiser le mot de passe
+                {{ t('auth.reset_password_button') }}
             </PrimaryButton>
         </form>
     </AuthenticationCard>

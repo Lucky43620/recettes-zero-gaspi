@@ -4,6 +4,9 @@ import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     shoppingLists: Array,
@@ -46,14 +49,14 @@ const closeDeleteModal = () => {
 </script>
 
 <template>
-    <AppLayout title="Listes de courses">
+    <AppLayout :title="t('shopping_list.title')">
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Mes listes de courses
+                    {{ t('shopping_list.my_lists') }}
                 </h2>
                 <PrimaryButton @click="showCreateModal = true">
-                    Nouvelle liste
+                    {{ t('shopping_list.new_list') }}
                 </PrimaryButton>
             </div>
         </template>
@@ -78,20 +81,20 @@ const closeDeleteModal = () => {
                             </button>
                         </div>
                         <div class="text-sm text-gray-600 mb-4">
-                            <p>{{ list.items.length }} article{{ list.items.length > 1 ? 's' : '' }}</p>
-                            <p>{{ list.items.filter(item => item.is_checked).length }} coché{{ list.items.filter(item => item.is_checked).length > 1 ? 's' : '' }}</p>
+                            <p>{{ list.items.length }} {{ t('shopping_list.items_count', list.items.length) }}</p>
+                            <p>{{ list.items.filter(item => item.is_checked).length }} {{ t('shopping_list.checked_count', list.items.filter(item => item.is_checked).length) }}</p>
                         </div>
                         <Link :href="route('shopping-lists.show', list.id)" class="block">
                             <PrimaryButton class="w-full">
-                                Voir la liste
+                                {{ t('shopping_list.view_list') }}
                             </PrimaryButton>
                         </Link>
                     </div>
                 </div>
                 <div v-else class="text-center py-12">
-                    <p class="text-gray-500 mb-4">Aucune liste de courses</p>
+                    <p class="text-gray-500 mb-4">{{ t('shopping_list.no_lists') }}</p>
                     <PrimaryButton @click="showCreateModal = true">
-                        Créer ma première liste
+                        {{ t('shopping_list.create_first_list') }}
                     </PrimaryButton>
                 </div>
             </div>
@@ -103,25 +106,25 @@ const closeDeleteModal = () => {
             @click.self="showCreateModal = false"
         >
             <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                <h3 class="text-lg font-semibold mb-4">Nouvelle liste de courses</h3>
+                <h3 class="text-lg font-semibold mb-4">{{ t('shopping_list.new_list') }}</h3>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Nom de la liste
+                        {{ t('shopping_list.list_name') }}
                     </label>
                     <input
                         v-model="newListName"
                         type="text"
                         class="w-full px-3 py-2 border rounded-md"
-                        placeholder="Ma liste de courses"
+                        :placeholder="t('shopping_list.list_name_placeholder')"
                         @keyup.enter="createList"
                     />
                 </div>
                 <div class="flex gap-3 justify-end">
                     <PrimaryButton variant="secondary" @click="showCreateModal = false">
-                        Annuler
+                        {{ t('common.cancel') }}
                     </PrimaryButton>
                     <PrimaryButton @click="createList">
-                        Créer
+                        {{ t('common.create') }}
                     </PrimaryButton>
                 </div>
             </div>
@@ -129,16 +132,16 @@ const closeDeleteModal = () => {
 
         <ConfirmationModal :show="confirmingListDeletion" @close="closeDeleteModal">
             <template #title>
-                Supprimer la liste de courses
+                {{ t('shopping_list.delete_list') }}
             </template>
 
             <template #content>
-                Êtes-vous sûr de vouloir supprimer cette liste ? Cette action est irréversible.
+                {{ t('shopping_list.delete_confirmation') }}
             </template>
 
             <template #footer>
                 <PrimaryButton variant="secondary" @click="closeDeleteModal">
-                    Annuler
+                    {{ t('common.cancel') }}
                 </PrimaryButton>
 
                 <PrimaryButton
@@ -146,7 +149,7 @@ const closeDeleteModal = () => {
                     class="ms-3"
                     @click="deleteList"
                 >
-                    Supprimer
+                    {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
         </ConfirmationModal>

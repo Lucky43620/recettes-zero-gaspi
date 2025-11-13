@@ -3,6 +3,9 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
 import Pagination from '@/Components/Common/Pagination.vue';
 import EmptyState from '@/Components/Common/EmptyState.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     feed: Object,
@@ -10,10 +13,10 @@ const props = defineProps({
 </script>
 
 <template>
-    <AppLayout title="Mon flux">
+    <AppLayout :title="t('feed.title')">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Mon flux personnalisé
+                {{ t('feed.personalized_feed') }}
             </h2>
         </template>
 
@@ -30,9 +33,9 @@ const props = defineProps({
                 <EmptyState
                     v-else
                     icon="search"
-                    title="Vous ne suivez personne pour le moment"
-                    message="Commencez à suivre des cuisiniers pour voir leurs nouvelles recettes"
-                    action-label="Découvrir des recettes"
+                    :title="t('feed.not_following_anyone')"
+                    :message="t('feed.follow_chefs_message')"
+                    :action-label="t('feed.discover_recipes')"
                     :action-href="route('recipes.index')"
                 />
 

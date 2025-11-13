@@ -1,6 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PlusIcon, TrashIcon } from '@heroicons/vue/24/outline';
+
+const { t } = useI18n();
 
 const props = defineProps({
     modelValue: {
@@ -43,26 +46,26 @@ function removeIngredient(index) {
 <template>
     <div class="space-y-4">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Ingrédients</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{ t('recipe.ingredients') }}</h3>
             <button
                 type="button"
                 @click="addIngredient"
                 class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
                 <PlusIcon class="h-5 w-5" />
-                Ajouter un ingrédient
+                {{ t('recipe.add_ingredient') }}
             </button>
         </div>
 
         <div v-if="ingredients.length === 0" class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-            <p class="text-gray-500 mb-3">Aucun ingrédient ajouté</p>
+            <p class="text-gray-500 mb-3">{{ t('recipe.no_ingredients_added') }}</p>
             <button
                 type="button"
                 @click="addIngredient"
                 class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
                 <PlusIcon class="h-5 w-5" />
-                Ajouter le premier ingrédient
+                {{ t('recipe.add_first_ingredient') }}
             </button>
         </div>
 
@@ -81,7 +84,7 @@ function removeIngredient(index) {
                         <input
                             v-model="ingredient.name"
                             type="text"
-                            placeholder="Nom de l'ingrédient (ex: Farine)"
+                            :placeholder="t('recipe.ingredient_name_placeholder')"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                             required
                         />
@@ -93,7 +96,7 @@ function removeIngredient(index) {
                             type="number"
                             step="0.01"
                             min="0"
-                            placeholder="Quantité"
+                            :placeholder="t('pantry.quantity')"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                         />
                     </div>
@@ -103,7 +106,7 @@ function removeIngredient(index) {
                             v-model="ingredient.unit_code"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                         >
-                            <option value="">Unité</option>
+                            <option value="">{{ t('pantry.unit') }}</option>
                             <option v-for="unit in units" :key="unit.code" :value="unit.code">
                                 {{ unit.label }}
                             </option>
@@ -115,7 +118,7 @@ function removeIngredient(index) {
                     type="button"
                     @click="removeIngredient(index)"
                     class="flex-shrink-0 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Supprimer cet ingrédient"
+                    :title="t('recipe.delete_ingredient')"
                 >
                     <TrashIcon class="h-5 w-5" />
                 </button>

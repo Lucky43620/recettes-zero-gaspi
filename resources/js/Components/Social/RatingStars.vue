@@ -1,9 +1,12 @@
 <script setup>
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+
+const { t } = useI18n();
 
 const props = defineProps({
     recipe: Object,
@@ -119,7 +122,7 @@ const sizeClasses = {
                         @click="showForm = true"
                         class="text-sm text-green-600 hover:text-green-800"
                     >
-                        {{ userRating ? 'Modifier ma note' : 'Noter cette recette' }}
+                        {{ userRating ? t('profile.edit_rating') : t('profile.rate_recipe') }}
                     </button>
                 </div>
 
@@ -132,13 +135,13 @@ const sizeClasses = {
                     @click="confirmDeleteRating"
                     class="text-sm text-red-600 hover:text-red-800"
                 >
-                    Supprimer ma note
+                    {{ t('profile.delete_rating') }}
                 </button>
             </div>
 
             <form v-else @submit.prevent="submitRating" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Note</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('profile.rating_label') }}</label>
                     <div class="flex gap-1">
                         <button
                             v-for="star in 5"
@@ -165,13 +168,13 @@ const sizeClasses = {
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Avis (optionnel)
+                        {{ t('profile.review_optional') }}
                     </label>
                     <textarea
                         v-model="form.review"
                         rows="3"
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
-                        placeholder="Partagez votre expérience avec cette recette..."
+                        :placeholder="t('profile.share_review_experience')"
                     ></textarea>
                 </div>
 
@@ -181,37 +184,37 @@ const sizeClasses = {
                         :disabled="form.processing || form.rating === 0"
                         class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
                     >
-                        Enregistrer
+                        {{ t('common.save') }}
                     </button>
                     <button
                         type="button"
                         @click="showForm = false"
                         class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
                     >
-                        Annuler
+                        {{ t('common.cancel') }}
                     </button>
                 </div>
             </form>
 
             <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
                 <template #title>
-                    Supprimer votre note
+                    {{ t('profile.delete_rating') }}
                 </template>
 
                 <template #content>
-                    Êtes-vous sûr de vouloir supprimer votre note et avis ? Cette action est irréversible.
+                    {{ t('profile.delete_rating_confirmation') }}
                 </template>
 
                 <template #footer>
                     <SecondaryButton @click="confirmingDeletion = false">
-                        Annuler
+                        {{ t('common.cancel') }}
                     </SecondaryButton>
 
                     <DangerButton
                         class="ms-3"
                         @click="deleteRating"
                     >
-                        Supprimer
+                        {{ t('common.delete') }}
                     </DangerButton>
                 </template>
             </ConfirmationModal>

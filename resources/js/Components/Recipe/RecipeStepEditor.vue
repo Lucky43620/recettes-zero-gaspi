@@ -1,6 +1,9 @@
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { TrashIcon, PlusIcon, ClockIcon } from '@heroicons/vue/24/outline';
+
+const { t } = useI18n();
 
 const props = defineProps({
     modelValue: Array,
@@ -48,7 +51,7 @@ function getSeconds(timerMinutes) {
 <template>
     <div class="space-y-4">
         <label class="block text-sm font-medium text-gray-700">
-            Étapes de préparation *
+            {{ t('recipe.preparation_steps') }} *
         </label>
 
         <div class="space-y-4">
@@ -66,7 +69,7 @@ function getSeconds(timerMinutes) {
                         <textarea
                             :value="step.text"
                             @input="updateStepText(index, $event.target.value)"
-                            :placeholder="`Décrivez l'étape ${index + 1}...`"
+                            :placeholder="t('recipe.step_description_placeholder', { step: index + 1 })"
                             required
                             rows="3"
                             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 resize-none"
@@ -74,13 +77,13 @@ function getSeconds(timerMinutes) {
 
                         <div class="flex items-center gap-2">
                             <ClockIcon class="h-5 w-5 text-gray-400" />
-                            <span class="text-sm text-gray-600 font-medium">Minuteur (optionnel):</span>
+                            <span class="text-sm text-gray-600 font-medium">{{ t('recipe.timer_optional') }}:</span>
                             <div class="flex items-center gap-2">
                                 <input
                                     :value="getMinutes(step.timer_minutes)"
                                     @input="updateStepTimer(index, $event.target.value, getSeconds(step.timer_minutes))"
                                     type="number"
-                                    placeholder="Min"
+                                    :placeholder="t('recipe.minutes_short')"
                                     min="0"
                                     max="999"
                                     class="w-20 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-center"
@@ -90,7 +93,7 @@ function getSeconds(timerMinutes) {
                                     :value="getSeconds(step.timer_minutes)"
                                     @input="updateStepTimer(index, getMinutes(step.timer_minutes), $event.target.value)"
                                     type="number"
-                                    placeholder="Sec"
+                                    :placeholder="t('recipe.seconds_short')"
                                     min="0"
                                     max="59"
                                     class="w-20 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-center"
@@ -109,7 +112,7 @@ function getSeconds(timerMinutes) {
                                 ? 'text-gray-300 cursor-not-allowed'
                                 : 'text-red-600 hover:bg-red-50 hover:text-red-700'
                         ]"
-                        :title="steps.length === 1 ? 'Au moins une étape est requise' : 'Supprimer cette étape'"
+                        :title="steps.length === 1 ? t('recipe.min_one_step_required') : t('recipe.delete_step')"
                     >
                         <TrashIcon class="h-5 w-5" />
                     </button>
@@ -123,7 +126,7 @@ function getSeconds(timerMinutes) {
             class="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-green-400 hover:text-green-600 hover:bg-green-50 transition-all font-medium flex items-center justify-center gap-2"
         >
             <PlusIcon class="h-5 w-5" />
-            Ajouter une étape
+            {{ t('recipe.add_step') }}
         </button>
 
         <div v-if="errors?.steps" class="text-red-600 text-sm">

@@ -4,6 +4,9 @@ import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
 import FollowButton from '@/Components/Social/FollowButton.vue';
 import BackButton from '@/Components/Common/BackButton.vue';
 import { Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     profileUser: Object,
@@ -54,32 +57,32 @@ const props = defineProps({
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 p-6 bg-gray-50 rounded-lg">
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-green-600">{{ profileUser.recipes_count }}</div>
-                                <div class="text-sm text-gray-600">Recettes</div>
+                                <div class="text-sm text-gray-600">{{ t('nav.recipes') }}</div>
                             </div>
                             <Link
                                 :href="`/profile/${profileUser.id}/followers`"
                                 class="text-center hover:bg-gray-100 rounded-lg transition-colors p-2"
                             >
                                 <div class="text-2xl font-bold text-green-600">{{ profileUser.followers_count }}</div>
-                                <div class="text-sm text-gray-600">Abonnés</div>
+                                <div class="text-sm text-gray-600">{{ t('profile.followers') }}</div>
                             </Link>
                             <Link
                                 :href="`/profile/${profileUser.id}/following`"
                                 class="text-center hover:bg-gray-100 rounded-lg transition-colors p-2"
                             >
                                 <div class="text-2xl font-bold text-green-600">{{ profileUser.following_count }}</div>
-                                <div class="text-sm text-gray-600">Abonnements</div>
+                                <div class="text-sm text-gray-600">{{ t('profile.following') }}</div>
                             </Link>
                             <div v-if="averageRating" class="text-center">
                                 <div class="text-2xl font-bold text-yellow-500">⭐ {{ averageRating }}</div>
-                                <div class="text-sm text-gray-600">Note moyenne</div>
+                                <div class="text-sm text-gray-600">{{ t('profile.average_rating') }}</div>
                             </div>
                         </div>
 
                         <!-- Top 3 recettes -->
                         <div v-if="topRecipes && topRecipes.length" class="mb-8">
                             <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                                🏆 Top 3 recettes
+                                {{ t('profile.top_3_recipes') }}
                             </h2>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <RecipeCard
@@ -93,7 +96,7 @@ const props = defineProps({
                         <!-- Recettes récentes -->
                         <div>
                             <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                                Recettes récentes
+                                {{ t('profile.recent_recipes') }}
                             </h2>
                             <div v-if="recentRecipes && recentRecipes.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <RecipeCard
@@ -103,7 +106,7 @@ const props = defineProps({
                                 />
                             </div>
                             <p v-else class="text-gray-500">
-                                Aucune recette publique pour le moment
+                                {{ t('profile.no_public_recipes') }}
                             </p>
                         </div>
                     </div>

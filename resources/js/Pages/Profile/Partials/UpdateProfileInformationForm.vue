@@ -8,6 +8,9 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     user: Object,
@@ -78,11 +81,11 @@ const clearPhotoFileInput = () => {
 <template>
     <FormSection @submitted="updateProfileInformation">
         <template #title>
-            Informations du profil
+            {{ t('profile.profile_info') }}
         </template>
 
         <template #description>
-            Mettez à jour les informations de votre profil et votre adresse email.
+            {{ t('profile.profile_info_description') }}
         </template>
 
         <template #form>
@@ -97,7 +100,7 @@ const clearPhotoFileInput = () => {
                     @change="updatePhotoPreview"
                 >
 
-                <InputLabel for="photo" value="Photo de profil" />
+                <InputLabel for="photo" :value="t('profile.profile_photo')" />
 
                 <!-- Current Profile Photo -->
                 <div v-show="! photoPreview" class="mt-2">
@@ -114,7 +117,7 @@ const clearPhotoFileInput = () => {
 
                 <div class="flex gap-3 mt-3">
                     <SecondaryButton type="button" @click.prevent="selectNewPhoto">
-                        Choisir une nouvelle photo
+                        {{ t('profile.select_new_photo') }}
                     </SecondaryButton>
 
                     <SecondaryButton
@@ -122,7 +125,7 @@ const clearPhotoFileInput = () => {
                         type="button"
                         @click.prevent="deletePhoto"
                     >
-                        Supprimer
+                        {{ t('common.delete') }}
                     </SecondaryButton>
                 </div>
 
@@ -131,7 +134,7 @@ const clearPhotoFileInput = () => {
 
             <!-- Name -->
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="name" value="Nom" />
+                <InputLabel for="name" :value="t('auth.name')" />
                 <TextInput
                     id="name"
                     v-model="form.name"
@@ -145,7 +148,7 @@ const clearPhotoFileInput = () => {
 
             <!-- Email -->
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="t('auth.email')" />
                 <TextInput
                     id="email"
                     v-model="form.email"
@@ -158,7 +161,7 @@ const clearPhotoFileInput = () => {
 
                 <div v-if="$page.props.jetstream.hasEmailVerification && user.email_verified_at === null">
                     <p class="text-sm mt-2 text-gray-600">
-                        Votre adresse email n'est pas vérifiée.
+                        {{ t('profile.email_unverified') }}
 
                         <Link
                             :href="route('verification.send')"
@@ -167,12 +170,12 @@ const clearPhotoFileInput = () => {
                             class="underline text-sm text-green-600 hover:text-green-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                             @click.prevent="sendEmailVerification"
                         >
-                            Cliquez ici pour renvoyer l'email de vérification.
+                            {{ t('profile.resend_verification_link') }}
                         </Link>
                     </p>
 
                     <div v-show="verificationLinkSent" class="mt-2 font-medium text-sm text-green-600">
-                        Un nouveau lien de vérification a été envoyé à votre adresse email.
+                        {{ t('profile.verification_link_sent') }}
                     </div>
                 </div>
             </div>
@@ -180,11 +183,11 @@ const clearPhotoFileInput = () => {
 
         <template #actions>
             <ActionMessage :on="form.recentlySuccessful" class="me-3">
-                Enregistré.
+                {{ t('common.saved') }}
             </ActionMessage>
 
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Enregistrer
+                {{ t('common.save') }}
             </PrimaryButton>
         </template>
     </FormSection>

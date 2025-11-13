@@ -3,6 +3,9 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     favorites: Object,
@@ -10,10 +13,10 @@ const props = defineProps({
 </script>
 
 <template>
-    <AppLayout title="Mes favoris">
+    <AppLayout :title="t('favorites.title')">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Mes recettes favorites
+                {{ t('favorites.my_favorite_recipes') }}
             </h2>
         </template>
 
@@ -29,11 +32,11 @@ const props = defineProps({
 
                 <div v-else class="bg-white rounded-lg shadow p-8 text-center">
                     <p class="text-gray-600 mb-4">
-                        Vous n'avez pas encore de recettes favorites
+                        {{ t('favorites.empty') }}
                     </p>
                     <Link :href="route('home')">
                         <PrimaryButton>
-                            Découvrir des recettes
+                            {{ t('favorites.discover_recipes') }}
                         </PrimaryButton>
                     </Link>
                 </div>
@@ -53,8 +56,8 @@ const props = defineProps({
                                     : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
                         ]"
                     >
-                        <span v-if="link.label.includes('Previous')">← Précédent</span>
-                        <span v-else-if="link.label.includes('Next')">Suivant →</span>
+                        <span v-if="link.label.includes('Previous')">← {{ t('common.previous') }}</span>
+                        <span v-else-if="link.label.includes('Next')">{{ t('common.next') }} →</span>
                         <span v-else v-html="link.label"></span>
                     </component>
                 </div>

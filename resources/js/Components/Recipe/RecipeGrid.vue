@@ -1,11 +1,14 @@
 <script setup>
+import { useI18n } from 'vue-i18n';
 import RecipeCard from './RecipeCard.vue';
+
+const { t } = useI18n();
 
 defineProps({
     recipes: Array,
     emptyMessage: {
         type: String,
-        default: 'Aucune recette trouvée'
+        default: ''
     },
     fromMyRecipes: {
         type: Boolean,
@@ -24,6 +27,6 @@ defineProps({
         />
     </div>
     <div v-else class="text-center text-gray-500 py-12">
-        {{ emptyMessage }}
+        {{ emptyMessage || t('recipe.no_recipes_found') }}
     </div>
 </template>

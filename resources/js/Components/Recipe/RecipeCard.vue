@@ -1,9 +1,12 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import { useDifficultyLabels } from '@/composables/useEnumLabels';
 import { computed } from 'vue';
 import { ClockIcon, UserIcon, StarIcon } from '@heroicons/vue/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/vue/24/solid';
+
+const { t } = useI18n();
 
 const props = defineProps({
     recipe: Object,
@@ -51,19 +54,19 @@ const recipeUrl = computed(() => {
             </h3>
 
             <p class="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-                {{ recipe.summary || 'Aucune description disponible' }}
+                {{ recipe.summary || t('recipe.no_description') }}
             </p>
 
             <div class="flex items-center gap-3 text-sm text-gray-500 mb-3">
                 <div class="flex items-center gap-1.5">
                     <UserIcon class="h-4 w-4" />
                     <span class="truncate" v-if="recipe.author">{{ recipe.author.name }}</span>
-                    <span v-else>Anonyme</span>
+                    <span v-else>{{ t('recipe.anonymous') }}</span>
                 </div>
 
                 <div v-if="recipe.prep_minutes || recipe.cook_minutes" class="flex items-center gap-1.5">
                     <ClockIcon class="h-4 w-4" />
-                    <span>{{ (recipe.prep_minutes || 0) + (recipe.cook_minutes || 0) }} min</span>
+                    <span>{{ (recipe.prep_minutes || 0) + (recipe.cook_minutes || 0) }} {{ t('recipe.min') }}</span>
                 </div>
             </div>
 
@@ -78,7 +81,7 @@ const recipeUrl = computed(() => {
                     {{ parseFloat(recipe.rating_avg).toFixed(1) }}
                 </span>
                 <span class="text-xs text-gray-500">
-                    ({{ recipe.rating_count }} {{ recipe.rating_count > 1 ? 'avis' : 'avis' }})
+                    ({{ recipe.rating_count }} {{ t('recipe.reviews', recipe.rating_count) }})
                 </span>
             </div>
         </div>

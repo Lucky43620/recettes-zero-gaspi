@@ -9,7 +9,7 @@
                 v-model="searchQuery"
                 @input="handleSearch"
                 type="text"
-                :placeholder="placeholder"
+                :placeholder="placeholder || t('common.search_ingredient_placeholder')"
                 class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
             >
             <button
@@ -64,14 +64,17 @@
         </div>
 
         <div v-else-if="searchQuery.length >= minSearchLength && !isSearching" class="mt-2 p-4 text-center text-gray-500 border border-gray-200 rounded-md bg-gray-50">
-            Aucun ingrédient trouvé
+            {{ t('common.no_ingredient_found') }}
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import axios from 'axios';
+
+const { t } = useI18n();
 
 const props = defineProps({
     label: {
@@ -80,7 +83,7 @@ const props = defineProps({
     },
     placeholder: {
         type: String,
-        default: 'Rechercher un ingrédient...',
+        default: '',
     },
     showBarcodeButton: {
         type: Boolean,

@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
@@ -7,6 +8,8 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+
+const { t } = useI18n();
 
 const form = useForm({
     name: '',
@@ -24,7 +27,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Inscription" />
+    <Head :title="t('auth.register')" />
 
     <AuthenticationCard>
         <template #logo>
@@ -32,13 +35,13 @@ const submit = () => {
         </template>
 
         <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-900 mb-2">Créer un compte</h1>
-            <p class="text-gray-600">Rejoignez la communauté anti-gaspillage</p>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ t('auth.create_account') }}</h1>
+            <p class="text-gray-600">{{ t('auth.register_subtitle') }}</p>
         </div>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Nom" />
+                <InputLabel for="name" :value="t('auth.name')" />
                 <TextInput
                     id="name"
                     v-model="form.name"
@@ -52,7 +55,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="t('auth.email')" />
                 <TextInput
                     id="email"
                     v-model="form.email"
@@ -65,7 +68,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Mot de passe" />
+                <InputLabel for="password" :value="t('auth.password')" />
                 <TextInput
                     id="password"
                     v-model="form.password"
@@ -78,7 +81,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirmer le mot de passe" />
+                <InputLabel for="password_confirmation" :value="t('auth.password_confirmation')" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
@@ -96,7 +99,7 @@ const submit = () => {
                         <Checkbox id="terms" v-model:checked="form.terms" name="terms" required />
 
                         <div class="ms-2 text-sm">
-                            J'accepte les <a target="_blank" :href="route('terms.show')" class="underline text-green-600 hover:text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">Conditions d'utilisation</a> et la <a target="_blank" :href="route('policy.show')" class="underline text-green-600 hover:text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">Politique de confidentialité</a>
+                            {{ t('auth.accept_terms_start') }} <a target="_blank" :href="route('terms.show')" class="underline text-green-600 hover:text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">{{ t('auth.terms_of_service') }}</a> {{ t('auth.and') }} {{ t('auth.accept_terms_mid') }} <a target="_blank" :href="route('policy.show')" class="underline text-green-600 hover:text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">{{ t('auth.privacy_policy') }}</a>
                         </div>
                     </div>
                     <InputError class="mt-2" :message="form.errors.terms" />
@@ -105,13 +108,13 @@ const submit = () => {
 
             <div class="flex flex-col gap-4 mt-6">
                 <PrimaryButton class="w-full justify-center bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    S'inscrire
+                    {{ t('auth.register_button') }}
                 </PrimaryButton>
 
                 <div class="text-center text-sm text-gray-600">
-                    Déjà un compte ?
+                    {{ t('auth.already_registered') }}
                     <Link :href="route('login')" class="text-green-600 hover:text-green-800 font-medium">
-                        Se connecter
+                        {{ t('auth.login_button') }}
                     </Link>
                 </div>
             </div>

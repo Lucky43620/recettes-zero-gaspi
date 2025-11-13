@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+
+const { t } = useI18n();
 
 const props = defineProps({
     badges: Object,
@@ -56,7 +59,7 @@ const submit = () => {
 };
 
 const deleteBadge = (badge) => {
-    if (confirm(`Supprimer le badge "${badge.name}" ? Cette action est irréversible.`)) {
+    if (confirm(t('admin.delete_badge_confirm', { name: badge.name }))) {
         form.delete(route('admin.badges.destroy', badge.id), {
             preserveScroll: true,
         });
@@ -65,20 +68,20 @@ const deleteBadge = (badge) => {
 </script>
 
 <template>
-    <Head title="Administration - Badges" />
+    <Head :title="t('admin.badges_title')" />
 
     <AdminLayout>
         <div class="space-y-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Badges</h1>
-                    <p class="mt-2 text-gray-600">Gérer les badges et récompenses</p>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ t('admin.badges') }}</h1>
+                    <p class="mt-2 text-gray-600">{{ t('admin.manage_badges_description') }}</p>
                 </div>
                 <button
                     @click="openCreateModal"
                     class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 >
-                    Nouveau badge
+                    {{ t('admin.new_badge') }}
                 </button>
             </div>
 
@@ -87,12 +90,12 @@ const deleteBadge = (badge) => {
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Badge</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Clé</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Requis</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utilisateurs</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.badge_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.key_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.description_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.required_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.users_column') }}</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{{ t('common.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -122,13 +125,13 @@ const deleteBadge = (badge) => {
                                         @click="openEditModal(badge)"
                                         class="text-blue-600 hover:text-blue-700"
                                     >
-                                        Modifier
+                                        {{ t('common.edit') }}
                                     </button>
                                     <button
                                         @click="deleteBadge(badge)"
                                         class="text-red-600 hover:text-red-700"
                                     >
-                                        Supprimer
+                                        {{ t('common.delete') }}
                                     </button>
                                 </td>
                             </tr>
@@ -138,7 +141,7 @@ const deleteBadge = (badge) => {
 
                 <div v-if="badges.links" class="px-6 py-4 border-t flex items-center justify-between">
                     <div class="text-sm text-gray-500">
-                        {{ badges.from }} - {{ badges.to }} sur {{ badges.total }} badges
+                        {{ badges.from }} - {{ badges.to }} {{ t('admin.pagination_of') }} {{ badges.total }} {{ t('admin.badges_count') }}
                     </div>
                     <div class="flex gap-2">
                         <Link
@@ -168,59 +171,59 @@ const deleteBadge = (badge) => {
             <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                 <div class="p-6">
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">
-                        {{ editingBadge ? 'Modifier le badge' : 'Nouveau badge' }}
+                        {{ editingBadge ? t('admin.edit_badge') : t('admin.new_badge') }}
                     </h2>
 
                     <form @submit.prevent="submit" class="space-y-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Clé unique</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('admin.unique_key') }}</label>
                             <input
                                 v-model="form.key"
                                 type="text"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                placeholder="first-recipe"
+                                :placeholder="t('admin.unique_key_placeholder')"
                                 required
                             />
                             <p v-if="form.errors.key" class="mt-1 text-sm text-red-600">{{ form.errors.key }}</p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('admin.badge_name') }}</label>
                             <input
                                 v-model="form.name"
                                 type="text"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                placeholder="Première recette"
+                                :placeholder="t('admin.name_placeholder')"
                                 required
                             />
                             <p v-if="form.errors.name" class="mt-1 text-sm text-red-600">{{ form.errors.name }}</p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('admin.badge_description') }}</label>
                             <textarea
                                 v-model="form.description"
                                 rows="3"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                placeholder="Créer votre première recette"
+                                :placeholder="t('admin.description_placeholder')"
                                 required
                             ></textarea>
                             <p v-if="form.errors.description" class="mt-1 text-sm text-red-600">{{ form.errors.description }}</p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Icône (emoji)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('admin.icon_emoji') }}</label>
                             <input
                                 v-model="form.icon"
                                 type="text"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                placeholder="🏆"
+                                :placeholder="t('admin.icon_emoji_placeholder')"
                             />
                             <p v-if="form.errors.icon" class="mt-1 text-sm text-red-600">{{ form.errors.icon }}</p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre requis</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('admin.required_count') }}</label>
                             <input
                                 v-model.number="form.required_count"
                                 type="number"
@@ -238,14 +241,14 @@ const deleteBadge = (badge) => {
                                 class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
                                 :disabled="form.processing"
                             >
-                                Annuler
+                                {{ t('common.cancel') }}
                             </button>
                             <button
                                 type="submit"
                                 class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
                                 :disabled="form.processing"
                             >
-                                {{ editingBadge ? 'Mettre à jour' : 'Créer' }}
+                                {{ editingBadge ? t('common.update') : t('common.create') }}
                             </button>
                         </div>
                     </form>

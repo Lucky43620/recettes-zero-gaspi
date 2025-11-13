@@ -2,9 +2,12 @@
 import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
+import { useI18n } from 'vue-i18n';
 import FormInput from '@/Components/Common/FormInput.vue';
 import FormSelect from '@/Components/Common/FormSelect.vue';
 import { useDifficultyLabels } from '@/composables/useEnumLabels';
+
+const { t } = useI18n();
 
 const props = defineProps({
     filters: Object,
@@ -39,16 +42,16 @@ watch([search, difficulty, sort], () => {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormInput
                 v-model="search"
-                label="Rechercher"
+                :label="t('common.search')"
                 type="text"
-                placeholder="Titre ou description..."
+                :placeholder="t('recipe.search_placeholder')"
                 @keyup.enter="applyFilters"
             />
 
             <FormSelect
                 v-model="difficulty"
-                label="Difficulté"
-                placeholder="Toutes"
+                :label="t('recipe.difficulty')"
+                :placeholder="t('recipe.all_difficulties')"
                 @change="applyFilters"
             >
                 <option v-for="option in difficultyOptions" :key="option.value" :value="option.value">
@@ -58,12 +61,12 @@ watch([search, difficulty, sort], () => {
 
             <FormSelect
                 v-model="sort"
-                label="Trier par"
+                :label="t('recipe.sort_by')"
                 @change="applyFilters"
             >
-                <option value="latest">Plus récent</option>
-                <option value="rating">Note</option>
-                <option value="duration">Durée</option>
+                <option value="latest">{{ t('recipe.sort_latest') }}</option>
+                <option value="rating">{{ t('recipe.sort_rating') }}</option>
+                <option value="duration">{{ t('recipe.sort_duration') }}</option>
             </FormSelect>
         </div>
     </div>

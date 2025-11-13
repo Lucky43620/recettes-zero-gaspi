@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon, ClockIcon, CheckIcon } from '@heroicons/vue/24/outline';
+
+const { t } = useI18n();
 
 const props = defineProps({
     recipe: Object,
@@ -68,8 +71,8 @@ const startTimer = (stepIndex) => {
             if (remaining === 0) {
                 clearInterval(interval);
                 if (Notification.permission === 'granted') {
-                    new Notification('Recettes Zéro Gaspi', {
-                        body: `Étape ${stepIndex + 1} terminée !`,
+                    new Notification(t('app.name'), {
+                        body: t('cook.step_completed', { step: stepIndex + 1 }),
                         icon: '/favicon.ico',
                     });
                 }
@@ -98,9 +101,9 @@ const formatTime = (seconds) => {
             <div class="max-w-4xl mx-auto p-6">
                 <div v-if="currentStep === -1" class="space-y-6">
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Ingrédients nécessaires</h3>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ t('cook.ingredients_needed') }}</h3>
                         <div class="bg-gray-50 rounded-lg p-6">
-                            <p class="text-lg text-gray-600 mb-4">Pour {{ recipe.servings }} personnes</p>
+                            <p class="text-lg text-gray-600 mb-4">{{ t('cook.for_servings', { servings: recipe.servings }) }}</p>
                             <ul class="space-y-3">
                                 <li v-for="(ingredient, index) in ingredients" :key="index" class="flex items-center text-lg">
                                     <div class="w-2 h-2 bg-green-600 rounded-full mr-3"></div>
@@ -113,17 +116,17 @@ const formatTime = (seconds) => {
 
                     <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
                         <p class="text-lg text-blue-900">
-                            ⏱️ Temps de préparation : {{ recipe.prep_time }} minutes
+                            ⏱️ {{ t('cook.preparation_time', { time: recipe.prep_time }) }}
                         </p>
                         <p class="text-lg text-blue-900 mt-2">
-                            🔥 Temps de cuisson : {{ recipe.cook_time }} minutes
+                            🔥 {{ t('cook.cooking_time', { time: recipe.cook_time }) }}
                         </p>
                     </div>
                 </div>
 
                 <div v-else class="space-y-6">
                     <div class="text-center mb-8">
-                        <p class="text-gray-500 text-lg mb-2">Étape {{ currentStep + 1 }} sur {{ steps.length }}</p>
+                        <p class="text-gray-500 text-lg mb-2">{{ t('cook.step_on_total', { current: currentStep + 1, total: steps.length }) }}</p>
                         <div class="w-full bg-gray-200 rounded-full h-3">
                             <div
                                 class="bg-green-600 h-3 rounded-full transition-all duration-300"
@@ -134,7 +137,7 @@ const formatTime = (seconds) => {
 
                     <div v-if="steps[currentStep]" class="bg-white rounded-xl shadow-lg p-8">
                         <div class="flex items-start justify-between mb-6">
-                            <h3 class="text-3xl font-bold text-gray-900">Étape {{ currentStep + 1 }}</h3>
+                            <h3 class="text-3xl font-bold text-gray-900">{{ t('cook.step') }} {{ currentStep + 1 }}</h3>
                             <button
                                 @click="toggleStepCompletion(currentStep)"
                                 :class="[
@@ -157,7 +160,7 @@ const formatTime = (seconds) => {
                                 <div class="flex items-center">
                                     <ClockIcon class="w-8 h-8 text-orange-600 mr-3" />
                                     <span class="text-xl font-semibold text-orange-900">
-                                        {{ extractDuration(steps[currentStep].content) }} minutes
+                                        {{ extractDuration(steps[currentStep].content) }} {{ t('cook.minutes') }}
                                     </span>
                                 </div>
                                 <button
@@ -165,7 +168,7 @@ const formatTime = (seconds) => {
                                     @click="startTimer(currentStep)"
                                     class="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-lg font-medium"
                                 >
-                                    Lancer le minuteur
+                                    {{ t('cook.launch_timer') }}
                                 </button>
                                 <div v-else class="text-3xl font-bold text-orange-600">
                                     {{ formatTime(timers[currentStep].remaining) }}
@@ -184,11 +187,11 @@ const formatTime = (seconds) => {
                 class="flex items-center px-6 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-lg font-medium"
             >
                 <ChevronLeftIcon class="w-6 h-6 mr-2" />
-                {{ currentStep === -1 ? 'Fermer' : currentStep === 0 ? 'Ingrédients' : 'Précédent' }}
+                {{ currentStep === -1 ? t('cook.close') : currentStep === 0 ? t('cook.ingredients') : t('cook.previous') }}
             </button>
 
             <div class="text-center">
-                <p class="text-sm text-gray-500">{{ completedSteps.length }} / {{ steps.length }} étapes terminées</p>
+                <p class="text-sm text-gray-500">{{ t('cook.completed_steps', { completed: completedSteps.length, total: steps.length }) }}</p>
             </div>
 
             <button
@@ -196,7 +199,7 @@ const formatTime = (seconds) => {
                 @click="currentStep === -1 ? currentStep = 0 : nextStep()"
                 class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-lg font-medium"
             >
-                {{ currentStep === -1 ? 'Commencer' : 'Suivant' }}
+                {{ currentStep === -1 ? t('cook.start') : t('cook.next') }}
                 <ChevronRightIcon class="w-6 h-6 ml-2" />
             </button>
             <button
@@ -204,7 +207,7 @@ const formatTime = (seconds) => {
                 @click="emit('close')"
                 class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-lg font-medium"
             >
-                Terminer
+                {{ t('cook.finish') }}
             </button>
         </div>
     </div>

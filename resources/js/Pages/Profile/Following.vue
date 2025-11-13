@@ -2,6 +2,9 @@
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import BackButton from '@/Components/Common/BackButton.vue';
 import { Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     profileUser: Object,
@@ -10,21 +13,21 @@ const props = defineProps({
 </script>
 
 <template>
-    <PublicLayout :title="`Abonnements de ${profileUser.name}`">
+    <PublicLayout :title="t('profile.following_of', { name: profileUser.name })">
         <div class="py-8">
             <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <BackButton
                     :href="`/profile/${profileUser.id}`"
-                    label="Retour au profil"
+                    :label="t('profile.back_to_profile')"
                     class="mb-6"
                 />
 
                 <h1 class="text-3xl font-bold text-gray-900 mb-8">
-                    Abonnements de {{ profileUser.name }}
+                    {{ t('profile.following_of', { name: profileUser.name }) }}
                 </h1>
 
                 <div v-if="following.data.length === 0" class="text-center py-12">
-                    <p class="text-gray-600">Aucun abonnement pour le moment</p>
+                    <p class="text-gray-600">{{ t('profile.no_following') }}</p>
                 </div>
 
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -43,10 +46,10 @@ const props = defineProps({
                             <div>
                                 <h3 class="font-semibold text-gray-900">{{ user.name }}</h3>
                                 <p class="text-sm text-gray-600">
-                                    {{ user.recipes_count }} recette{{ user.recipes_count > 1 ? 's' : '' }}
+                                    {{ t('profile.recipes_with_count', user.recipes_count, { count: user.recipes_count }) }}
                                 </p>
                                 <p class="text-sm text-gray-600">
-                                    {{ user.followers_count }} abonné{{ user.followers_count > 1 ? 's' : '' }}
+                                    {{ t('profile.followers_with_count', user.followers_count, { count: user.followers_count }) }}
                                 </p>
                             </div>
                         </div>

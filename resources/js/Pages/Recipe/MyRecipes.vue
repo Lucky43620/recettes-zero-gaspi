@@ -1,10 +1,13 @@
 <script setup>
+import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
 import RecipeFilters from '@/Components/Recipe/RecipeFilters.vue';
 import Pagination from '@/Components/Common/Pagination.vue';
 import EmptyState from '@/Components/Common/EmptyState.vue';
+
+const { t } = useI18n();
 
 const props = defineProps({
     recipes: Object,
@@ -13,17 +16,17 @@ const props = defineProps({
 </script>
 
 <template>
-    <AppLayout title="Mes Recettes">
+    <AppLayout :title="t('nav.my_recipes')">
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Mes Recettes
+                    {{ t('nav.my_recipes') }}
                 </h2>
                 <Link
                     :href="route('recipes.create')"
                     class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
                 >
-                    Créer une recette
+                    {{ t('recipe.create_recipe') }}
                 </Link>
             </div>
         </template>
@@ -40,7 +43,7 @@ const props = defineProps({
                                     !filters.visibility ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 ]"
                             >
-                                Toutes
+                                {{ t('recipe.all_recipes') }}
                             </Link>
                             <Link
                                 :href="route('recipes.my', { visibility: 'public' })"
@@ -49,7 +52,7 @@ const props = defineProps({
                                     filters.visibility === 'public' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 ]"
                             >
-                                Publiques
+                                {{ t('recipe.public_recipes') }}
                             </Link>
                             <Link
                                 :href="route('recipes.my', { visibility: 'private' })"
@@ -58,7 +61,7 @@ const props = defineProps({
                                     filters.visibility === 'private' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 ]"
                             >
-                                Privées
+                                {{ t('recipe.private_recipes') }}
                             </Link>
                         </div>
                     </div>
@@ -78,7 +81,7 @@ const props = defineProps({
                                         : 'bg-orange-100 text-orange-800'
                                 ]"
                             >
-                                {{ recipe.is_public ? 'Public' : 'Privé' }}
+                                {{ recipe.is_public ? t('common.public') : t('common.private') }}
                             </span>
                         </div>
                     </div>
@@ -86,9 +89,9 @@ const props = defineProps({
                 <EmptyState
                     v-else
                     icon="book"
-                    title="Aucune recette trouvée"
-                    message="Commencez par créer votre première recette"
-                    action-label="Créer une recette"
+                    :title="t('recipe.no_recipes_found')"
+                    :message="t('recipe.create_first_recipe')"
+                    :action-label="t('recipe.create_recipe')"
                     :action-href="route('recipes.create')"
                 />
 
