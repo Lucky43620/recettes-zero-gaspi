@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -13,6 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens;
+    use Billable;
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -79,6 +81,49 @@ class User extends Authenticatable
     public function pantryItems()
     {
         return $this->hasMany(PantryItem::class);
+    }
+
+    /**
+     * Check if the user has an active premium subscription.
+     */
+    public function isPremium(): bool
+    {
+        return $this->subscribed('default');
+    }
+
+    /**
+     * Check if the user is on a free plan.
+     */
+    public function isFree(): bool
+    {
+        return ! $this->isPremium();
+    }
+
+    /**
+     * Get the user's subscription plan name.
+     */
+    public function planName(): string
+    {
+        if ($this->isFree()) {
+            return 'free';
+        }
+
+        $subscription = $this->subscription('default');
+
+        if (! $subscription) {
+            return 'free';
+        }
+
+        // Check if it's the monthly or yearly price
+        if ($subscription->stripe_price === env('STRIPE_PRICE_MONTHLY')) {
+            return 'monthly';
+        }
+
+        if ($subscription->stripe_price === env('STRIPE_PRICE_YEARLY')) {
+            return 'yearly';
+        }
+
+        return 'premium';
     }
 
     /**

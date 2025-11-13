@@ -42,6 +42,10 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+// Stripe webhook (handled automatically by Laravel Cashier)
+Route::post('/stripe/webhook', '\Laravel\Cashier\Http\Controllers\WebhookController@handleWebhook')
+    ->name('cashier.webhook');
+
 // Public recipe routes - order matters! Specific routes before parameterized routes
 Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
 Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create')->middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']);
@@ -161,6 +165,18 @@ Route::middleware([
     Route::post('/barcode/lookup', [\App\Http\Controllers\BarcodeController::class, 'lookup'])
         ->middleware('throttle:60,1')
         ->name('barcode.lookup');
+
+    // Subscription routes
+    Route::prefix('subscription')->name('subscription.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\SubscriptionController::class, 'index'])->name('index');
+        Route::post('/checkout', [\App\Http\Controllers\SubscriptionController::class, 'checkout'])->name('checkout');
+        Route::get('/success', [\App\Http\Controllers\SubscriptionController::class, 'success'])->name('success');
+        Route::get('/manage', [\App\Http\Controllers\SubscriptionController::class, 'manage'])->name('manage');
+        Route::post('/resume', [\App\Http\Controllers\SubscriptionController::class, 'resume'])->name('resume');
+        Route::post('/cancel', [\App\Http\Controllers\SubscriptionController::class, 'cancel'])->name('cancel');
+        Route::get('/payment-method', [\App\Http\Controllers\SubscriptionController::class, 'paymentMethod'])->name('payment-method');
+        Route::post('/payment-method', [\App\Http\Controllers\SubscriptionController::class, 'updatePaymentMethod'])->name('payment-method.update');
+    });
 });
 
 Route::middleware([
