@@ -52,6 +52,20 @@ export WWWUSER=1000
 docker compose build --no-cache
 
 echo ""
+echo "🔍 6/10 Vérification configuration Redis..."
+if ! grep -q "CACHE_STORE=redis" .env 2>/dev/null; then
+    echo "   ⚠️ ATTENTION: Redis non configuré dans .env"
+    echo "   Ajoutez ces lignes dans votre .env:"
+    echo "   CACHE_STORE=redis"
+    echo "   REDIS_CLIENT=phpredis"
+    echo "   REDIS_HOST=redis"
+    echo "   REDIS_PASSWORD=null"
+    echo "   REDIS_PORT=6379"
+else
+    echo "   ✓ Redis configuré"
+fi
+
+echo ""
 echo "🚀 8/10 Démarrage des containers..."
 docker compose up -d
 
