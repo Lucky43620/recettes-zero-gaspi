@@ -75,7 +75,6 @@ class SubscriptionController extends Controller
 
         $user = auth()->user();
 
-        // Get the price ID based on the selected plan
         $priceId = $request->plan === 'monthly'
             ? env('STRIPE_PRICE_MONTHLY')
             : env('STRIPE_PRICE_YEARLY');

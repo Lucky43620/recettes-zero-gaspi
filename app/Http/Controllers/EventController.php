@@ -6,12 +6,16 @@ use App\Http\Requests\JoinEventRequest;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
+use App\Services\EventService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class EventController extends Controller
 {
+    public function __construct(
+        private EventService $eventService
+    ) {}
+
     public function index()
     {
         $activeEvents = Event::active()->latest()->get();
@@ -27,27 +31,11 @@ class EventController extends Controller
 
     public function show(Event $event)
     {
-        $event->load(['participants' => function ($query) {
-            $query->with(['recipes' => function ($q) {
-                $q->whereColumn('recipes.id', 'event_participants.recipe_id');
-            }]);
-        }]);
-
-        $leaderboard = DB::table('event_participants')
-            ->join('users', 'event_participants.user_id', '=', 'users.id')
-            ->leftJoin('recipes', 'event_participants.recipe_id', '=', 'recipes.id')
-            ->where('event_participants.event_id', $event->id)
-            ->select('users.id', 'users.name', 'users.profile_photo_path', 'event_participants.score', 'recipes.title as recipe_title', 'recipes.slug as recipe_slug')
-            ->orderByDesc('event_participants.score')
-            ->limit(10)
-            ->get();
+        $leaderboard = $this->eventService->getLeaderboard($event, 10);
 
         $userParticipation = null;
         if (Auth::check()) {
-            $userParticipation = DB::table('event_participants')
-                ->where('event_id', $event->id)
-                ->where('user_id', Auth::id())
-                ->first();
+            $userParticipation = $this->eventService->getUserParticipation($event, Auth::id());
         }
 
         return Inertia::render('Event/Show', [

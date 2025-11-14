@@ -162,7 +162,7 @@ Route::middleware([
     Route::get('/gdpr/export', [GdprController::class, 'exportData'])->name('gdpr.export');
     Route::delete('/gdpr/delete-account', [GdprController::class, 'deleteAccount'])->name('gdpr.delete');
 
-    Route::post('/barcode/lookup', [\App\Http\Controllers\BarcodeController::class, 'lookup'])
+    Route::post('/barcode/lookup', [IngredientController::class, 'lookupBarcode'])
         ->middleware(['premium', 'throttle:60,1'])
         ->name('barcode.lookup');
 
@@ -183,6 +183,7 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    \App\Http\Middleware\EnsureUserIsAdmin::class,
 ])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
 

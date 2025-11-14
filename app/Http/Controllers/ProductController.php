@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductSearchRequest;
 use App\Models\Ingredient;
 use App\Services\IngredientService;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -13,10 +13,10 @@ class ProductController extends Controller
         private IngredientService $ingredientService
     ) {}
 
-    public function index(Request $request)
+    public function index(ProductSearchRequest $request)
     {
-        $query = $request->input('q');
-        $page = (int) $request->input('page', 1);
+        $query = $request->getQuery();
+        $page = $request->getPage();
         $perPage = 20;
         $products = [];
         $hasMore = false;
@@ -46,3 +46,4 @@ class ProductController extends Controller
         ]);
     }
 }
+

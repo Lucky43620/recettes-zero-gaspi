@@ -1,0 +1,293 @@
+================================================================================
+COMPONENT ANALYSIS - ISSUES AT A GLANCE
+================================================================================
+
+TOTAL COMPONENTS ANALYZED: 65
+
+================================================================================
+1. DUPLICATE COMPONENTS (4 issues)
+================================================================================
+
+CONFLICT 1: PrimaryButton (2 versions with different styles)
+  Root version:     /resources/js/Components/PrimaryButton.vue
+    - Uses: bg-gray-800 (GRAY BACKGROUND)
+  Common version:   /resources/js/Components/Common/PrimaryButton.vue
+    - Uses: bg-green-600 (GREEN BACKGROUND)
+  ACTION: Remove root version, keep Common version
+  PRIORITY: CRITICAL
+
+CONFLICT 2: SecondaryButton (2 versions)
+  Root version:     /resources/js/Components/SecondaryButton.vue
+    - Uses: focus:ring-indigo-500
+  Common version:   /resources/js/Components/Common/SecondaryButton.vue
+    - Uses: focus:ring-green-500
+  ACTION: Remove root version, keep Common version
+  PRIORITY: CRITICAL
+
+CONFLICT 3: StatCard naming inconsistency
+  Admin version:    /resources/js/Components/Admin/StatCard.vue
+  Dashboard version: /resources/js/Components/Dashboard/StatsCard.vue
+  ACTION: Consolidate into single component
+  PRIORITY: CRITICAL
+
+CONFLICT 4: ActionButton (2 versions)
+  Common version:   /resources/js/Components/Common/ActionButton.vue
+  Dashboard version: /resources/js/Components/Dashboard/ActionButton.vue
+  ACTION: Merge implementations
+  PRIORITY: HIGH
+
+================================================================================
+2. COMPONENTS TOO LARGE - SHOULD BE SPLIT (5 major issues)
+================================================================================
+
+FILE 1: /resources/js/Components/Recipe/CookingMode.vue
+  Lines: 215
+  Responsibilities:
+    - Ingredients display
+    - Step navigation
+    - Timer extraction & management
+    - Completion tracking
+    - Time formatting
+  SPLIT INTO: 4 components (CookingIngredientsPanel, CookingStepsPanel, etc.)
+  PRIORITY: CRITICAL
+
+FILE 2: /resources/js/Components/Social/RatingStars.vue
+  Lines: 224
+  Responsibilities:
+    - Readonly star display
+    - Interactive rating editor
+    - Review text input
+    - Confirmation modal for deletion
+  SPLIT INTO: 3 components (RatingDisplay, RatingEditor, etc.)
+  PRIORITY: CRITICAL
+
+FILE 3: /resources/js/Components/Social/CommentSection.vue
+  Lines: 267
+  Responsibilities:
+    - Comment form
+    - Comment/reply display
+    - Voting system
+    - Delete operations
+    - Nested replies
+  SPLIT INTO: 4 components (CommentForm, CommentList, CommentItem, etc.)
+  PRIORITY: CRITICAL
+
+FILE 4: /resources/js/Components/Social/CooksnapSection.vue
+  Lines: 223
+  Responsibilities:
+    - Photo upload with preview
+    - Gallery display
+    - Image modal
+    - Delete confirmation
+  SPLIT INTO: 3 components (PhotoUploadForm, CooksnapGallery, CooksnapCard)
+  PRIORITY: HIGH
+
+FILE 5: /resources/js/Components/Notifications/NotificationBell.vue
+  Lines: 138
+  Responsibilities:
+    - Dropdown toggle
+    - Notification list display
+    - Mark as read
+    - Icon/color mapping
+    - Date formatting
+  SPLIT INTO: 2 components (NotificationItem, NotificationIcon)
+  PRIORITY: MEDIUM
+
+================================================================================
+3. HARDCODED VALUES & STRINGS (i18n Missing)
+================================================================================
+
+FILE: /resources/js/Components/Notifications/NotificationBell.vue
+  Line 21: "Notifications" (hardcoded)
+  Line 29: "Tout marquer comme lu" (French hardcoded)
+  Line 34: "Aucune notification" (French hardcoded)
+  Line 73: "Voir toutes les notifications" (French hardcoded)
+  ISSUE: Uses French strings directly instead of i18n
+  ACTION: Add to i18n translations
+  PRIORITY: HIGH
+
+FILE: /resources/js/Components/Common/LanguageSwitcher.vue
+  Lines 8-14: Hardcoded language list
+  ISSUE: Language data hardcoded, should be in config or backend
+  ACTION: Move to i18n config
+  PRIORITY: MEDIUM
+
+FILE: /resources/js/Components/Common/EmptyState.vue
+  Lines 27-31: Hardcoded SVG icon paths
+  ISSUE: Should use @heroicons/vue library
+  ACTION: Import from heroicons
+  PRIORITY: LOW
+
+FILE: /resources/js/Components/Recipe/CookingMode.vue
+  Line 93: bg-green-600 (hardcoded)
+  Line 117: border-blue-500 (hardcoded)
+  Line 158: bg-orange-50 (hardcoded)
+  ISSUE: Hardcoded Tailwind classes should use design system
+  ACTION: Create color palette system
+  PRIORITY: MEDIUM
+
+================================================================================
+4. INCONSISTENT NAMING PATTERNS
+================================================================================
+
+BUTTON COMPONENTS:
+  ❌ PrimaryButton.vue (root)
+  ❌ SecondaryButton.vue (root)
+  ❌ DangerButton.vue (root)
+  ❌ Common/PrimaryButton.vue
+  ❌ Common/SecondaryButton.vue
+  ❌ Common/ActionButton.vue
+  ❌ Dashboard/ActionButton.vue
+  ✓ FIX: Merge into Common/Button.vue with variant prop
+
+MODAL COMPONENTS:
+  ❌ Modal.vue
+  ❌ DialogModal.vue
+  ❌ ConfirmationModal.vue
+  ❌ Pantry/AddPantryItemModal.vue
+  ❌ Pantry/EditPantryItemModal.vue
+  ❌ Pantry/BarcodeScanner.vue (should be BarcodeModal.vue)
+  ✓ FIX: Organize under Common/Modals/
+
+FORM COMPONENTS:
+  ❌ Checkbox.vue (root, should be removed)
+  ✓ Common/FormCheckbox.vue
+  ❌ TextInput.vue (should be removed)
+  ✓ Common/FormInput.vue
+  ✓ Common/FormSelect.vue
+  ✓ Common/FormRadio.vue
+  ✓ Common/FormTextarea.vue
+
+================================================================================
+5. MISSING REUSABLE COMPONENTS (Code Duplication)
+================================================================================
+
+PATTERN 1: Modal Overlay
+  Appears in: AddPantryItemModal.vue, EditPantryItemModal.vue, BarcodeScanner.vue
+  ACTION: Create ModalOverlay.vue
+  PRIORITY: MEDIUM
+
+PATTERN 2: Image Placeholder (green gradient)
+  Appears in: ProductCard.vue, PantryItemCard.vue, IngredientSearchInput.vue, AddPantryItemModal.vue
+  ACTION: Create ImagePlaceholder.vue
+  PRIORITY: MEDIUM
+
+PATTERN 3: Loading Spinner (SVG)
+  Appears in: IngredientSearchInput.vue, AddPantryItemModal.vue, BarcodeScanner.vue
+  ACTION: Create LoadingSpinner.vue
+  PRIORITY: MEDIUM
+
+PATTERN 4: Icon SVGs (hardcoded in multiple places)
+  - Close button (×) in 5+ components
+  - Checkmark in 4+ components
+  - Arrows in CommentSection
+  ACTION: Use @heroicons/vue consistently
+  PRIORITY: LOW
+
+PATTERN 5: Delete Confirmation Dialog
+  Appears in: CommentSection, CooksnapSection, RatingStars, PantryItemCard
+  ACTION: Create useConfirmDialog composable
+  PRIORITY: LOW
+
+================================================================================
+6. COMPONENTS NOT FOLLOWING STRUCTURE
+================================================================================
+
+ROOT-LEVEL COMPONENTS (should be in Common/):
+  - PrimaryButton.vue
+  - SecondaryButton.vue
+  - DangerButton.vue
+  - Modal.vue
+  - DialogModal.vue
+  - ConfirmationModal.vue
+  - Checkbox.vue
+  - TextInput.vue
+  - Dropdown.vue
+  - DropdownLink.vue
+  - InputLabel.vue
+  - InputError.vue
+  - ActionMessage.vue
+  - NavLink.vue
+  - ResponsiveNavLink.vue
+  - Banner.vue
+  - SectionBorder.vue
+  - SectionTitle.vue
+  - FormSection.vue
+  - ActionSection.vue
+
+RECOMMENDED STRUCTURE:
+  Common/
+  ├── Buttons/
+  │   ├── Button.vue (with variants)
+  │   └── IconButton.vue
+  ├── Forms/
+  │   ├── FormInput.vue
+  │   ├── FormCheckbox.vue
+  │   ├── FormRadio.vue
+  │   ├── FormSelect.vue
+  │   ├── FormTextarea.vue
+  │   └── FormSection.vue
+  ├── Modals/
+  │   ├── Modal.vue
+  │   ├── DialogModal.vue
+  │   ├── ConfirmationModal.vue
+  │   └── FormModal.vue
+  ├── Feedback/
+  │   ├── Banner.vue
+  │   ├── ActionMessage.vue
+  │   └── InputError.vue
+  ├── Navigation/
+  │   ├── NavLink.vue
+  │   └── ResponsiveNavLink.vue
+  ├── Layout/
+  │   ├── SectionBorder.vue
+  │   ├── SectionTitle.vue
+  │   └── ActionSection.vue
+  └── Utilities/
+      └── ...
+
+================================================================================
+7. FILES TO DELETE
+================================================================================
+
+Can be safely deleted (use Common/ versions instead):
+  1. /resources/js/Components/PrimaryButton.vue (keep Common/PrimaryButton.vue)
+  2. /resources/js/Components/SecondaryButton.vue (keep Common/SecondaryButton.vue)
+  3. /resources/js/Components/TextInput.vue (use Common/FormInput.vue)
+  4. /resources/js/Components/Checkbox.vue (use Common/FormCheckbox.vue)
+  5. /resources/js/Components/DangerButton.vue (merge into Button system)
+
+Can be renamed/consolidated:
+  1. /resources/js/Components/Pantry/BarcodeScanner.vue → BarcodeModal.vue
+  2. /resources/js/Components/Dashboard/ActionButton.vue → merge with Common/ActionButton.vue
+
+================================================================================
+PRIORITY ROADMAP
+================================================================================
+
+PRIORITY 1 - CRITICAL (Week 1):
+  ✓ Remove duplicate PrimaryButton (root)
+  ✓ Remove duplicate SecondaryButton (root)
+  ✓ Consolidate StatCard components
+  ✓ Remove TextInput.vue
+  ✓ Remove Checkbox.vue (root)
+
+PRIORITY 2 - HIGH (Week 2):
+  ✓ Split CookingMode.vue
+  ✓ Split RatingStars.vue
+  ✓ Split CommentSection.vue
+  ✓ Split CooksnapSection.vue
+  ✓ Merge AddPantryItemModal + EditPantryItemModal
+
+PRIORITY 3 - MEDIUM (Week 3-4):
+  ✓ Create ImagePlaceholder.vue
+  ✓ Create LoadingSpinner.vue
+  ✓ Fix hardcoded i18n strings in NotificationBell
+  ✓ Reorganize component directory structure
+
+PRIORITY 4 - LOW (Ongoing):
+  ✓ Consolidate icon usage
+  ✓ Create color system
+  ✓ Extract reusable patterns
+
+================================================================================

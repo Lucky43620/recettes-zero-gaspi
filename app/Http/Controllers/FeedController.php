@@ -10,11 +10,15 @@ class FeedController extends Controller
 {
     public function index()
     {
-        $followingIds = Auth::user()->following()->pluck('users.id');
-
         $feed = Recipe::with(['author', 'media'])
             ->where('is_public', true)
-            ->whereIn('author_id', $followingIds)
+            ->whereHas('author', function ($query) {
+                $query->whereIn('id', function ($subQuery) {
+                    $subQuery->select('following_id')
+                        ->from('followers')
+                        ->where('follower_id', Auth::id());
+                });
+            })
             ->latest()
             ->paginate(12);
 

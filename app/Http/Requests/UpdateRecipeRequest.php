@@ -43,7 +43,6 @@ class UpdateRecipeRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            // Ensure each ingredient has either ingredient_id or name
             if ($this->has('ingredients')) {
                 foreach ($this->input('ingredients', []) as $index => $ingredient) {
                     if (empty($ingredient['ingredient_id']) && empty($ingredient['name'])) {
