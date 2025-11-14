@@ -77,9 +77,12 @@ const getReasonLabel = (reason) => {
                         <tbody class="bg-white divide-y divide-gray-200">
                             <tr v-for="report in reports.data" :key="report.id" class="hover:bg-gray-50">
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center">
+                                    <div v-if="report.reporter" class="flex items-center">
                                         <img :src="report.reporter.profile_photo_url" :alt="report.reporter.name" class="w-8 h-8 rounded-full" />
                                         <span class="ml-3 text-sm font-medium text-gray-900">{{ report.reporter.name }}</span>
+                                    </div>
+                                    <div v-else class="text-sm text-gray-400 italic">
+                                        {{ t('common.deleted_user') }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-900">
@@ -135,8 +138,8 @@ const getReasonLabel = (reason) => {
                     </div>
                     <div class="flex gap-2">
                         <Link
-                            v-for="link in reports.links"
-                            :key="link.label"
+                            v-for="(link, index) in reports.links"
+                            :key="index"
                             :href="link.url"
                             :class="[
                                 'px-3 py-2 rounded-lg text-sm transition',
@@ -146,8 +149,11 @@ const getReasonLabel = (reason) => {
                                     ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     : 'bg-gray-50 text-gray-400 cursor-not-allowed'
                             ]"
-                            v-html="link.label"
-                        />
+                        >
+                            <span v-if="link.label === 'pagination.previous'">{{ t('common.previous') }}</span>
+                            <span v-else-if="link.label === 'pagination.next'">{{ t('common.next') }}</span>
+                            <span v-else v-html="link.label"></span>
+                        </Link>
                     </div>
                 </div>
             </div>

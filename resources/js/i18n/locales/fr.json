@@ -538,7 +538,9 @@
     "see_details": "Voir les détails",
     "product_not_registered": "Produit non enregistré",
     "proteins_g": "{g}g protéines",
-    "search_ingredient_placeholder": "Rechercher un ingrédient..."
+    "search_ingredient_placeholder": "Rechercher un ingrédient...",
+    "deleted_user": "Utilisateur supprimé",
+    "description_column": "Description"
   },
   "time": {
     "minutes": "minutes",
