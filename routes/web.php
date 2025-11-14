@@ -55,7 +55,7 @@ Route::get('/recipes/{recipe:slug}/cook', [RecipeController::class, 'cook'])->na
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show'])->name('ingredients.show');
 
-Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('user.profile');
+Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('user.public-profile');
 Route::get('/profile/{user}/followers', [ProfileController::class, 'followers'])->name('user.followers');
 Route::get('/profile/{user}/following', [ProfileController::class, 'following'])->name('user.following');
 
@@ -96,6 +96,8 @@ Route::middleware([
             'stats' => $stats
         ]);
     })->name('dashboard');
+
+    Route::get('/user/profile', [ProfileController::class, 'edit'])->name('user.profile');
 
     Route::get('/my-recipes', [RecipeController::class, 'myRecipes'])->name('recipes.my');
     Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');

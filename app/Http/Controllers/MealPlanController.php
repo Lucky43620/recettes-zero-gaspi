@@ -33,6 +33,7 @@ class MealPlanController extends Controller
             $mealPlan = Auth::user()->mealPlans()->create([
                 'week_start_date' => $weekStart->format('Y-m-d'),
             ]);
+            $mealPlan->load('mealPlanRecipes.recipe.media');
         }
 
         $userRecipes = Auth::user()->recipes()

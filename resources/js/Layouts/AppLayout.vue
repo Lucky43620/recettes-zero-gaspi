@@ -95,11 +95,11 @@ const logout = () => {
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink :href="route('user.profile', $page.props.auth.user)">
+                                        <DropdownLink :href="route('user.profile')">
                                             {{ t('profile.title') }}
                                         </DropdownLink>
 
-                                        <DropdownLink :href="`/profile/${$page.props.auth.user.id}`">
+                                        <DropdownLink :href="route('user.public-profile', $page.props.auth.user)">
                                             {{ t('profile.view_public') }}
                                         </DropdownLink>
 
@@ -201,8 +201,12 @@ const logout = () => {
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('user.profile', $page.props.auth.user)" :active="route().current('user.profile')">
+                            <ResponsiveNavLink :href="route('user.profile')" :active="route().current('user.profile')">
                                 {{ t('profile.title') }}
+                            </ResponsiveNavLink>
+
+                            <ResponsiveNavLink :href="route('user.public-profile', $page.props.auth.user)">
+                                {{ t('profile.view_public') }}
                             </ResponsiveNavLink>
 
                             <ResponsiveNavLink :href="route('subscription.index')" :active="route().current('subscription.*')">

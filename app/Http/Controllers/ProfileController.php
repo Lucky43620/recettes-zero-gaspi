@@ -9,6 +9,42 @@ use Inertia\Inertia;
 
 class ProfileController extends Controller
 {
+    public function edit(Request $request)
+    {
+        return Inertia::render('Profile/Show', [
+            'confirmsTwoFactorAuthentication' => config('jetstream.confirms_two_factor_authentication'),
+            'sessions' => $this->sessions($request)->all(),
+        ]);
+    }
+
+    protected function sessions(Request $request)
+    {
+        if (config('session.driver') !== 'database') {
+            return collect();
+        }
+
+        return collect(
+            \DB::connection(config('session.connection'))->table(config('session.table', 'sessions'))
+                    ->where('user_id', $request->user()->getAuthIdentifier())
+                    ->orderBy('last_activity', 'desc')
+                    ->get()
+        )->map(function ($session) use ($request) {
+            return (object) [
+                'agent' => $this->createAgent($session),
+                'ip_address' => $session->ip_address,
+                'is_current_device' => $session->id === $request->session()->getId(),
+                'last_active' => \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans(),
+            ];
+        });
+    }
+
+    protected function createAgent($session)
+    {
+        return tap(new \Jenssegers\Agent\Agent, function ($agent) use ($session) {
+            $agent->setUserAgent($session->user_agent);
+        });
+    }
+
     public function show(User $user)
     {
         $user->loadCount(['recipes', 'followers', 'following']);

@@ -168,7 +168,7 @@ const getRecipeImage = (recipe) => {
 
                 <FreeLimitBanner
                     v-if="!isPremium && recipeLimit"
-                    :current-count="mealPlan.meal_plan_recipes.length"
+                    :current-count="mealPlan.meal_plan_recipes?.length || 0"
                     :limit="recipeLimit"
                 />
 
