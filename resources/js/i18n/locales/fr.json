@@ -782,7 +782,8 @@
     "plans": {
       "free": "Gratuit",
       "monthly": "Mensuel",
-      "yearly": "Annuel"
+      "yearly": "Annuel",
+      "premium": "Premium"
     },
     "current_plan": "Plan actuel",
     "active_subscription": "Vous avez un abonnement actif",

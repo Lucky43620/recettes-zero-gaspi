@@ -244,6 +244,24 @@ class SubscriptionController extends Controller
      */
     public function paymentMethod()
     {
-        return redirect()->route('subscription.manage')->with('error', 'Cette fonctionnalité sera bientôt disponible.');
+        $user = auth()->user();
+
+        if (!$user->isPremium()) {
+            return redirect()->route('subscription.index');
+        }
+
+        try {
+            $stripe = new \Stripe\StripeClient(config('stripe.secret'));
+
+            $session = $stripe->billingPortal->sessions->create([
+                'customer' => $user->stripe_id,
+                'return_url' => route('subscription.manage'),
+            ]);
+
+            return Inertia::location($session->url);
+        } catch (\Exception $e) {
+            \Log::error('Stripe billing portal error: ' . $e->getMessage());
+            return redirect()->route('subscription.manage')->with('error', 'Erreur lors de la création de la session de paiement.');
+        }
     }
 }

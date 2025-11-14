@@ -8,6 +8,7 @@ use App\Integrations\OpenFoodFacts\Requests\GetProductByBarcodeRequest;
 use App\Integrations\OpenFoodFacts\Requests\SearchProductsRequest;
 use App\Models\Ingredient;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -32,38 +33,39 @@ class IngredientService
 
     public function searchIngredients(string $searchTerm, int $limit = 20, bool $localOnly = false): Collection
     {
-        $localResults = $this->searchLocal($searchTerm, $limit);
+        $localResults = $this->searchLocal($searchTerm, min($limit * 2, 100));
 
-        if ($localOnly) {
-            return $localResults;
+        if ($localOnly || $localResults->count() >= $limit) {
+            return $localResults->take($limit);
         }
 
-        if ($localResults->count() >= $limit) {
-            return $localResults;
-        }
+        $cacheKey = 'ingredient_search_' . md5(strtolower(trim($searchTerm)));
 
         try {
-            $remainingLimit = $limit - $localResults->count();
-            $apiResults = $this->searchFromOpenFoodFacts($searchTerm, 50, true);
+            $apiResults = Cache::remember($cacheKey, 3600, function () use ($searchTerm) {
+                $results = $this->searchFromOpenFoodFacts($searchTerm, 30, true);
+
+                if ($results->count() < 10) {
+                    $broadResults = $this->searchFromOpenFoodFacts($searchTerm, 20, false);
+                    $results = $results->concat($broadResults)->unique(function ($item) {
+                        return $item->openfoodfacts_id ?? $item->name;
+                    });
+                }
+
+                return $results->take(50);
+            });
 
             $combined = $localResults->concat($apiResults)->unique(function ($item) {
                 return $item->id ?? $item->openfoodfacts_id ?? $item->name;
             });
 
-            if ($combined->count() < $limit) {
-                $broadResults = $this->searchFromOpenFoodFacts($searchTerm, 50, false);
-                $combined = $combined->concat($broadResults)->unique(function ($item) {
-                    return $item->id ?? $item->openfoodfacts_id ?? $item->name;
-                });
-            }
-
             return $combined->take($limit);
         } catch (\Exception $e) {
-            Log::warning('API search skipped due to timeout', [
+            Log::warning('API search skipped due to error', [
                 'search_term' => $searchTerm,
                 'error' => $e->getMessage(),
             ]);
-            return $localResults;
+            return $localResults->take($limit);
         }
     }
 
