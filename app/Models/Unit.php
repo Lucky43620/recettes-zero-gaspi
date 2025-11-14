@@ -17,6 +17,13 @@ class Unit extends Model
         'label',
     ];
 
+    protected $appends = ['name'];
+
+    public function getNameAttribute(): string
+    {
+        return $this->label;
+    }
+
     public function pantryItems(): HasMany
     {
         return $this->hasMany(PantryItem::class, 'unit_code', 'code');
