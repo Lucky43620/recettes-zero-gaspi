@@ -23,7 +23,7 @@ defineProps({
 const emit = defineEmits(['dragstart']);
 
 const getRecipeImage = (recipe) => {
-    return recipe.media?.[0]?.original_url || '/images/placeholder-recipe.jpg';
+    return recipe.media?.[0]?.original_url || '/images/placeholder-recipe.svg';
 };
 </script>
 
@@ -44,7 +44,7 @@ const getRecipeImage = (recipe) => {
                 v-for="recipe in recipes"
                 :key="recipe.id"
                 draggable="true"
-                @dragstart="emit('dragstart', recipe)"
+                @dragstart="(event) => emit('dragstart', event, recipe)"
                 :class="[bgClass, hoverClass]"
                 class="p-2 rounded cursor-move transition"
             >

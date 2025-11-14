@@ -29,7 +29,7 @@ class NewFollowerNotification extends Notification implements ShouldQueue
             'message' => $this->follower->name . ' vous suit maintenant',
             'follower_id' => $this->follower->id,
             'follower_name' => $this->follower->name,
-            'action_url' => route('profile.show', $this->follower->id),
+            'action_url' => route('user.profile', $this->follower->id),
         ];
     }
 }

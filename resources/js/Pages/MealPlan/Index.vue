@@ -67,15 +67,19 @@ const getMealPlanRecipes = (day, mealType) => {
     ) || [];
 };
 
-const onDragStart = (recipe) => {
+const onDragStart = (event, recipe) => {
     draggedRecipe.value = recipe;
+    event.dataTransfer.effectAllowed = 'copy';
+    event.dataTransfer.setData('text/plain', recipe.id);
 };
 
 const onDragOver = (event) => {
     event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
 };
 
-const onDrop = (day, mealType) => {
+const onDrop = (event, day, mealType) => {
+    event.preventDefault();
     if (!draggedRecipe.value) return;
 
     router.post(route('meal-plans.recipes.add', props.mealPlan.id), {
@@ -127,7 +131,7 @@ const generateShoppingList = () => {
 };
 
 const getRecipeImage = (recipe) => {
-    return recipe.media?.[0]?.original_url || '/images/placeholder-recipe.jpg';
+    return recipe.media?.[0]?.original_url || '/images/placeholder-recipe.svg';
 };
 </script>
 

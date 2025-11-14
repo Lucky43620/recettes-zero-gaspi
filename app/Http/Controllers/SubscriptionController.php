@@ -81,14 +81,21 @@ class SubscriptionController extends Controller
             ? env('STRIPE_PRICE_MONTHLY')
             : env('STRIPE_PRICE_YEARLY');
 
+        if (empty($priceId)) {
+            return back()->with('error', 'Les abonnements ne sont pas encore configurés. Veuillez réessayer plus tard.');
+        }
+
         try {
-            return $user->newSubscription('default', $priceId)
+            $checkoutResponse = $user->newSubscription('default', $priceId)
                 ->checkout([
                     'success_url' => route('subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
                     'cancel_url' => route('subscription.index'),
                 ]);
+
+            return Inertia::location($checkoutResponse->getTargetUrl());
         } catch (\Exception $e) {
-            return redirect()->route('subscription.index')->with('error', 'Une erreur est survenue lors de la création de la session de paiement.');
+            \Log::error('Subscription checkout error: ' . $e->getMessage());
+            return back()->with('error', 'Une erreur est survenue lors de la création de la session de paiement.');
         }
     }
 

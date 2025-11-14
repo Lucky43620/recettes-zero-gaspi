@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-defineProps({
+const props = defineProps({
     daysOfWeek: Array,
     dayLabels: Object,
     mealTypes: Array,
@@ -16,7 +16,15 @@ defineProps({
 });
 
 const getRecipeImage = (recipe) => {
-    return recipe.media?.[0]?.original_url || '/images/placeholder-recipe.jpg';
+    return recipe.media?.[0]?.original_url || '/images/placeholder-recipe.svg';
+};
+
+const handleDragOver = (event) => {
+    props.onDragOver(event);
+};
+
+const handleDrop = (event, day, mealType) => {
+    props.onDrop(event, day, mealType);
 };
 </script>
 
@@ -46,8 +54,8 @@ const getRecipeImage = (recipe) => {
                         <td
                             v-for="day in daysOfWeek"
                             :key="`${day}-${mealType}`"
-                            @dragover="onDragOver"
-                            @drop="onDrop(day, mealType)"
+                            @dragover="handleDragOver"
+                            @drop="(event) => handleDrop(event, day, mealType)"
                             class="px-2 py-2 align-top border-l border-gray-200 min-h-[120px]"
                         >
                             <div class="space-y-2 min-h-[100px]">

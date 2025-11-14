@@ -8,6 +8,7 @@ use App\Integrations\OpenFoodFacts\Requests\GetProductByBarcodeRequest;
 use App\Integrations\OpenFoodFacts\Requests\SearchProductsRequest;
 use App\Models\Ingredient;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class IngredientService
@@ -153,10 +154,16 @@ class IngredientService
 
         $query = Ingredient::query()->whereNotIn('id', $exactIds);
 
-        if (strlen($searchTerm) >= 3) {
-            $query->whereRaw('MATCH(name) AGAINST(? IN BOOLEAN MODE)', [$searchTerm . '*'])
-                ->orWhere('brands', 'like', "%{$searchTerm}%")
-                ->orWhere('barcode', 'like', "%{$searchTerm}%");
+        if (strlen($searchTerm) >= 3 && DB::getDriverName() === 'mysql') {
+            try {
+                $query->whereRaw('MATCH(name) AGAINST(? IN BOOLEAN MODE)', [$searchTerm . '*'])
+                    ->orWhere('brands', 'like', "%{$searchTerm}%")
+                    ->orWhere('barcode', 'like', "%{$searchTerm}%");
+            } catch (\Exception $e) {
+                $query->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('brands', 'like', "%{$searchTerm}%")
+                    ->orWhere('barcode', 'like', "%{$searchTerm}%");
+            }
         } else {
             $query->where('name', 'like', "%{$searchTerm}%")
                 ->orWhere('brands', 'like', "%{$searchTerm}%")

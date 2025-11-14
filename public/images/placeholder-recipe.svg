@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#f3f4f6"/>
+  <g transform="translate(200, 150)">
+    <path d="M-40-30 L-40-10 L-30-10 L-30 10 L-40 10 L-40 30 L-20 30 L-20 40 L20 40 L20 30 L40 30 L40 10 L30 10 L30-10 L40-10 L40-30 L20-30 L20-40 L-20-40 L-20-30 Z" fill="#d1d5db"/>
+    <circle cx="-15" cy="0" r="8" fill="#9ca3af"/>
+    <circle cx="15" cy="0" r="8" fill="#9ca3af"/>
+    <text x="0" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#6b7280">Image de recette</text>
+  </g>
+</svg>
