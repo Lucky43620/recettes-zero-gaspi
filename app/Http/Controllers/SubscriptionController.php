@@ -95,11 +95,25 @@ class SubscriptionController extends Controller
         }
 
         try {
-            return $user->newSubscription('default', $priceId)
-                ->checkout([
-                    'success_url' => route('subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
-                    'cancel_url' => route('subscription.index'),
-                ]);
+            if (!$user->stripe_id) {
+                $user->createAsStripeCustomer();
+            }
+
+            $stripe = new \Stripe\StripeClient(config('stripe.secret'));
+
+            $session = $stripe->checkout->sessions->create([
+                'customer' => $user->stripe_id,
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price' => $priceId,
+                    'quantity' => 1,
+                ]],
+                'mode' => 'subscription',
+                'success_url' => route('subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('subscription.index'),
+            ]);
+
+            return Inertia::location($session->url);
         } catch (\Exception $e) {
             \Log::error('Subscription checkout error: ' . $e->getMessage(), [
                 'exception' => get_class($e),
