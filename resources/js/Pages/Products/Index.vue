@@ -2,28 +2,28 @@
     <PublicLayout title="Recherche de Produits">
         <div class="py-12 bg-gray-50 min-h-screen">
             <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8 p-8">
-                    <div class="text-center mb-8">
-                        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8 p-4 md:p-8">
+                    <div class="text-center mb-6 md:mb-8">
+                        <h1 class="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
                             Recherche de Produits Alimentaires
                         </h1>
-                        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
                             Explorez notre base de données de produits alimentaires et découvrez leurs informations nutritionnelles complètes
                         </p>
                     </div>
 
                     <div class="max-w-2xl mx-auto">
-                        <div class="relative">
+                        <div class="flex flex-col sm:flex-row gap-2">
                             <input
                                 v-model="searchQuery"
                                 @keyup.enter="performSearch(searchQuery)"
                                 type="text"
                                 placeholder="Rechercher un produit par nom, marque ou code-barres..."
-                                class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm pr-32 py-3"
+                                class="flex-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm py-3 text-base"
                             >
                             <PrimaryButton
                                 @click="performSearch(searchQuery)"
-                                class="absolute right-2 top-1/2 -translate-y-1/2"
+                                class="w-full sm:w-auto whitespace-nowrap"
                             >
                                 Rechercher
                             </PrimaryButton>
@@ -40,8 +40,8 @@
                 </div>
 
                 <div v-else-if="allProducts.length > 0">
-                    <div class="mb-6 flex items-center justify-between">
-                        <p class="text-gray-600">
+                    <div class="mb-6 flex items-center justify-between px-4 md:px-0">
+                        <p class="text-sm md:text-base text-gray-600">
                             <span class="font-semibold text-gray-900">{{ allProducts.length }}</span> produit(s) trouvé(s)
                         </p>
                     </div>
@@ -77,9 +77,9 @@
                     <p class="text-gray-500">Recherchez un produit pour voir les résultats</p>
                 </div>
 
-                <div class="mt-12 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-4">À propos de notre base de données</h2>
-                    <div class="grid md:grid-cols-3 gap-6 text-center">
+                <div class="mt-12 bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 md:p-6">
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6 text-center">À propos de notre base de données</h2>
+                    <div class="grid md:grid-cols-3 gap-4 md:gap-6 text-center">
                         <div>
                             <div class="flex justify-center mb-3">
                                 <div class="bg-green-100 rounded-full p-3">
