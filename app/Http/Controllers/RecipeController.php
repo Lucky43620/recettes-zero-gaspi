@@ -144,8 +144,19 @@ class RecipeController extends Controller
                 'id' => $recipe->id,
                 'slug' => $recipe->slug,
                 'title' => $recipe->title,
-                'author' => $recipe->author,
-                'steps' => $recipe->steps->values()->toArray(),
+                'author' => [
+                    'id' => $recipe->author->id,
+                    'name' => $recipe->author->name,
+                    'profile_photo_url' => $recipe->author->profile_photo_url,
+                ],
+                'steps' => $recipe->steps->map(function ($step) {
+                    return [
+                        'id' => $step->id,
+                        'position' => $step->position,
+                        'text' => $step->text,
+                        'timer_minutes' => $step->timer_minutes,
+                    ];
+                })->toArray(),
             ],
         ]);
     }

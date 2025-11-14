@@ -755,7 +755,9 @@
     "start": "Commencer",
     "completed_steps": "{completed} / {total} étapes terminées",
     "step_completed": "Étape {step} terminée !",
-    "minutes": "minutes"
+    "minutes": "minutes",
+    "no_steps_title": "Aucune étape disponible",
+    "no_steps_message": "Cette recette ne contient pas d'étapes de préparation."
   },
   "events": {
     "title": "Événements",
