@@ -27,12 +27,6 @@ class EventController extends Controller
 
     public function show(Event $event)
     {
-        $event->load(['participants' => function ($query) {
-            $query->with(['recipes' => function ($q) {
-                $q->whereColumn('recipes.id', 'event_participants.recipe_id');
-            }]);
-        }]);
-
         $leaderboard = DB::table('event_participants')
             ->join('users', 'event_participants.user_id', '=', 'users.id')
             ->leftJoin('recipes', 'event_participants.recipe_id', '=', 'recipes.id')

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateMealPlanRecipeRequest;
 use App\Models\MealPlan;
 use App\Models\MealPlanRecipe;
 use App\Models\Recipe;
+use App\Services\FeatureLimitService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -53,15 +54,15 @@ class MealPlanController extends Controller
         ]);
     }
 
-    public function addRecipe(StoreMealPlanRequest $request, MealPlan $mealPlan)
+    public function addRecipe(StoreMealPlanRequest $request, MealPlan $mealPlan, FeatureLimitService $limitService)
     {
         $this->authorize('update', $mealPlan);
 
         $user = $request->user();
+        $currentCount = $mealPlan->mealPlanRecipes()->count();
 
-        // Limit for free users: 3 recipes per week max
-        if (! $user->isPremium() && $mealPlan->mealPlanRecipes()->count() >= 3) {
-            return redirect()->back()->with('error', 'Limite atteinte. Passez à Premium pour des plans de repas illimités.');
+        if (! $limitService->canAdd($user, 'meal_plan_recipes', $currentCount)) {
+            return redirect()->back()->with('error', $limitService->getLimitMessage('meal_plan_recipes'));
         }
 
         $validated = $request->validated();

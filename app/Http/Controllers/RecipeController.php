@@ -84,7 +84,7 @@ class RecipeController extends Controller
             abort(403);
         }
 
-        $recipe->load([
+        $loadRelations = [
             'author',
             'steps',
             'ingredients',
@@ -94,19 +94,26 @@ class RecipeController extends Controller
                 $query->with(['user', 'replies.user'])->orderBy('upvotes', 'desc')->orderBy('created_at', 'desc');
             },
             'cooksnaps.user',
-        ]);
+        ];
+
+        if (Auth::check()) {
+            $loadRelations['ratings'] = fn($query) => $query->where('user_id', Auth::id());
+            $loadRelations['comments.votes'] = fn($query) => $query->where('user_id', Auth::id());
+        }
+
+        $recipe->load($loadRelations);
 
         $userRating = null;
         $isFavorited = false;
         $commentVotes = [];
 
         if (Auth::check()) {
-            $userRating = $recipe->ratings()->where('user_id', Auth::id())->first();
-            $isFavorited = Auth::user()->hasFavorited($recipe);
-            $commentVotes = \App\Models\CommentVote::where('user_id', Auth::id())
-                ->whereIn('comment_id', $recipe->comments->pluck('id'))
-                ->pluck('vote_type', 'comment_id')
-                ->toArray();
+            $userRating = $recipe->ratings->where('user_id', Auth::id())->first();
+            $isFavorited = Auth::user()->favorites()->where('recipe_id', $recipe->id)->exists();
+
+            $commentVotes = $recipe->comments->flatMap(function ($comment) {
+                return $comment->votes;
+            })->pluck('vote_type', 'comment_id')->toArray();
         }
 
         $isOwner = Auth::id() === $recipe->author_id;

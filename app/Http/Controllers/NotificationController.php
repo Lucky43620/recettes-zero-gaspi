@@ -10,11 +10,11 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        $notifications = Auth::user()
-            ->notifications()
-            ->paginate(20);
+        $user = Auth::user()->loadCount('unreadNotifications');
 
-        $unreadCount = Auth::user()->unreadNotifications()->count();
+        $notifications = $user->notifications()->paginate(20);
+
+        $unreadCount = $user->unread_notifications_count;
 
         return Inertia::render('Notifications/Index', [
             'notifications' => $notifications,

@@ -13,29 +13,27 @@ class ProfileController extends Controller
     {
         $user->loadCount(['recipes', 'followers', 'following']);
 
-        // Top 3 recettes par note moyenne
-        $topRecipes = $user->recipes()
+        $allPublicRecipes = $user->recipes()
             ->where('is_public', true)
-            ->whereNotNull('rating_avg')
-            ->orderBy('rating_avg', 'desc')
-            ->orderBy('rating_count', 'desc')
             ->with('media')
-            ->limit(3)
+            ->select('id', 'author_id', 'title', 'slug', 'rating_avg', 'rating_count', 'created_at')
             ->get();
 
-        // Recettes récentes (exclure le top 3)
-        $recentRecipes = $user->recipes()
-            ->where('is_public', true)
+        $topRecipes = $allPublicRecipes
+            ->filter(fn($r) => $r->rating_avg !== null)
+            ->sortByDesc('rating_avg')
+            ->sortByDesc('rating_count')
+            ->take(3)
+            ->values();
+
+        $recentRecipes = $allPublicRecipes
             ->whereNotIn('id', $topRecipes->pluck('id'))
-            ->with('media')
-            ->latest()
-            ->limit(6)
-            ->get();
+            ->sortByDesc('created_at')
+            ->take(6)
+            ->values();
 
-        // Moyenne globale des notes de toutes les recettes
-        $averageRating = $user->recipes()
-            ->where('is_public', true)
-            ->whereNotNull('rating_avg')
+        $averageRating = $allPublicRecipes
+            ->filter(fn($r) => $r->rating_avg !== null)
             ->avg('rating_avg');
 
         $isFollowing = Auth::check() ? Auth::user()->isFollowing($user) : false;

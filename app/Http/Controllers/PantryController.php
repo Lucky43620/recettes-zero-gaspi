@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePantryItemRequest;
 use App\Http\Resources\PantryItemResource;
 use App\Models\PantryItem;
 use App\Models\Unit;
+use App\Services\FeatureLimitService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -59,13 +60,13 @@ class PantryController extends Controller
         ]);
     }
 
-    public function store(StorePantryItemRequest $request)
+    public function store(StorePantryItemRequest $request, FeatureLimitService $limitService)
     {
         $user = $request->user();
+        $currentCount = $user->pantryItems()->count();
 
-        // Limit for free users: 10 items max
-        if (! $user->isPremium() && $user->pantryItems()->count() >= 10) {
-            return redirect()->back()->with('error', 'Limite atteinte. Passez à Premium pour un garde-manger illimité.');
+        if (! $limitService->canAdd($user, 'pantry_items', $currentCount)) {
+            return redirect()->back()->with('error', $limitService->getLimitMessage('pantry_items'));
         }
 
         $validated = $request->validated();
