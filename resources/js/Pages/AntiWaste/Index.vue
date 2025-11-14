@@ -183,7 +183,7 @@ onMounted(async () => {
         pantryIngredientsCount.value = response.data.pantry_ingredients_count || 0;
     } catch (error) {
         console.error('Error fetching recipes:', error);
-        message.value = 'Erreur lors de la recherche des recettes.';
+        message.value = t('anti_waste.search_error');
     } finally {
         loading.value = false;
     }
