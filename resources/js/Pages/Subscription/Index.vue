@@ -17,6 +17,7 @@ const props = defineProps({
 
 const selectedPlan = ref('monthly');
 const isProcessing = ref(false);
+const errorMessage = ref(null);
 
 const subscribe = (plan) => {
     console.log('=== SUBSCRIBE FUNCTION CALLED ===');
@@ -28,6 +29,8 @@ const subscribe = (plan) => {
         return;
     }
 
+    errorMessage.value = null;
+
     try {
         const routeUrl = route('subscription.checkout');
         console.log('Route URL:', routeUrl);
@@ -38,8 +41,8 @@ const subscribe = (plan) => {
         router.post(routeUrl, {
             plan: plan,
         }, {
-            preserveState: false,
-            preserveScroll: false,
+            preserveState: true,
+            preserveScroll: true,
             onStart: () => {
                 console.log('Request started');
             },
@@ -50,7 +53,16 @@ const subscribe = (plan) => {
             onError: (errors) => {
                 console.error('Request errors:', errors);
                 isProcessing.value = false;
-                alert('Erreur : ' + JSON.stringify(errors));
+
+                if (errors.plan) {
+                    errorMessage.value = errors.plan;
+                } else if (typeof errors === 'string') {
+                    errorMessage.value = errors;
+                } else {
+                    errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.';
+                }
+
+                console.log('Error message set to:', errorMessage.value);
             },
             onSuccess: (page) => {
                 console.log('Request successful', page);
@@ -59,7 +71,7 @@ const subscribe = (plan) => {
     } catch (error) {
         console.error('Exception in subscribe:', error);
         isProcessing.value = false;
-        alert('Exception: ' + error.message);
+        errorMessage.value = error.message;
     }
 };
 
@@ -90,6 +102,28 @@ const getPlanFeatures = (features) => {
                         <a :href="route('subscription.manage')" class="text-green-700 hover:text-green-900 font-medium underline">
                             {{ t('subscription.manage_subscription') }}
                         </a>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div v-if="errorMessage" class="mb-8 bg-red-50 border border-red-200 rounded-lg p-6">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-red-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <h3 class="text-lg font-semibold text-red-900 mb-1">
+                                Erreur
+                            </h3>
+                            <p class="text-red-700">
+                                {{ errorMessage }}
+                            </p>
+                        </div>
+                        <button @click="errorMessage = null" class="ml-auto text-red-500 hover:text-red-700">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 

@@ -81,8 +81,17 @@ class SubscriptionController extends Controller
             ? env('STRIPE_PRICE_MONTHLY')
             : env('STRIPE_PRICE_YEARLY');
 
+        \Log::info('Subscription checkout attempt', [
+            'plan' => $request->plan,
+            'price_id' => $priceId,
+            'user_id' => $user->id,
+        ]);
+
         if (empty($priceId)) {
-            return back()->with('error', 'Les abonnements ne sont pas encore configurés. Veuillez réessayer plus tard.');
+            \Log::warning('Stripe price ID not configured', ['plan' => $request->plan]);
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'plan' => 'Les abonnements ne sont pas encore configurés. Veuillez contacter le support.'
+            ]);
         }
 
         try {
@@ -92,10 +101,19 @@ class SubscriptionController extends Controller
                     'cancel_url' => route('subscription.index'),
                 ]);
 
-            return Inertia::location($checkoutResponse->getTargetUrl());
+            $targetUrl = $checkoutResponse->getTargetUrl();
+            \Log::info('Stripe checkout session created', ['url' => $targetUrl]);
+
+            return Inertia::location($targetUrl);
         } catch (\Exception $e) {
-            \Log::error('Subscription checkout error: ' . $e->getMessage());
-            return back()->with('error', 'Une erreur est survenue lors de la création de la session de paiement.');
+            \Log::error('Subscription checkout error: ' . $e->getMessage(), [
+                'exception' => get_class($e),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'plan' => 'Erreur lors de la création de la session de paiement : ' . $e->getMessage()
+            ]);
         }
     }
 
