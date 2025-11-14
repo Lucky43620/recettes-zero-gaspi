@@ -217,7 +217,7 @@ class SubscriptionController extends Controller
         $user = auth()->user();
         $subscription = $user->subscription('default');
 
-        if ($subscription && ! $subscription->cancelled()) {
+        if ($subscription && ! $subscription->canceled()) {
             $subscription->cancel();
             return redirect()->route('subscription.manage')->with('success', 'Votre abonnement sera annulé à la fin de la période en cours.');
         }
@@ -242,13 +242,8 @@ class SubscriptionController extends Controller
     /**
      * Show the payment method update page.
      */
-    public function paymentMethod(): Response
+    public function paymentMethod()
     {
-        $user = auth()->user();
-
-        return Inertia::render('Subscription/PaymentMethod', [
-            'intent' => $user->createSetupIntent(),
-            'stripeKey' => config('stripe.key'),
-        ]);
+        return redirect()->route('subscription.manage')->with('error', 'Cette fonctionnalité sera bientôt disponible.');
     }
 }
