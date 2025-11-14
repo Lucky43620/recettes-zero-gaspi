@@ -15,7 +15,7 @@ class StoreMealPlanRequest extends FormRequest
     {
         return [
             'recipe_id' => 'required|exists:recipes,id',
-            'planned_date' => 'required|date',
+            'day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
             'meal_type' => 'required|in:breakfast,lunch,dinner,snack',
             'servings' => 'nullable|integer|min:1',
             'notes' => 'nullable|string',

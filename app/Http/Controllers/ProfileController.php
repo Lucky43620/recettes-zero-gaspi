@@ -30,7 +30,11 @@ class ProfileController extends Controller
                     ->get()
         )->map(function ($session) use ($request) {
             return (object) [
-                'agent' => $this->createAgent($session),
+                'agent' => (object) [
+                    'is_desktop' => true,
+                    'platform' => $this->extractPlatform($session->user_agent ?? ''),
+                    'browser' => $this->extractBrowser($session->user_agent ?? ''),
+                ],
                 'ip_address' => $session->ip_address,
                 'is_current_device' => $session->id === $request->session()->getId(),
                 'last_active' => \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans(),
@@ -38,11 +42,23 @@ class ProfileController extends Controller
         });
     }
 
-    protected function createAgent($session)
+    protected function extractPlatform(string $userAgent): string
     {
-        return tap(new \Jenssegers\Agent\Agent, function ($agent) use ($session) {
-            $agent->setUserAgent($session->user_agent);
-        });
+        if (stripos($userAgent, 'Windows') !== false) return 'Windows';
+        if (stripos($userAgent, 'Mac') !== false) return 'Mac';
+        if (stripos($userAgent, 'Linux') !== false) return 'Linux';
+        if (stripos($userAgent, 'Android') !== false) return 'Android';
+        if (stripos($userAgent, 'iOS') !== false || stripos($userAgent, 'iPhone') !== false) return 'iOS';
+        return 'Unknown';
+    }
+
+    protected function extractBrowser(string $userAgent): string
+    {
+        if (stripos($userAgent, 'Firefox') !== false) return 'Firefox';
+        if (stripos($userAgent, 'Chrome') !== false) return 'Chrome';
+        if (stripos($userAgent, 'Safari') !== false) return 'Safari';
+        if (stripos($userAgent, 'Edge') !== false) return 'Edge';
+        return 'Unknown';
     }
 
     public function show(User $user)

@@ -16,10 +16,34 @@ const props = defineProps({
 });
 
 const selectedPlan = ref('monthly');
+const isProcessing = ref(false);
 
 const subscribe = (plan) => {
+    if (isProcessing.value) {
+        console.log('Already processing...');
+        return;
+    }
+
+    console.log('Subscribing to plan:', plan);
+    isProcessing.value = true;
+
     router.post(route('subscription.checkout'), {
         plan: plan,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        onFinish: () => {
+            console.log('Subscription request finished');
+            isProcessing.value = false;
+        },
+        onError: (errors) => {
+            console.error('Subscription errors:', errors);
+            isProcessing.value = false;
+            alert('Erreur lors de la souscription : ' + (errors.plan || errors.error || 'Erreur inconnue'));
+        },
+        onSuccess: () => {
+            console.log('Subscription request successful');
+        },
     });
 };
 
@@ -98,8 +122,14 @@ const getPlanFeatures = (features) => {
                                 <span class="text-gray-700">{{ feature }}</span>
                             </li>
                         </ul>
-                        <PrimaryButton v-if="currentPlan !== 'monthly'" @click="subscribe('monthly')" class="w-full justify-center py-3">
-                            {{ t('subscription.subscribe') }}
+                        <PrimaryButton
+                            v-if="currentPlan !== 'monthly'"
+                            @click="subscribe('monthly')"
+                            :disabled="isProcessing"
+                            class="w-full justify-center py-3"
+                        >
+                            <span v-if="isProcessing">{{ t('common.loading') }}...</span>
+                            <span v-else>{{ t('subscription.subscribe') }}</span>
                         </PrimaryButton>
                         <button v-else disabled class="w-full py-3 px-6 rounded-lg bg-gray-300 text-gray-600 font-semibold cursor-not-allowed">
                             {{ t('subscription.current_plan') }}
@@ -128,8 +158,14 @@ const getPlanFeatures = (features) => {
                                 <span class="text-gray-700">{{ feature }}</span>
                             </li>
                         </ul>
-                        <PrimaryButton v-if="currentPlan !== 'yearly'" @click="subscribe('yearly')" class="w-full justify-center py-3">
-                            {{ t('subscription.subscribe') }}
+                        <PrimaryButton
+                            v-if="currentPlan !== 'yearly'"
+                            @click="subscribe('yearly')"
+                            :disabled="isProcessing"
+                            class="w-full justify-center py-3"
+                        >
+                            <span v-if="isProcessing">{{ t('common.loading') }}...</span>
+                            <span v-else>{{ t('subscription.subscribe') }}</span>
                         </PrimaryButton>
                         <button v-else disabled class="w-full py-3 px-6 rounded-lg bg-gray-300 text-gray-600 font-semibold cursor-not-allowed">
                             {{ t('subscription.current_plan') }}
