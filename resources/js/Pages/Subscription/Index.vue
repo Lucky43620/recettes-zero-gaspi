@@ -16,11 +16,63 @@ const props = defineProps({
 });
 
 const selectedPlan = ref('monthly');
+const isProcessing = ref(false);
+const errorMessage = ref(null);
 
 const subscribe = (plan) => {
-    router.post(route('subscription.checkout'), {
-        plan: plan,
-    });
+    console.log('=== SUBSCRIBE FUNCTION CALLED ===');
+    console.log('Plan:', plan);
+    console.log('isProcessing:', isProcessing.value);
+
+    if (isProcessing.value) {
+        console.log('Already processing, returning...');
+        return;
+    }
+
+    errorMessage.value = null;
+
+    try {
+        const routeUrl = route('subscription.checkout');
+        console.log('Route URL:', routeUrl);
+
+        isProcessing.value = true;
+        console.log('Starting router.post...');
+
+        router.post(routeUrl, {
+            plan: plan,
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            onStart: () => {
+                console.log('Request started');
+            },
+            onFinish: () => {
+                console.log('Request finished');
+                isProcessing.value = false;
+            },
+            onError: (errors) => {
+                console.error('Request errors:', errors);
+                isProcessing.value = false;
+
+                if (errors.plan) {
+                    errorMessage.value = errors.plan;
+                } else if (typeof errors === 'string') {
+                    errorMessage.value = errors;
+                } else {
+                    errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.';
+                }
+
+                console.log('Error message set to:', errorMessage.value);
+            },
+            onSuccess: (page) => {
+                console.log('Request successful', page);
+            },
+        });
+    } catch (error) {
+        console.error('Exception in subscribe:', error);
+        isProcessing.value = false;
+        errorMessage.value = error.message;
+    }
 };
 
 const getPlanFeatures = (features) => {
@@ -50,6 +102,28 @@ const getPlanFeatures = (features) => {
                         <a :href="route('subscription.manage')" class="text-green-700 hover:text-green-900 font-medium underline">
                             {{ t('subscription.manage_subscription') }}
                         </a>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div v-if="errorMessage" class="mb-8 bg-red-50 border border-red-200 rounded-lg p-6">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-red-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <h3 class="text-lg font-semibold text-red-900 mb-1">
+                                Erreur
+                            </h3>
+                            <p class="text-red-700">
+                                {{ errorMessage }}
+                            </p>
+                        </div>
+                        <button @click="errorMessage = null" class="ml-auto text-red-500 hover:text-red-700">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
@@ -98,8 +172,15 @@ const getPlanFeatures = (features) => {
                                 <span class="text-gray-700">{{ feature }}</span>
                             </li>
                         </ul>
-                        <PrimaryButton v-if="currentPlan !== 'monthly'" @click="subscribe('monthly')" class="w-full justify-center py-3">
-                            {{ t('subscription.subscribe') }}
+                        <PrimaryButton
+                            v-if="currentPlan !== 'monthly'"
+                            type="button"
+                            @click="subscribe('monthly')"
+                            :disabled="isProcessing"
+                            class="w-full justify-center py-3"
+                        >
+                            <span v-if="isProcessing">{{ t('common.loading') }}...</span>
+                            <span v-else>{{ t('subscription.subscribe') }}</span>
                         </PrimaryButton>
                         <button v-else disabled class="w-full py-3 px-6 rounded-lg bg-gray-300 text-gray-600 font-semibold cursor-not-allowed">
                             {{ t('subscription.current_plan') }}
@@ -128,8 +209,15 @@ const getPlanFeatures = (features) => {
                                 <span class="text-gray-700">{{ feature }}</span>
                             </li>
                         </ul>
-                        <PrimaryButton v-if="currentPlan !== 'yearly'" @click="subscribe('yearly')" class="w-full justify-center py-3">
-                            {{ t('subscription.subscribe') }}
+                        <PrimaryButton
+                            v-if="currentPlan !== 'yearly'"
+                            type="button"
+                            @click="subscribe('yearly')"
+                            :disabled="isProcessing"
+                            class="w-full justify-center py-3"
+                        >
+                            <span v-if="isProcessing">{{ t('common.loading') }}...</span>
+                            <span v-else>{{ t('subscription.subscribe') }}</span>
                         </PrimaryButton>
                         <button v-else disabled class="w-full py-3 px-6 rounded-lg bg-gray-300 text-gray-600 font-semibold cursor-not-allowed">
                             {{ t('subscription.current_plan') }}

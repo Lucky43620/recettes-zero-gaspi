@@ -33,6 +33,7 @@ class MealPlanController extends Controller
             $mealPlan = Auth::user()->mealPlans()->create([
                 'week_start_date' => $weekStart->format('Y-m-d'),
             ]);
+            $mealPlan->load('mealPlanRecipes.recipe.media');
         }
 
         $userRecipes = Auth::user()->recipes()
@@ -70,7 +71,28 @@ class MealPlanController extends Controller
 
         $validated = $request->validated();
 
-        $mealPlan->mealPlanRecipes()->create($validated);
+        $dayOfWeek = $validated['day_of_week'];
+        $weekStart = Carbon::parse($mealPlan->week_start_date);
+
+        $daysMap = [
+            'monday' => 0,
+            'tuesday' => 1,
+            'wednesday' => 2,
+            'thursday' => 3,
+            'friday' => 4,
+            'saturday' => 5,
+            'sunday' => 6,
+        ];
+
+        $plannedDate = $weekStart->copy()->addDays($daysMap[$dayOfWeek]);
+
+        $mealPlan->mealPlanRecipes()->create([
+            'recipe_id' => $validated['recipe_id'],
+            'planned_date' => $plannedDate->format('Y-m-d'),
+            'meal_type' => $validated['meal_type'],
+            'servings' => $validated['servings'] ?? 1,
+            'notes' => $validated['notes'] ?? null,
+        ]);
 
         return back();
     }
