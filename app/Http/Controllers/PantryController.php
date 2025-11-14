@@ -59,7 +59,7 @@ class PantryController extends Controller
             'items' => $items->resolve(),
             'stats' => $stats,
             'storageLocations' => StorageLocation::values(),
-            'units' => Unit::select('id', 'code', 'name', 'abbreviation')->get()->values()->all(),
+            'units' => Unit::all()->values()->all(),
             'isPremium' => $request->user()->isPremium(),
             'itemLimit' => $request->user()->isPremium() ? null : 10,
         ]);
