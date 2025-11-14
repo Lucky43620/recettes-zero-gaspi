@@ -58,9 +58,12 @@ echo "   ✓ Migrations exécutées"
 echo ""
 echo "💳 5/7 Configuration Stripe..."
 
-STRIPE_KEY_SET=$(docker compose exec -T laravel.test grep -c "^STRIPE_KEY=sk_" .env 2>/dev/null || echo "0")
+STRIPE_KEY_SET=$(docker compose exec -T laravel.test grep -c "^STRIPE_KEY=pk_" .env 2>/dev/null || echo "0")
+STRIPE_SECRET_SET=$(docker compose exec -T laravel.test grep -c "^STRIPE_SECRET=sk_" .env 2>/dev/null || echo "0")
+STRIPE_MONTHLY_SET=$(docker compose exec -T laravel.test grep -c "^STRIPE_PRICE_MONTHLY=price_" .env 2>/dev/null || echo "0")
+STRIPE_YEARLY_SET=$(docker compose exec -T laravel.test grep -c "^STRIPE_PRICE_YEARLY=price_" .env 2>/dev/null || echo "0")
 
-if [ "$STRIPE_KEY_SET" = "0" ]; then
+if [ "$STRIPE_KEY_SET" = "0" ] || [ "$STRIPE_SECRET_SET" = "0" ] || [ "$STRIPE_MONTHLY_SET" = "0" ] || [ "$STRIPE_YEARLY_SET" = "0" ]; then
     echo "   ⚠️  Stripe non configuré"
     echo ""
     read -p "   STRIPE_KEY (pk_...): " STRIPE_KEY_INPUT
