@@ -95,16 +95,11 @@ class SubscriptionController extends Controller
         }
 
         try {
-            $checkoutResponse = $user->newSubscription('default', $priceId)
+            return $user->newSubscription('default', $priceId)
                 ->checkout([
                     'success_url' => route('subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
                     'cancel_url' => route('subscription.index'),
                 ]);
-
-            $targetUrl = $checkoutResponse->getTargetUrl();
-            \Log::info('Stripe checkout session created', ['url' => $targetUrl]);
-
-            return Inertia::location($targetUrl);
         } catch (\Exception $e) {
             \Log::error('Subscription checkout error: ' . $e->getMessage(), [
                 'exception' => get_class($e),
