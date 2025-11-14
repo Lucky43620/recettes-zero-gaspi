@@ -188,7 +188,7 @@ class SubscriptionController extends Controller
                 'ends_at' => $subscription->ends_at,
                 'trial_ends_at' => $subscription->trial_ends_at,
                 'on_grace_period' => $subscription->onGracePeriod(),
-                'cancelled' => $subscription->cancelled(),
+                'canceled' => $subscription->canceled(),
             ],
         ]);
     }
