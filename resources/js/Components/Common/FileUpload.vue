@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { PhotoIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     modelValue: [Array, File],
@@ -18,7 +21,7 @@ const props = defineProps({
     },
     label: {
         type: String,
-        default: 'Images'
+        default: null
     },
     hint: String,
     error: String,
@@ -34,6 +37,9 @@ const files = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value),
 });
+
+const displayLabel = computed(() => props.label || t('common.images'));
+const defaultHint = computed(() => t('common.file_size_limit', { size: props.maxSize / 1024 }));
 
 function handleFileSelect(event) {
     const selectedFiles = Array.from(event.target.files);
@@ -109,8 +115,8 @@ function handleDragLeave() {
 
 <template>
     <div>
-        <label v-if="label" class="block text-sm font-medium text-gray-700 mb-2">
-            {{ label }}
+        <label v-if="displayLabel" class="block text-sm font-medium text-gray-700 mb-2">
+            {{ displayLabel }}
         </label>
 
         <div
@@ -140,10 +146,10 @@ function handleDragLeave() {
                 <PhotoIcon class="mx-auto h-12 w-12 text-gray-400" />
                 <div class="mt-4">
                     <p class="text-sm font-medium text-gray-900">
-                        Cliquez pour ajouter ou glissez-déposez
+                        {{ t('common.click_or_drag_drop') }}
                     </p>
                     <p class="text-xs text-gray-500 mt-1">
-                        {{ hint || `PNG, JPG, GIF jusqu'à ${maxSize / 1024}MB` }}
+                        {{ hint || defaultHint }}
                     </p>
                 </div>
             </div>

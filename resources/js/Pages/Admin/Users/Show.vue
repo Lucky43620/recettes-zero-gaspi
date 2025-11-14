@@ -1,11 +1,14 @@
 <script setup>
 import { ref } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import StatCard from '@/Components/Admin/StatCard.vue';
 import { useDateFormat } from '@/composables/useDateFormat';
+
+const { t } = useI18n();
 
 const props = defineProps({
     user: Object,
@@ -31,14 +34,14 @@ const { formatDate, formatRelativeTime } = useDateFormat();
 </script>
 
 <template>
-    <Head :title="`Administration - ${user.name}`" />
+    <Head :title="`${t('admin.title')} - ${user.name}`" />
 
     <AdminLayout>
         <div class="space-y-6">
             <div class="flex items-start justify-between">
                 <div class="flex items-center gap-4">
                     <Link href="/admin/users" class="text-gray-600 hover:text-gray-900">
-                        ← Retour
+                        ← {{ t('common.back') }}
                     </Link>
                     <img :src="user.profile_photo_url" :alt="user.name" class="w-16 h-16 rounded-full" />
                     <div>
@@ -50,54 +53,54 @@ const { formatDate, formatRelativeTime } = useDateFormat();
                     @click="confirmDelete"
                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
                 >
-                    Supprimer
+                    {{ t('common.delete') }}
                 </button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <StatCard
-                    title="Recettes"
+                    :title="t('admin.recipes')"
                     :value="stats.recipes_count"
                     icon="📖"
                     color="blue"
-                    :subtitle="`${stats.public_recipes} publiques`"
+                    :subtitle="t('admin.public_count', { count: stats.public_recipes })"
                 />
                 <StatCard
-                    title="Commentaires"
+                    :title="t('admin.comments')"
                     :value="stats.comments_count"
                     icon="💬"
                     color="purple"
                 />
                 <StatCard
-                    title="Notes données"
+                    :title="t('admin.ratings_given')"
                     :value="stats.ratings_count"
                     icon="⭐"
                     color="orange"
                 />
                 <StatCard
-                    title="Followers"
+                    :title="t('admin.followers_column')"
                     :value="stats.followers_count"
                     icon="👥"
                     color="green"
-                    :subtitle="`Suit ${stats.following_count} personnes`"
+                    :subtitle="t('admin.follows_count', { count: stats.following_count })"
                 />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatCard
-                    title="Collections"
+                    :title="t('admin.collections')"
                     :value="stats.collections_count"
                     icon="📚"
                     color="blue"
                 />
                 <StatCard
-                    title="Inscrit le"
+                    :title="t('admin.registered_on_date')"
                     :value="formatDate(user.created_at)"
                     icon="📅"
                     color="green"
                 />
                 <StatCard
-                    title="Dernière activité"
+                    :title="t('admin.last_activity')"
                     :value="formatRelativeTime(user.updated_at)"
                     icon="⚡"
                     color="purple"
@@ -106,7 +109,7 @@ const { formatDate, formatRelativeTime } = useDateFormat();
 
             <div class="bg-white rounded-lg shadow">
                 <div class="p-6 border-b">
-                    <h2 class="text-lg font-semibold text-gray-900">Recettes récentes</h2>
+                    <h2 class="text-lg font-semibold text-gray-900">{{ t('admin.recent_recipes') }}</h2>
                 </div>
                 <div v-if="user.recipes && user.recipes.length > 0" class="divide-y">
                     <div
@@ -120,7 +123,7 @@ const { formatDate, formatRelativeTime } = useDateFormat();
                                     {{ recipe.title }}
                                 </Link>
                                 <div class="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                                    <span>{{ recipe.is_public ? '🌐 Public' : '🔒 Privé' }}</span>
+                                    <span>{{ recipe.is_public ? t('admin.public_badge') : t('admin.private_badge') }}</span>
                                     <span>{{ formatRelativeTime(recipe.created_at) }}</span>
                                 </div>
                             </div>
@@ -132,13 +135,13 @@ const { formatDate, formatRelativeTime } = useDateFormat();
                     </div>
                 </div>
                 <div v-else class="p-8 text-center text-gray-500">
-                    Aucune recette
+                    {{ t('admin.no_recipes') }}
                 </div>
             </div>
 
             <div class="bg-white rounded-lg shadow">
                 <div class="p-6 border-b">
-                    <h2 class="text-lg font-semibold text-gray-900">Commentaires récents</h2>
+                    <h2 class="text-lg font-semibold text-gray-900">{{ t('admin.recent_comments') }}</h2>
                 </div>
                 <div v-if="user.comments && user.comments.length > 0" class="divide-y">
                     <div
@@ -149,30 +152,30 @@ const { formatDate, formatRelativeTime } = useDateFormat();
                         <p class="text-gray-900">{{ comment.content }}</p>
                         <div class="mt-2 flex items-center gap-4 text-sm text-gray-500">
                             <Link v-if="comment.recipe" :href="`/recipes/${comment.recipe.slug}`" class="hover:text-green-600">
-                                Sur: {{ comment.recipe.title }}
+                                {{ t('admin.on_recipe', { title: comment.recipe.title }) }}
                             </Link>
                             <span>{{ formatRelativeTime(comment.created_at) }}</span>
                         </div>
                     </div>
                 </div>
                 <div v-else class="p-8 text-center text-gray-500">
-                    Aucun commentaire
+                    {{ t('admin.no_comments') }}
                 </div>
             </div>
         </div>
 
         <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
             <template #title>
-                Supprimer l'utilisateur
+                {{ t('admin.delete_user') }}
             </template>
 
             <template #content>
-                Êtes-vous sûr de vouloir supprimer cet utilisateur ? Toutes ses recettes et données seront supprimées définitivement.
+                {{ t('admin.delete_user_confirm') }}
             </template>
 
             <template #footer>
                 <PrimaryButton variant="secondary" @click="confirmingDeletion = false">
-                    Annuler
+                    {{ t('common.cancel') }}
                 </PrimaryButton>
 
                 <PrimaryButton
@@ -181,7 +184,7 @@ const { formatDate, formatRelativeTime } = useDateFormat();
                     @click="deleteUser"
                     :loading="deleteForm.processing"
                 >
-                    Supprimer
+                    {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
         </ConfirmationModal>

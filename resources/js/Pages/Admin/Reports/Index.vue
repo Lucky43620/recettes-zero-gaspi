@@ -1,8 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { useDateFormat } from '@/composables/useDateFormat';
+
+const { t } = useI18n();
 
 const props = defineProps({
     reports: Object,
@@ -39,36 +42,22 @@ const getStatusColor = (status) => {
 };
 
 const getStatusLabel = (status) => {
-    const labels = {
-        pending: 'En attente',
-        reviewing: 'En cours',
-        resolved: 'Résolu',
-        dismissed: 'Rejeté',
-    };
-    return labels[status] || status;
+    return t(`admin.report_status.${status}`);
 };
 
 const getReasonLabel = (reason) => {
-    const labels = {
-        spam: 'Spam',
-        inappropriate: 'Inapproprié',
-        offensive: 'Offensant',
-        misleading: 'Trompeur',
-        copyright: 'Copyright',
-        other: 'Autre',
-    };
-    return labels[reason] || reason;
+    return t(`admin.report_reason.${reason}`);
 };
 </script>
 
 <template>
-    <Head title="Administration - Signalements" />
+    <Head :title="t('admin.reports_title')" />
 
     <AdminLayout>
         <div class="space-y-6">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">Signalements</h1>
-                <p class="mt-2 text-gray-600">Gérer les signalements de contenu</p>
+                <h1 class="text-3xl font-bold text-gray-900">{{ t('admin.reports') }}</h1>
+                <p class="mt-2 text-gray-600">{{ t('admin.manage_reports_description') }}</p>
             </div>
 
             <div class="bg-white rounded-lg shadow">
@@ -76,13 +65,13 @@ const getReasonLabel = (reason) => {
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rapporteur</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Raison</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.reporter_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.type_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.reason_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.description_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('common.status') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.date_column') }}</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{{ t('common.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -118,21 +107,21 @@ const getReasonLabel = (reason) => {
                                         @click="updateStatus(report, 'reviewing')"
                                         class="text-blue-600 hover:text-blue-700"
                                     >
-                                        En cours
+                                        {{ t('admin.mark_reviewing') }}
                                     </button>
                                     <button
                                         v-if="report.status !== 'resolved'"
                                         @click="updateStatus(report, 'resolved')"
                                         class="text-green-600 hover:text-green-700"
                                     >
-                                        Résoudre
+                                        {{ t('admin.resolve') }}
                                     </button>
                                     <button
                                         v-if="report.status !== 'dismissed'"
                                         @click="updateStatus(report, 'dismissed')"
                                         class="text-gray-600 hover:text-gray-700"
                                     >
-                                        Rejeter
+                                        {{ t('admin.dismiss') }}
                                     </button>
                                 </td>
                             </tr>
@@ -142,7 +131,7 @@ const getReasonLabel = (reason) => {
 
                 <div v-if="reports.links" class="px-6 py-4 border-t flex items-center justify-between">
                     <div class="text-sm text-gray-500">
-                        {{ reports.from }} - {{ reports.to }} sur {{ reports.total }} signalements
+                        {{ reports.from }} - {{ reports.to }} {{ t('admin.pagination_of') }} {{ reports.total }} {{ t('admin.reports_count') }}
                     </div>
                     <div class="flex gap-2">
                         <Link

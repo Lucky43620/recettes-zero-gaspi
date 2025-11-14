@@ -1,11 +1,14 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+
+const { t } = useI18n();
 
 defineProps({
     status: String,
@@ -21,7 +24,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Mot de passe oublié" />
+    <Head :title="t('auth.forgot_password')" />
 
     <AuthenticationCard>
         <template #logo>
@@ -29,9 +32,9 @@ const submit = () => {
         </template>
 
         <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-900 mb-2">Mot de passe oublié</h1>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ t('auth.forgot_password_title') }}</h1>
             <p class="text-sm text-gray-600">
-                Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+                {{ t('auth.forgot_password_description') }}
             </p>
         </div>
 
@@ -41,7 +44,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="t('auth.email')" />
                 <TextInput
                     id="email"
                     v-model="form.email"
@@ -55,7 +58,7 @@ const submit = () => {
             </div>
 
             <PrimaryButton class="w-full justify-center mt-6 bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Envoyer le lien de réinitialisation
+                {{ t('auth.send_reset_link') }}
             </PrimaryButton>
         </form>
     </AuthenticationCard>

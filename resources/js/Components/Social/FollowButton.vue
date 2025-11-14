@@ -1,5 +1,8 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     user: Object,
@@ -32,6 +35,6 @@ function toggleFollow() {
                 : 'bg-green-600 text-white hover:bg-green-700'
         ]"
     >
-        {{ isFollowing ? 'Ne plus suivre' : 'Suivre' }}
+        {{ isFollowing ? t('profile.unfollow') : t('profile.follow') }}
     </button>
 </template>

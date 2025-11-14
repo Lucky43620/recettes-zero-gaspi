@@ -3,9 +3,9 @@
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-2">
         <ClockIcon class="w-5 h-5 text-gray-600" />
-        <h3 class="text-lg font-semibold text-gray-900">Minuteur</h3>
+        <h3 class="text-lg font-semibold text-gray-900">{{ t('cook.timer') }}</h3>
       </div>
-      <span class="text-sm text-gray-500">Étape {{ stepNumber }}</span>
+      <span class="text-sm text-gray-500">{{ t('cook.step') }} {{ stepNumber }}</span>
     </div>
 
     <div class="text-center mb-6">
@@ -28,7 +28,7 @@
         class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
       >
         <PlayIcon class="w-5 h-5" />
-        Démarrer
+        {{ t('cook.timer_start') }}
       </button>
 
       <button
@@ -37,7 +37,7 @@
         class="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition flex items-center gap-2"
       >
         <PauseIcon class="w-5 h-5" />
-        Pause
+        {{ t('cook.timer_pause') }}
       </button>
 
       <button
@@ -46,7 +46,7 @@
         class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
       >
         <PlayIcon class="w-5 h-5" />
-        Reprendre
+        {{ t('cook.timer_resume') }}
       </button>
 
       <button
@@ -54,7 +54,7 @@
         class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2"
       >
         <ArrowPathIcon class="w-5 h-5" />
-        Réinitialiser
+        {{ t('cook.timer_reset') }}
       </button>
     </div>
 
@@ -64,7 +64,7 @@
     >
       <p class="text-green-800 font-semibold flex items-center justify-center gap-2">
         <BellAlertIcon class="w-5 h-5" />
-        Minuteur terminé !
+        {{ t('cook.timer_finished') }}
       </p>
     </div>
   </div>
@@ -72,6 +72,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useTimer } from '@/composables/useTimer'
 import {
   ClockIcon,
@@ -80,6 +81,8 @@ import {
   ArrowPathIcon,
   BellAlertIcon
 } from '@heroicons/vue/24/outline'
+
+const { t } = useI18n()
 
 const props = defineProps({
   minutes: {

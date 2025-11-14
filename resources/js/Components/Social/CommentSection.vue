@@ -1,9 +1,12 @@
 <script setup>
 import { ref } from 'vue';
 import { useForm, Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { useDateFormat } from '@/composables/useDateFormat';
+
+const { t } = useI18n();
 
 const props = defineProps({
     recipe: Object,
@@ -75,14 +78,14 @@ const { formatRelativeTime } = useDateFormat();
 <template>
     <div class="space-y-6">
         <h3 class="text-xl font-semibold text-gray-900">
-            Commentaires ({{ comments?.length || 0 }})
+            {{ t('profile.comments_count', { count: comments?.length || 0 }) }}
         </h3>
 
         <div v-if="!$page.props.auth.user" class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-            <p class="text-gray-700 mb-4">Connectez-vous pour laisser un commentaire</p>
+            <p class="text-gray-700 mb-4">{{ t('profile.login_to_comment') }}</p>
             <Link :href="route('login')">
                 <PrimaryButton>
-                    Se connecter
+                    {{ t('auth.login') }}
                 </PrimaryButton>
             </Link>
         </div>
@@ -93,13 +96,13 @@ const { formatRelativeTime } = useDateFormat();
                     v-model="form.content"
                     rows="3"
                     class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
-                    placeholder="Partagez votre expérience ou posez une question..."
+                    :placeholder="t('profile.share_experience')"
                     required
                 ></textarea>
             </div>
             <div class="flex gap-2">
                 <PrimaryButton type="submit" :loading="form.processing">
-                    Publier
+                    {{ t('profile.publish') }}
                 </PrimaryButton>
                 <PrimaryButton
                     v-if="replyingTo"
@@ -107,7 +110,7 @@ const { formatRelativeTime } = useDateFormat();
                     @click="cancelReply"
                     variant="secondary"
                 >
-                    Annuler
+                    {{ t('common.cancel') }}
                 </PrimaryButton>
             </div>
         </form>
@@ -158,21 +161,21 @@ const { formatRelativeTime } = useDateFormat();
                                 </button>
                             </div>
                             <span v-else class="font-medium text-gray-600">
-                                {{ comment.score }} points
+                                {{ comment.score }} {{ t('profile.points') }}
                             </span>
                             <button
                                 v-if="$page.props.auth.user"
                                 @click="startReply(comment)"
                                 class="text-green-600 hover:text-green-800"
                             >
-                                Répondre
+                                {{ t('profile.reply') }}
                             </button>
                             <button
                                 v-if="$page.props.auth.user?.id === comment.user_id"
                                 @click="confirmDeleteComment(comment.id)"
                                 class="text-red-600 hover:text-red-800"
                             >
-                                Supprimer
+                                {{ t('common.delete') }}
                             </button>
                         </div>
 
@@ -182,12 +185,12 @@ const { formatRelativeTime } = useDateFormat();
                                     v-model="form.content"
                                     rows="2"
                                     class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
-                                    placeholder="Votre réponse..."
+                                    :placeholder="t('profile.your_reply')"
                                     required
                                 ></textarea>
                                 <div class="flex gap-2">
                                     <PrimaryButton type="submit" :loading="form.processing" size="sm">
-                                        Répondre
+                                        {{ t('profile.reply') }}
                                     </PrimaryButton>
                                     <PrimaryButton
                                         type="button"
@@ -195,7 +198,7 @@ const { formatRelativeTime } = useDateFormat();
                                         variant="secondary"
                                         size="sm"
                                     >
-                                        Annuler
+                                        {{ t('common.cancel') }}
                                     </PrimaryButton>
                                 </div>
                             </form>
@@ -226,7 +229,7 @@ const { formatRelativeTime } = useDateFormat();
                                         @click="confirmDeleteComment(reply.id)"
                                         class="text-sm text-red-600 hover:text-red-800 mt-1"
                                     >
-                                        Supprimer
+                                        {{ t('common.delete') }}
                                     </button>
                                 </div>
                             </div>
@@ -238,16 +241,16 @@ const { formatRelativeTime } = useDateFormat();
 
         <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
             <template #title>
-                Supprimer le commentaire
+                {{ t('profile.delete_comment') }}
             </template>
 
             <template #content>
-                Êtes-vous sûr de vouloir supprimer ce commentaire ? Cette action est irréversible.
+                {{ t('profile.delete_comment_confirmation') }}
             </template>
 
             <template #footer>
                 <PrimaryButton variant="secondary" @click="confirmingDeletion = false">
-                    Annuler
+                    {{ t('common.cancel') }}
                 </PrimaryButton>
 
                 <PrimaryButton
@@ -255,7 +258,7 @@ const { formatRelativeTime } = useDateFormat();
                     class="ms-3"
                     @click="deleteComment"
                 >
-                    Supprimer
+                    {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
         </ConfirmationModal>

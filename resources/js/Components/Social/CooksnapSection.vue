@@ -1,9 +1,12 @@
 <script setup>
 import { ref } from 'vue';
 import { useForm, Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { useDateFormat } from '@/composables/useDateFormat';
+
+const { t } = useI18n();
 
 const props = defineProps({
     recipe: Object,
@@ -23,7 +26,7 @@ const selectedImage = ref(null);
 function handlePhotoSelect(event) {
     const files = Array.from(event.target.files);
     if (files.length + form.photos.length > 5) {
-        alert('Maximum 5 photos autorisées');
+        alert(t('cooksnaps.max_photos_alert'));
         return;
     }
 
@@ -82,15 +85,15 @@ const { formatRelativeTime } = useDateFormat();
 <template>
     <div class="space-y-6">
         <h3 class="text-xl font-semibold text-gray-900">
-            Cooksnaps ({{ cooksnaps?.length || 0 }})
+            {{ t('cooksnaps.title') }} ({{ cooksnaps?.length || 0 }})
         </h3>
-        <p class="text-gray-600 text-sm">Partagez vos réalisations de cette recette !</p>
+        <p class="text-gray-600 text-sm">{{ t('cooksnaps.share_your_creation') }}</p>
 
         <div v-if="!$page.props.auth.user" class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-            <p class="text-gray-700 mb-4">Connectez-vous pour partager votre réalisation</p>
+            <p class="text-gray-700 mb-4">{{ t('cooksnaps.login_to_share') }}</p>
             <Link :href="route('login')">
                 <PrimaryButton>
-                    Se connecter
+                    {{ t('auth.login') }}
                 </PrimaryButton>
             </Link>
         </div>
@@ -98,7 +101,7 @@ const { formatRelativeTime } = useDateFormat();
         <form v-else @submit.prevent="submitCooksnap" class="space-y-4 bg-gray-50 rounded-lg p-6">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Photos (1-5) *
+                    {{ t('cooksnaps.photos_1_5') }}
                 </label>
                 <input
                     type="file"
@@ -124,18 +127,18 @@ const { formatRelativeTime } = useDateFormat();
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Commentaire (optionnel)
+                    {{ t('cooksnaps.comment_optional') }}
                 </label>
                 <textarea
                     v-model="form.comment"
                     rows="3"
                     class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
-                    placeholder="Décrivez votre expérience avec cette recette..."
+                    :placeholder="t('cooksnaps.describe_experience')"
                 ></textarea>
             </div>
 
             <PrimaryButton type="submit" :loading="form.processing" :disabled="form.photos.length === 0">
-                Publier mon cooksnap
+                {{ t('cooksnaps.publish_cooksnap') }}
             </PrimaryButton>
         </form>
 
@@ -174,7 +177,7 @@ const { formatRelativeTime } = useDateFormat();
                             @click="confirmDeleteCooksnap(cooksnap.id)"
                             class="text-red-600 hover:text-red-800 text-sm"
                         >
-                            Supprimer
+                            {{ t('common.delete') }}
                         </button>
                     </div>
                     <p v-if="cooksnap.comment" class="text-gray-700 text-sm">{{ cooksnap.comment }}</p>
@@ -194,16 +197,16 @@ const { formatRelativeTime } = useDateFormat();
 
         <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
             <template #title>
-                Supprimer le cooksnap
+                {{ t('cooksnaps.delete_cooksnap') }}
             </template>
 
             <template #content>
-                Êtes-vous sûr de vouloir supprimer ce cooksnap ? Cette action est irréversible.
+                {{ t('cooksnaps.delete_confirmation') }}
             </template>
 
             <template #footer>
                 <PrimaryButton variant="secondary" @click="confirmingDeletion = false">
-                    Annuler
+                    {{ t('common.cancel') }}
                 </PrimaryButton>
 
                 <PrimaryButton
@@ -211,7 +214,7 @@ const { formatRelativeTime } = useDateFormat();
                     class="ms-3"
                     @click="deleteCooksnap"
                 >
-                    Supprimer
+                    {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
         </ConfirmationModal>

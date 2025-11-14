@@ -1,5 +1,8 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     recipe: Object,
@@ -35,6 +38,6 @@ function toggleFavorite() {
                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
             />
         </svg>
-        <span>{{ isFavorited ? 'Retirer des favoris' : 'Ajouter aux favoris' }}</span>
+        <span>{{ isFavorited ? t('profile.remove_from_favorites') : t('profile.add_to_favorites_text') }}</span>
     </button>
 </template>

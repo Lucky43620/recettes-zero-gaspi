@@ -1,25 +1,27 @@
 <script setup>
 import { ref, reactive, nextTick } from 'vue';
+import { useI18n } from 'vue-i18n';
 import DialogModal from './DialogModal.vue';
 import InputError from './InputError.vue';
 import PrimaryButton from './PrimaryButton.vue';
 import SecondaryButton from './SecondaryButton.vue';
 import TextInput from './TextInput.vue';
 
+const { t } = useI18n();
 const emit = defineEmits(['confirmed']);
 
 defineProps({
     title: {
         type: String,
-        default: 'Confirm Password',
+        default: '',
     },
     content: {
         type: String,
-        default: 'For your security, please confirm your password to continue.',
+        default: '',
     },
     button: {
         type: String,
-        default: 'Confirm',
+        default: '',
     },
 });
 
@@ -78,11 +80,11 @@ const closeModal = () => {
 
         <DialogModal :show="confirmingPassword" @close="closeModal">
             <template #title>
-                {{ title }}
+                {{ title || t('auth.secure_area') }}
             </template>
 
             <template #content>
-                {{ content }}
+                {{ content || t('auth.confirm_password_description') }}
 
                 <div class="mt-4">
                     <TextInput
@@ -90,7 +92,7 @@ const closeModal = () => {
                         v-model="form.password"
                         type="password"
                         class="mt-1 block w-3/4"
-                        placeholder="Password"
+                        :placeholder="t('auth.password')"
                         autocomplete="current-password"
                         @keyup.enter="confirmPassword"
                     />
@@ -101,7 +103,7 @@ const closeModal = () => {
 
             <template #footer>
                 <SecondaryButton @click="closeModal">
-                    Cancel
+                    {{ t('common.cancel') }}
                 </SecondaryButton>
 
                 <PrimaryButton
@@ -110,7 +112,7 @@ const closeModal = () => {
                     :disabled="form.processing"
                     @click="confirmPassword"
                 >
-                    {{ button }}
+                    {{ button || t('auth.confirm') }}
                 </PrimaryButton>
             </template>
         </DialogModal>

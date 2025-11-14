@@ -7,6 +7,9 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
@@ -40,16 +43,16 @@ const updatePassword = () => {
 <template>
     <FormSection @submitted="updatePassword">
         <template #title>
-            Mot de passe
+            {{ t('profile.password_title') }}
         </template>
 
         <template #description>
-            Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé.
+            {{ t('profile.password_description') }}
         </template>
 
         <template #form>
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="current_password" value="Mot de passe actuel" />
+                <InputLabel for="current_password" :value="t('profile.current_password')" />
                 <TextInput
                     id="current_password"
                     ref="currentPasswordInput"
@@ -62,7 +65,7 @@ const updatePassword = () => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="password" value="Nouveau mot de passe" />
+                <InputLabel for="password" :value="t('profile.new_password')" />
                 <TextInput
                     id="password"
                     ref="passwordInput"
@@ -75,7 +78,7 @@ const updatePassword = () => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="password_confirmation" value="Confirmer le mot de passe" />
+                <InputLabel for="password_confirmation" :value="t('profile.confirm_password')" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
@@ -89,11 +92,11 @@ const updatePassword = () => {
 
         <template #actions>
             <ActionMessage :on="form.recentlySuccessful" class="me-3">
-                Enregistré.
+                {{ t('common.saved') }}
             </ActionMessage>
 
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Enregistrer
+                {{ t('common.save') }}
             </PrimaryButton>
         </template>
     </FormSection>

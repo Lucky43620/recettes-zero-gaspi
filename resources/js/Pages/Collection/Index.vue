@@ -6,6 +6,9 @@ import FormInput from '@/Components/Common/FormInput.vue';
 import FormTextarea from '@/Components/Common/FormTextarea.vue';
 import FormCheckbox from '@/Components/Common/FormCheckbox.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     collections: Array,
@@ -29,17 +32,17 @@ function submitCollection() {
 </script>
 
 <template>
-    <AppLayout title="Mes collections">
+    <AppLayout :title="t('collections.my_collections')">
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Mes collections
+                    {{ t('collections.my_collections') }}
                 </h2>
                 <PrimaryButton
                     @click="showForm = !showForm"
                     :variant="showForm ? 'secondary' : 'primary'"
                 >
-                    {{ showForm ? 'Annuler' : 'Nouvelle collection' }}
+                    {{ showForm ? t('common.cancel') : t('collections.create_collection') }}
                 </PrimaryButton>
             </div>
         </template>
@@ -50,7 +53,7 @@ function submitCollection() {
                     <form @submit.prevent="submitCollection" class="space-y-4">
                         <FormInput
                             v-model="form.name"
-                            label="Nom de la collection"
+                            :label="t('collections.collection_name')"
                             type="text"
                             required
                             :error="form.errors.name"
@@ -58,7 +61,7 @@ function submitCollection() {
 
                         <FormTextarea
                             v-model="form.description"
-                            label="Description"
+                            :label="t('collections.collection_description')"
                             rows="3"
                             :error="form.errors.description"
                         />
@@ -66,14 +69,14 @@ function submitCollection() {
                         <FormCheckbox
                             v-model="form.is_public"
                             id="is_public"
-                            label="Collection publique"
+                            :label="t('collections.public_collection')"
                         />
 
                         <PrimaryButton
                             type="submit"
                             :loading="form.processing"
                         >
-                            Créer
+                            {{ t('common.create') }}
                         </PrimaryButton>
                     </form>
                 </div>
@@ -92,16 +95,16 @@ function submitCollection() {
                             {{ collection.description }}
                         </p>
                         <div class="flex items-center justify-between text-sm text-gray-500">
-                            <span>{{ collection.recipes_count }} recettes</span>
-                            <span v-if="collection.is_public" class="text-green-600">Publique</span>
-                            <span v-else class="text-gray-600">Privée</span>
+                            <span>{{ collection.recipes_count }} {{ t('collections.recipes_count') }}</span>
+                            <span v-if="collection.is_public" class="text-green-600">{{ t('collections.public') }}</span>
+                            <span v-else class="text-gray-600">{{ t('collections.private') }}</span>
                         </div>
                     </Link>
                 </div>
 
                 <div v-else class="bg-white rounded-lg shadow p-8 text-center">
                     <p class="text-gray-600">
-                        Vous n'avez pas encore de collection
+                        {{ t('collections.no_collections') }}
                     </p>
                 </div>
             </div>

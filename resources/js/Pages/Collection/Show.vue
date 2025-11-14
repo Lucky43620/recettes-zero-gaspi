@@ -3,6 +3,9 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     collection: Object,
@@ -12,7 +15,7 @@ const props = defineProps({
 const deleteForm = useForm({});
 
 function deleteCollection() {
-    if (confirm('Supprimer cette collection ?')) {
+    if (confirm(t('collections.delete_confirmation'))) {
         deleteForm.delete(route('collections.destroy', props.collection.id));
     }
 }
@@ -35,7 +38,7 @@ function deleteCollection() {
                     @click="deleteCollection"
                     variant="danger"
                 >
-                    Supprimer
+                    {{ t('common.delete') }}
                 </PrimaryButton>
             </div>
         </template>
@@ -44,12 +47,12 @@ function deleteCollection() {
             <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
                 <div class="mb-6 flex items-center justify-between">
                     <div class="text-sm text-gray-600">
-                        {{ collection.recipes.length }} recettes •
-                        <span v-if="collection.is_public" class="text-green-600">Publique</span>
-                        <span v-else>Privée</span>
+                        {{ collection.recipes.length }} {{ t('collections.recipes_count') }} •
+                        <span v-if="collection.is_public" class="text-green-600">{{ t('collections.public') }}</span>
+                        <span v-else>{{ t('collections.private') }}</span>
                     </div>
                     <div class="text-sm text-gray-600">
-                        Par {{ collection.user.name }}
+                        {{ t('collections.by_user', { name: collection.user.name }) }}
                     </div>
                 </div>
 
@@ -63,7 +66,7 @@ function deleteCollection() {
 
                 <div v-else class="bg-white rounded-lg shadow p-8 text-center">
                     <p class="text-gray-600">
-                        Cette collection est vide
+                        {{ t('collections.empty') }}
                     </p>
                 </div>
             </div>

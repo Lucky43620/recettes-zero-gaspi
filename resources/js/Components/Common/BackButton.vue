@@ -1,6 +1,9 @@
 <script setup>
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
 import { Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     href: {
@@ -9,13 +12,15 @@ const props = defineProps({
     },
     label: {
         type: String,
-        default: 'Retour'
+        default: null
     }
 });
 
 function goBack() {
     window.history.back();
 }
+
+const displayLabel = props.label || t('common.back');
 </script>
 
 <template>
@@ -25,7 +30,7 @@ function goBack() {
         class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition-colors group"
     >
         <ArrowLeftIcon class="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-        {{ label }}
+        {{ displayLabel }}
     </Link>
     <button
         v-else
@@ -33,6 +38,6 @@ function goBack() {
         class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition-colors group"
     >
         <ArrowLeftIcon class="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-        {{ label }}
+        {{ displayLabel }}
     </button>
 </template>

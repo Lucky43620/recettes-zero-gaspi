@@ -1,8 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { useDateFormat } from '@/composables/useDateFormat';
+
+const { t } = useI18n();
 
 const props = defineProps({
     users: Object,
@@ -22,14 +25,14 @@ const { formatRelativeTime } = useDateFormat();
 </script>
 
 <template>
-    <Head title="Administration - Utilisateurs" />
+    <Head :title="t('admin.users_title')" />
 
     <AdminLayout>
         <div class="space-y-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Utilisateurs</h1>
-                    <p class="mt-2 text-gray-600">Gérer les utilisateurs de la plateforme</p>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ t('admin.users') }}</h1>
+                    <p class="mt-2 text-gray-600">{{ t('admin.manage_users_description') }}</p>
                 </div>
             </div>
 
@@ -39,7 +42,7 @@ const { formatRelativeTime } = useDateFormat();
                         <input
                             v-model="search"
                             type="text"
-                            placeholder="Rechercher par nom ou email..."
+                            :placeholder="t('admin.search_by_name_email')"
                             class="flex-1 border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
                             @keyup.enter="searchUsers"
                         />
@@ -47,7 +50,7 @@ const { formatRelativeTime } = useDateFormat();
                             @click="searchUsers"
                             class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                         >
-                            Rechercher
+                            {{ t('common.search') }}
                         </button>
                     </div>
                 </div>
@@ -56,13 +59,13 @@ const { formatRelativeTime } = useDateFormat();
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utilisateur</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Recettes</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Commentaires</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Followers</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Inscrit</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.user_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.email') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.recipes_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.comments_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.followers_column') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('admin.registered_column') }}</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{{ t('common.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -90,7 +93,7 @@ const { formatRelativeTime } = useDateFormat();
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
                                     <Link :href="`/admin/users/${user.id}`" class="text-green-600 hover:text-green-700 font-medium">
-                                        Voir détails
+                                        {{ t('admin.view_details') }}
                                     </Link>
                                 </td>
                             </tr>
@@ -100,7 +103,7 @@ const { formatRelativeTime } = useDateFormat();
 
                 <div v-if="users.links" class="px-6 py-4 border-t flex items-center justify-between">
                     <div class="text-sm text-gray-500">
-                        {{ users.from }} - {{ users.to }} sur {{ users.total }} utilisateurs
+                        {{ users.from }} - {{ users.to }} {{ t('admin.pagination_of') }} {{ users.total }} {{ t('admin.users_count') }}
                     </div>
                     <div class="flex gap-2">
                         <Link

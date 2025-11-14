@@ -1,5 +1,8 @@
 <script setup>
 import { router } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     day: String,
@@ -48,7 +51,7 @@ const props = defineProps({
                                 />
                                 <div class="flex-1 min-w-0">
                                     <p class="text-xs font-medium truncate">{{ mpr.recipe.title }}</p>
-                                    <p class="text-xs text-gray-500">{{ mpr.servings }} portions</p>
+                                    <p class="text-xs text-gray-500">{{ mpr.servings }} {{ t('recipe.servings').toLowerCase() }}</p>
                                 </div>
                             </div>
                         </div>

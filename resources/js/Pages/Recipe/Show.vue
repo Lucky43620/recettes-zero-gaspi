@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import BackButton from '@/Components/Common/BackButton.vue';
@@ -12,6 +13,8 @@ import CooksnapSection from '@/Components/Social/CooksnapSection.vue';
 import FavoriteButton from '@/Components/Social/FavoriteButton.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+
+const { t } = useI18n();
 
 const props = defineProps({
     recipe: Object,
@@ -54,7 +57,7 @@ function deleteRecipe() {
                         :href="route('recipes.edit', recipe.slug)"
                     >
                         <PrimaryButton>
-                            Modifier
+                            {{ t('common.edit') }}
                         </PrimaryButton>
                     </Link>
                     <PrimaryButton
@@ -62,7 +65,7 @@ function deleteRecipe() {
                         @click="confirmDeleteRecipe"
                         variant="danger"
                     >
-                        Supprimer
+                        {{ t('common.delete') }}
                     </PrimaryButton>
                 </div>
             </div>
@@ -86,7 +89,7 @@ function deleteRecipe() {
                         />
                     </div>
                     <div v-else class="h-96 bg-gray-200 flex items-center justify-center">
-                        <span class="text-gray-400 text-xl">Pas d'image</span>
+                        <span class="text-gray-400 text-xl">{{ t('recipe.no_image') }}</span>
                     </div>
 
                     <div class="p-6">
@@ -102,7 +105,7 @@ function deleteRecipe() {
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
                                     </svg>
-                                    Mode Cuisine
+                                    {{ t('cook.title') }}
                                 </Link>
                             </div>
                             <FavoriteButton
@@ -114,25 +117,25 @@ function deleteRecipe() {
 
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
                             <div>
-                                <p class="text-sm text-gray-600">Portions</p>
+                                <p class="text-sm text-gray-600">{{ t('recipe.servings') }}</p>
                                 <p class="text-lg font-semibold">{{ recipe.servings }}</p>
                             </div>
                             <div v-if="recipe.prep_minutes">
-                                <p class="text-sm text-gray-600">Préparation</p>
+                                <p class="text-sm text-gray-600">{{ t('recipe.preparation') }}</p>
                                 <p class="text-lg font-semibold">{{ recipe.prep_minutes }} min</p>
                             </div>
                             <div v-if="recipe.cook_minutes">
-                                <p class="text-sm text-gray-600">Cuisson</p>
+                                <p class="text-sm text-gray-600">{{ t('recipe.cooking') }}</p>
                                 <p class="text-lg font-semibold">{{ recipe.cook_minutes }} min</p>
                             </div>
                             <div v-if="recipe.difficulty">
-                                <p class="text-sm text-gray-600">Difficulté</p>
+                                <p class="text-sm text-gray-600">{{ t('recipe.difficulty') }}</p>
                                 <p class="text-lg font-semibold">{{ getDifficultyLabel(recipe.difficulty) }}</p>
                             </div>
                         </div>
 
                         <div v-if="recipe.ingredients && recipe.ingredients.length > 0" class="mb-6">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Ingrédients</h3>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ t('recipe.ingredients') }}</h3>
                             <div class="bg-white border border-gray-200 rounded-lg divide-y divide-gray-200">
                                 <div
                                     v-for="ingredient in recipe.ingredients"
@@ -148,7 +151,7 @@ function deleteRecipe() {
                         </div>
 
                         <div class="mb-6">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Étapes</h3>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ t('recipe.steps') }}</h3>
                             <ol class="space-y-4">
                                 <li
                                     v-for="(step, index) in recipe.steps"
@@ -174,19 +177,19 @@ function deleteRecipe() {
                                     :href="`/profile/${recipe.author.id}`"
                                     class="hover:underline"
                                 >
-                                    Par {{ recipe.author.name }}
+                                    {{ t('recipe.by_author', { author: recipe.author.name }) }}
                                 </Link>
                                 <span v-if="recipe.cuisine">{{ recipe.cuisine }}</span>
                             </div>
                         </div>
 
                         <div class="pt-6 border-t border-gray-200 mb-6">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Votre avis</h3>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ t('recipe.your_rating') }}</h3>
                             <div v-if="!$page.props.auth.user" class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-                                <p class="text-gray-700 mb-3">Connectez-vous pour noter cette recette</p>
+                                <p class="text-gray-700 mb-3">{{ t('recipe.login_to_rate') }}</p>
                                 <Link :href="route('login')">
                                     <PrimaryButton>
-                                        Se connecter
+                                        {{ t('auth.login') }}
                                     </PrimaryButton>
                                 </Link>
                             </div>
@@ -200,7 +203,7 @@ function deleteRecipe() {
 
                         <div v-if="recipe.ratings?.length" class="pt-6 border-t border-gray-200 mb-6">
                             <h3 class="text-xl font-semibold text-gray-900 mb-4">
-                                Avis ({{ recipe.ratings.length }})
+                                {{ t('recipe.reviews_count', { count: recipe.ratings.length }) }}
                             </h3>
                             <div class="space-y-4">
                                 <div
@@ -246,16 +249,16 @@ function deleteRecipe() {
 
         <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
             <template #title>
-                Supprimer la recette
+                {{ t('recipe.delete_recipe') }}
             </template>
 
             <template #content>
-                Êtes-vous sûr de vouloir supprimer cette recette ? Cette action est irréversible.
+                {{ t('recipe.delete_recipe_message') }}
             </template>
 
             <template #footer>
                 <PrimaryButton variant="secondary" @click="confirmingDeletion = false">
-                    Annuler
+                    {{ t('common.cancel') }}
                 </PrimaryButton>
 
                 <PrimaryButton
@@ -263,7 +266,7 @@ function deleteRecipe() {
                     class="ms-3"
                     @click="deleteRecipe"
                 >
-                    Supprimer
+                    {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
         </ConfirmationModal>

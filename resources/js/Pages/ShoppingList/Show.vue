@@ -3,6 +3,9 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import BackButton from '@/Components/Common/BackButton.vue';
 import { Link, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     shoppingList: Object,
@@ -61,23 +64,23 @@ const removeItem = (itemId) => {
             <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
                 <BackButton
                     :href="route('shopping-lists.index')"
-                    label="Retour aux listes"
+                    :label="t('shopping_list.back_to_lists')"
                     class="mb-6"
                 />
                 <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <h3 class="font-semibold text-lg mb-4">Ajouter un article</h3>
+                    <h3 class="font-semibold text-lg mb-4">{{ t('shopping_list.add_item') }}</h3>
                     <div class="flex gap-3">
                         <input
                             v-model="newItemName"
                             type="text"
-                            placeholder="Nom de l'article"
+                            :placeholder="t('shopping_list.item_name')"
                             class="flex-1 px-3 py-2 border rounded-md"
                             @keyup.enter="addItem"
                         />
                         <input
                             v-model="newItemQuantity"
                             type="text"
-                            placeholder="Quantité (optionnel)"
+                            :placeholder="t('shopping_list.quantity_optional')"
                             class="w-40 px-3 py-2 border rounded-md"
                             @keyup.enter="addItem"
                         />
@@ -85,14 +88,14 @@ const removeItem = (itemId) => {
                             @click="addItem"
                             class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700"
                         >
-                            Ajouter
+                            {{ t('shopping_list.add') }}
                         </button>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-lg shadow">
                     <div v-if="uncheckedItems.length" class="p-6 border-b">
-                        <h3 class="font-semibold text-lg mb-4">À acheter ({{ uncheckedItems.length }})</h3>
+                        <h3 class="font-semibold text-lg mb-4">{{ t('shopping_list.to_buy') }} ({{ uncheckedItems.length }})</h3>
                         <div class="space-y-2">
                             <div
                                 v-for="item in uncheckedItems"
@@ -124,7 +127,7 @@ const removeItem = (itemId) => {
                     </div>
 
                     <div v-if="checkedItems.length" class="p-6">
-                        <h3 class="font-semibold text-lg mb-4 text-gray-500">Acheté ({{ checkedItems.length }})</h3>
+                        <h3 class="font-semibold text-lg mb-4 text-gray-500">{{ t('shopping_list.bought') }} ({{ checkedItems.length }})</h3>
                         <div class="space-y-2">
                             <div
                                 v-for="item in checkedItems"
@@ -156,7 +159,7 @@ const removeItem = (itemId) => {
                     </div>
 
                     <div v-if="!shoppingList.items.length" class="p-12 text-center">
-                        <p class="text-gray-500">Aucun article dans cette liste</p>
+                        <p class="text-gray-500">{{ t('shopping_list.no_items') }}</p>
                     </div>
                 </div>
             </div>

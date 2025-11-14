@@ -4,6 +4,9 @@ import MealPlanMobileCard from '@/Components/MealPlanMobileCard.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { ref, computed } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     mealPlan: Object,
@@ -18,21 +21,21 @@ const page = usePage();
 
 const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 const dayLabels = {
-    monday: 'Lundi',
-    tuesday: 'Mardi',
-    wednesday: 'Mercredi',
-    thursday: 'Jeudi',
-    friday: 'Vendredi',
-    saturday: 'Samedi',
-    sunday: 'Dimanche',
+    monday: t('time.days.monday'),
+    tuesday: t('time.days.tuesday'),
+    wednesday: t('time.days.wednesday'),
+    thursday: t('time.days.thursday'),
+    friday: t('time.days.friday'),
+    saturday: t('time.days.saturday'),
+    sunday: t('time.days.sunday'),
 };
 
 const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
 const mealTypeLabels = {
-    breakfast: 'Petit-déjeuner',
-    lunch: 'Déjeuner',
-    dinner: 'Dîner',
-    snack: 'Collation',
+    breakfast: t('meal_plan.breakfast'),
+    lunch: t('meal_plan.lunch'),
+    dinner: t('meal_plan.dinner'),
+    snack: t('meal_plan.snack'),
 };
 
 const draggedRecipe = ref(null);
@@ -126,11 +129,11 @@ const getRecipeImage = (recipe) => {
 </script>
 
 <template>
-    <AppLayout title="Planning des repas">
+    <AppLayout :title="t('meal_plan.title')">
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Planning des repas
+                    {{ t('meal_plan.title') }}
                 </h2>
                 <div class="flex gap-3">
                     <PrimaryButton
@@ -138,10 +141,10 @@ const getRecipeImage = (recipe) => {
                         :loading="isGeneratingShoppingList"
                         variant="warning"
                     >
-                        Générer liste de courses
+                        {{ t('meal_plan.generate_shopping_list') }}
                     </PrimaryButton>
                     <PrimaryButton @click="openDuplicateModal">
-                        Dupliquer cette semaine
+                        {{ t('meal_plan.duplicate_week') }}
                     </PrimaryButton>
                 </div>
             </div>
@@ -151,13 +154,13 @@ const getRecipeImage = (recipe) => {
             <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
                 <div class="mb-6 flex justify-between items-center">
                     <PrimaryButton variant="secondary" @click="navigateWeek(prevWeek)">
-                        ← Semaine précédente
+                        ← {{ t('meal_plan.previous_week') }}
                     </PrimaryButton>
                     <div class="text-lg font-semibold">
-                        Semaine du {{ new Date(weekStart).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) }}
+                        {{ t('meal_plan.week_of') }} {{ new Date(weekStart).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) }}
                     </div>
                     <PrimaryButton variant="secondary" @click="navigateWeek(nextWeek)">
-                        Semaine suivante →
+                        {{ t('meal_plan.next_week') }} →
                     </PrimaryButton>
                 </div>
 
@@ -170,15 +173,15 @@ const getRecipeImage = (recipe) => {
                             </svg>
                             <div>
                                 <p class="text-sm font-semibold text-gray-900">
-                                    Limite Gratuite : {{ mealPlan.meal_plan_recipes.length }}/{{ recipeLimit }} recettes par semaine
+                                    {{ t('meal_plan.free_limit', { used: mealPlan.meal_plan_recipes.length, limit: recipeLimit }) }}
                                 </p>
                                 <p class="text-xs text-gray-600 mt-0.5">
-                                    Passez à Premium pour des plans de repas illimités avec générateur de menus IA
+                                    {{ t('meal_plan.upgrade_unlimited_message') }}
                                 </p>
                             </div>
                         </div>
                         <Link :href="route('subscription.index')" class="ml-4 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm font-semibold rounded-lg transition-all">
-                            Passer à Premium
+                            {{ t('pantry.upgrade_to_premium') }}
                         </Link>
                     </div>
                 </div>
@@ -186,15 +189,15 @@ const getRecipeImage = (recipe) => {
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     <div class="lg:col-span-1">
                         <div class="bg-white rounded-lg shadow p-4 mb-6">
-                            <h3 class="font-semibold text-lg mb-4">Mes recettes</h3>
+                            <h3 class="font-semibold text-lg mb-4">{{ t('profile.my_recipes') }}</h3>
                             <p v-if="!userRecipes || !userRecipes.length" class="text-sm text-gray-500 mb-4">
-                                Vous n'avez pas encore de recettes publiques.
+                                {{ t('meal_plan.no_recipes_yet') }}
                                 <Link :href="route('recipes.create')" class="text-green-600 hover:underline">
-                                    Créer une recette
+                                    {{ t('recipe.create_recipe') }}
                                 </Link>
                             </p>
                             <p v-else class="text-sm text-gray-500 mb-4">
-                                Glissez-déposez vos recettes dans le planning
+                                {{ t('meal_plan.drag_drop_recipes') }}
                             </p>
                             <div class="space-y-2 max-h-[400px] overflow-y-auto">
                                 <div
@@ -212,7 +215,7 @@ const getRecipeImage = (recipe) => {
                                         />
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-medium truncate">{{ recipe.title }}</p>
-                                            <p class="text-xs text-gray-500">{{ recipe.servings }} portions</p>
+                                            <p class="text-xs text-gray-500">{{ recipe.servings }} {{ t('recipe.servings').toLowerCase() }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -220,9 +223,9 @@ const getRecipeImage = (recipe) => {
                         </div>
 
                         <div v-if="favoriteRecipes && favoriteRecipes.length" class="bg-white rounded-lg shadow p-4">
-                            <h3 class="font-semibold text-lg mb-4">Mes favoris</h3>
+                            <h3 class="font-semibold text-lg mb-4">{{ t('profile.my_favorites') }}</h3>
                             <p class="text-sm text-gray-500 mb-4">
-                                Glissez-déposez vos recettes favorites dans le planning
+                                {{ t('meal_plan.drag_drop_favorites') }}
                             </p>
                             <div class="space-y-2 max-h-[400px] overflow-y-auto">
                                 <div
@@ -240,7 +243,7 @@ const getRecipeImage = (recipe) => {
                                         />
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-medium truncate">{{ recipe.title }}</p>
-                                            <p class="text-xs text-gray-500">{{ recipe.servings }} portions</p>
+                                            <p class="text-xs text-gray-500">{{ recipe.servings }} {{ t('recipe.servings').toLowerCase() }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -256,7 +259,7 @@ const getRecipeImage = (recipe) => {
                                     <thead class="bg-gray-50">
                                         <tr>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-32">
-                                                Repas
+                                                {{ t('meal_plan.meals') }}
                                             </th>
                                             <th
                                                 v-for="day in daysOfWeek"
@@ -302,7 +305,7 @@ const getRecipeImage = (recipe) => {
                                                             />
                                                             <div class="flex-1 min-w-0">
                                                                 <p class="text-xs font-medium truncate">{{ mpr.recipe.title }}</p>
-                                                                <p class="text-xs text-gray-500">{{ mpr.servings }} portions</p>
+                                                                <p class="text-xs text-gray-500">{{ mpr.servings }} {{ t('recipe.servings').toLowerCase() }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -341,10 +344,10 @@ const getRecipeImage = (recipe) => {
             @click.self="showDuplicateModal = false"
         >
             <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                <h3 class="text-lg font-semibold mb-4">Dupliquer la semaine</h3>
+                <h3 class="text-lg font-semibold mb-4">{{ t('meal_plan.duplicate_week') }}</h3>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Vers quelle semaine ?
+                        {{ t('meal_plan.duplicate_to_week') }}
                     </label>
                     <input
                         v-model="duplicateWeekStart"
@@ -358,13 +361,13 @@ const getRecipeImage = (recipe) => {
                         @click="showDuplicateModal = false"
                         :disabled="isDuplicating"
                     >
-                        Annuler
+                        {{ t('common.cancel') }}
                     </PrimaryButton>
                     <PrimaryButton
                         @click="duplicateWeek"
                         :loading="isDuplicating"
                     >
-                        Dupliquer
+                        {{ t('meal_plan.duplicate') }}
                     </PrimaryButton>
                 </div>
             </div>

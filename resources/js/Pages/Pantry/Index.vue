@@ -1,15 +1,15 @@
 <template>
-    <AppLayout title="Mon Garde-Manger">
+    <AppLayout :title="t('pantry.title')">
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Mon Garde-Manger
+                    {{ t('pantry.title') }}
                 </h2>
                 <PrimaryButton @click="openAddModal" type="button">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-                    Ajouter un article
+                    {{ t('pantry.add_item') }}
                 </PrimaryButton>
             </div>
         </template>
@@ -25,15 +25,15 @@
                             </svg>
                             <div>
                                 <p class="text-sm font-semibold text-gray-900">
-                                    Limite Gratuite : {{ stats.total }}/{{ itemLimit }} articles utilisés
+                                    {{ t('pantry.free_limit_used', { used: stats.total, limit: itemLimit }) }}
                                 </p>
                                 <p class="text-xs text-gray-600 mt-0.5">
-                                    Passez à Premium pour un garde-manger illimité avec scanner de code-barres
+                                    {{ t('pantry.upgrade_unlimited_message') }}
                                 </p>
                             </div>
                         </div>
                         <Link :href="route('subscription.index')" class="ml-4 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm font-semibold rounded-lg transition-all">
-                            Passer à Premium
+                            {{ t('pantry.upgrade_to_premium') }}
                         </Link>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm text-gray-600">Total d'articles</p>
+                                <p class="text-sm text-gray-600">{{ t('pantry.total_items') }}</p>
                                 <p class="text-2xl font-bold text-gray-900">{{ stats.total }}</p>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm text-gray-600">Expire bientôt</p>
+                                <p class="text-sm text-gray-600">{{ t('pantry.expiring_soon') }}</p>
                                 <p class="text-2xl font-bold text-yellow-900">{{ stats.expiring_soon }}</p>
                             </div>
                         </div>
@@ -75,7 +75,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm text-gray-600">Expiré</p>
+                                <p class="text-sm text-gray-600">{{ t('pantry.expired') }}</p>
                                 <p class="text-2xl font-bold text-red-900">{{ stats.expired }}</p>
                             </div>
                         </div>
@@ -86,26 +86,26 @@
                     <div class="p-6 border-b border-gray-200">
                         <div class="flex flex-col sm:flex-row gap-4">
                             <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Filtrer par statut</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('pantry.filter_by_status') }}</label>
                                 <select
                                     v-model="filters.status"
                                     @change="applyFilters"
                                     class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
                                 >
-                                    <option value="">Tous les articles</option>
-                                    <option value="expiring">Expire bientôt</option>
-                                    <option value="expired">Expiré</option>
+                                    <option value="">{{ t('pantry.all_items') }}</option>
+                                    <option value="expiring">{{ t('pantry.expiring_soon') }}</option>
+                                    <option value="expired">{{ t('pantry.expired') }}</option>
                                 </select>
                             </div>
 
                             <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Filtrer par emplacement</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('pantry.filter_by_location') }}</label>
                                 <select
                                     v-model="filters.storage"
                                     @change="applyFilters"
                                     class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
                                 >
-                                    <option value="">Tous les emplacements</option>
+                                    <option value="">{{ t('pantry.all_locations') }}</option>
                                     <option v-for="location in storageLocations" :key="location" :value="location">
                                         {{ location }}
                                     </option>
@@ -119,10 +119,10 @@
                     <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun article dans votre garde-manger</h3>
-                    <p class="text-gray-500 mb-4">Commencez à ajouter des ingrédients pour suivre vos stocks et dates de péremption.</p>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ t('pantry.no_items') }}</h3>
+                    <p class="text-gray-500 mb-4">{{ t('pantry.empty_state') }}</p>
                     <PrimaryButton @click="openAddModal" type="button">
-                        Ajouter mon premier article
+                        {{ t('pantry.add_first_item') }}
                     </PrimaryButton>
                 </div>
 
@@ -153,16 +153,16 @@
 
         <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
             <template #title>
-                Supprimer l'article
+                {{ t('pantry.delete_item') }}
             </template>
 
             <template #content>
-                Êtes-vous sûr de vouloir supprimer cet article de votre garde-manger ? Cette action est irréversible.
+                {{ t('pantry.delete_confirmation') }}
             </template>
 
             <template #footer>
                 <PrimaryButton variant="secondary" @click="confirmingDeletion = false">
-                    Annuler
+                    {{ t('common.cancel') }}
                 </PrimaryButton>
 
                 <PrimaryButton
@@ -170,7 +170,7 @@
                     class="ms-3"
                     @click="confirmDelete"
                 >
-                    Supprimer
+                    {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
         </ConfirmationModal>
@@ -178,6 +178,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
+import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PantryItemCard from '@/Components/Pantry/PantryItemCard.vue';
 import AddPantryItemModal from '@/Components/Pantry/AddPantryItemModal.vue';
@@ -186,6 +188,8 @@ import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
+
+const { t } = useI18n();
 
 const props = defineProps({
     items: Array,

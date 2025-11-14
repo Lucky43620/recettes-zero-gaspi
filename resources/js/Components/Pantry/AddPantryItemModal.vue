@@ -6,7 +6,7 @@
             <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-semibold text-gray-900">
-                        Ajouter un article au garde-manger
+                        {{ t('pantry.add_to_pantry') }}
                     </h3>
                     <button
                         @click="$emit('close')"
@@ -21,14 +21,14 @@
                 <form @submit.prevent="submit" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Rechercher un ingrédient
+                            {{ t('pantry.search_ingredient') }}
                         </label>
                         <div class="relative">
                             <input
                                 v-model="searchQuery"
                                 @input="handleSearch"
                                 type="text"
-                                placeholder="Rechercher un produit..."
+                                :placeholder="t('pantry.search_product')"
                                 class="w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
                             >
                         </div>
@@ -96,7 +96,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <FormInput
                             v-model="form.quantity"
-                            label="Quantité"
+                            :label="t('pantry.quantity')"
                             type="number"
                             step="0.01"
                             min="0.01"
@@ -106,8 +106,8 @@
 
                         <FormSelect
                             v-model="form.unit_code"
-                            label="Unité"
-                            placeholder="Sélectionner"
+                            :label="t('pantry.unit')"
+                            :placeholder="t('pantry.select_unit')"
                             required
                             :error="form.errors.unit_code"
                         >
@@ -119,7 +119,7 @@
 
                     <FormInput
                         v-model="form.expiration_date"
-                        label="Date de péremption"
+                        :label="t('pantry.expiration_date')"
                         type="date"
                         :min="today"
                         :error="form.errors.expiration_date"
@@ -127,8 +127,8 @@
 
                     <FormSelect
                         v-model="form.storage_location"
-                        label="Emplacement de stockage"
-                        placeholder="Sélectionner un emplacement"
+                        :label="t('pantry.storage_location_label')"
+                        :placeholder="t('pantry.select_location')"
                         :error="form.errors.storage_location"
                     >
                         <option v-for="option in storageLocationOptions" :key="option.value" :value="option.value">
@@ -144,13 +144,13 @@
                             class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500"
                         >
                         <label for="opened" class="ml-2 text-sm text-gray-700">
-                            Article déjà ouvert
+                            {{ t('pantry.item_opened') }}
                         </label>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-4 border-t">
                         <SecondaryButton @click="$emit('close')">
-                            Annuler
+                            {{ t('common.cancel') }}
                         </SecondaryButton>
 
                         <PrimaryButton
@@ -158,7 +158,7 @@
                             :disabled="!form.ingredient_id"
                             :loading="form.processing"
                         >
-                            Ajouter
+                            {{ t('shopping_list.add') }}
                         </PrimaryButton>
                     </div>
                 </form>
@@ -170,12 +170,15 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import FormInput from '@/Components/Common/FormInput.vue';
 import FormSelect from '@/Components/Common/FormSelect.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import SecondaryButton from '@/Components/Common/SecondaryButton.vue';
 import { useStorageLocationLabels } from '@/composables/useEnumLabels';
+
+const { t } = useI18n();
 
 const props = defineProps({
     units: Array,

@@ -6,7 +6,7 @@
             <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-semibold text-gray-900">
-                        Modifier l'article
+                        {{ t('pantry.edit_item') }}
                     </h3>
                     <button
                         @click="$emit('close')"
@@ -21,7 +21,7 @@
                 <form @submit.prevent="submit" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Ingrédient
+                            {{ t('pantry.ingredient') }}
                         </label>
                         <div class="p-3 bg-gray-50 border border-gray-200 rounded-md flex items-center gap-3">
                             <img
@@ -45,7 +45,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <FormInput
                             v-model="form.quantity"
-                            label="Quantité"
+                            :label="t('pantry.quantity')"
                             type="number"
                             step="0.01"
                             min="0.01"
@@ -55,8 +55,8 @@
 
                         <FormSelect
                             v-model="form.unit_code"
-                            label="Unité"
-                            placeholder="Sélectionner"
+                            :label="t('pantry.unit')"
+                            :placeholder="t('pantry.select_unit')"
                             required
                             :error="form.errors.unit_code"
                         >
@@ -68,15 +68,15 @@
 
                     <FormInput
                         v-model="form.expiration_date"
-                        label="Date de péremption"
+                        :label="t('pantry.expiration_date')"
                         type="date"
                         :error="form.errors.expiration_date"
                     />
 
                     <FormSelect
                         v-model="form.storage_location"
-                        label="Emplacement de stockage"
-                        placeholder="Sélectionner un emplacement"
+                        :label="t('pantry.storage_location_label')"
+                        :placeholder="t('pantry.select_location')"
                         :error="form.errors.storage_location"
                     >
                         <option v-for="option in storageLocationOptions" :key="option.value" :value="option.value">
@@ -92,20 +92,20 @@
                             class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500"
                         >
                         <label for="opened-edit" class="ml-2 text-sm text-gray-700">
-                            Article déjà ouvert
+                            {{ t('pantry.item_opened') }}
                         </label>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-4 border-t">
                         <SecondaryButton @click="$emit('close')">
-                            Annuler
+                            {{ t('common.cancel') }}
                         </SecondaryButton>
 
                         <PrimaryButton
                             type="submit"
                             :loading="form.processing"
                         >
-                            Enregistrer
+                            {{ t('common.save') }}
                         </PrimaryButton>
                     </div>
                 </form>
@@ -116,11 +116,14 @@
 
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import FormInput from '@/Components/Common/FormInput.vue';
 import FormSelect from '@/Components/Common/FormSelect.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import SecondaryButton from '@/Components/Common/SecondaryButton.vue';
 import { useStorageLocationLabels } from '@/composables/useEnumLabels';
+
+const { t } = useI18n();
 
 const props = defineProps({
     item: {

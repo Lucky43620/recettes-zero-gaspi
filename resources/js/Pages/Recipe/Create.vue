@@ -1,10 +1,13 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import RecipeStepEditor from '@/Components/Recipe/RecipeStepEditor.vue';
 import RecipeFormFields from '@/Components/Recipe/RecipeFormFields.vue';
 import RecipeIngredientEditor from '@/Components/Recipe/RecipeIngredientEditor.vue';
 import FileUpload from '@/Components/Common/FileUpload.vue';
+
+const { t } = useI18n();
 
 const props = defineProps({
     units: Array,
@@ -33,10 +36,10 @@ function submit() {
 </script>
 
 <template>
-    <AppLayout title="Créer une recette">
+    <AppLayout :title="t('recipe.create_recipe')">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Créer une recette
+                {{ t('recipe.create_recipe') }}
             </h2>
         </template>
 
@@ -49,7 +52,7 @@ function submit() {
                                 <div>
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                         <span class="flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 rounded-full text-sm font-bold">1</span>
-                                        Informations générales
+                                        {{ t('recipe.general_information') }}
                                     </h3>
                                     <div class="pl-10">
                                         <RecipeFormFields :form="form" />
@@ -59,7 +62,7 @@ function submit() {
                                 <div class="border-t pt-6">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                         <span class="flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 rounded-full text-sm font-bold">2</span>
-                                        Ingrédients
+                                        {{ t('recipe.ingredients') }}
                                     </h3>
                                     <div class="pl-10">
                                         <RecipeIngredientEditor
@@ -72,7 +75,7 @@ function submit() {
                                 <div class="border-t pt-6">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                         <span class="flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 rounded-full text-sm font-bold">3</span>
-                                        Étapes de préparation
+                                        {{ t('recipe.preparation_steps') }}
                                     </h3>
                                     <div class="pl-10">
                                         <RecipeStepEditor
@@ -85,14 +88,14 @@ function submit() {
                                 <div class="border-t pt-6">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                                         <span class="flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 rounded-full text-sm font-bold">4</span>
-                                        Photos de la recette
+                                        {{ t('recipe.recipe_photos') }}
                                     </h3>
                                     <div class="pl-10">
                                         <FileUpload
                                             v-model="form.images"
                                             multiple
                                             label=""
-                                            hint="PNG, JPG, GIF jusqu'à 10MB par image"
+                                            :hint="t('recipe.image_upload_hint')"
                                             :error="form.errors.images"
                                         />
                                     </div>
@@ -108,9 +111,9 @@ function submit() {
                                                     class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-500 focus:ring-green-500 h-5 w-5"
                                                 />
                                                 <div class="ml-3">
-                                                    <span class="text-sm font-medium text-gray-900">Rendre cette recette publique</span>
+                                                    <span class="text-sm font-medium text-gray-900">{{ t('recipe.make_public') }}</span>
                                                     <p class="text-xs text-gray-500 mt-0.5">
-                                                        Les recettes publiques sont visibles par tous les utilisateurs
+                                                        {{ t('recipe.public_recipe_description') }}
                                                     </p>
                                                 </div>
                                             </label>
@@ -124,14 +127,14 @@ function submit() {
                                     :href="route('recipes.index')"
                                     class="px-6 py-2.5 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                                 >
-                                    Annuler
+                                    {{ t('common.cancel') }}
                                 </a>
                                 <button
                                     type="submit"
                                     :disabled="form.processing"
                                     class="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-sm transition-all"
                                 >
-                                    {{ form.processing ? 'Création...' : 'Créer la recette' }}
+                                    {{ form.processing ? t('common.creating') : t('recipe.create_button') }}
                                 </button>
                             </div>
                         </form>
