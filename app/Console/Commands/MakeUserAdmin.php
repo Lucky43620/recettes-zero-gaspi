@@ -34,9 +34,10 @@ class MakeUserAdmin extends Command
 
         \Artisan::call('cache:clear');
         \Artisan::call('config:clear');
+        \Artisan::call('permission:cache-reset');
 
         $this->info("User '{$user->name}' ({$email}) has been promoted to admin.");
-        $this->warn("Cache cleared. Please ask the user to logout and login again.");
+        $this->warn("All caches cleared (including permissions). User must logout and login again.");
 
         return Command::SUCCESS;
     }

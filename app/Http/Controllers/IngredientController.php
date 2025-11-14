@@ -13,8 +13,22 @@ class IngredientController extends Controller
         private IngredientService $ingredientService
     ) {}
 
-    public function show(Ingredient $ingredient)
+    public function show($identifier)
     {
+        if (is_numeric($identifier)) {
+            $ingredient = Ingredient::findOrFail($identifier);
+        } else {
+            $ingredient = Ingredient::where('openfoodfacts_id', $identifier)->first();
+
+            if (!$ingredient) {
+                $ingredient = $this->ingredientService->findOrCreateByBarcode($identifier);
+
+                if (!$ingredient) {
+                    abort(404, 'Produit non trouvé');
+                }
+            }
+        }
+
         return Inertia::render('Ingredient/Show', [
             'ingredient' => $ingredient,
         ]);

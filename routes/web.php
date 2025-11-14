@@ -53,7 +53,7 @@ Route::get('/recipes/{recipe:slug}', [RecipeController::class, 'show'])->name('r
 Route::get('/recipes/{recipe:slug}/cook', [RecipeController::class, 'cook'])->name('recipes.cook');
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show'])->name('ingredients.show');
+Route::get('/ingredients/{identifier}', [IngredientController::class, 'show'])->name('ingredients.show');
 
 Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('user.public-profile');
 Route::get('/profile/{user}/followers', [ProfileController::class, 'followers'])->name('user.followers');
