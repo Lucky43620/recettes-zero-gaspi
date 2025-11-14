@@ -45,13 +45,15 @@ class MealPlanController extends Controller
             ->with('media')
             ->get();
 
+        $isPremium = Auth::user()->isPremium();
+
         return Inertia::render('MealPlan/Index', [
             'mealPlan' => $mealPlan,
             'weekStart' => $weekStart->format('Y-m-d'),
             'userRecipes' => $userRecipes,
             'favoriteRecipes' => $favoriteRecipes,
-            'isPremium' => Auth::user()->isPremium(),
-            'recipeLimit' => Auth::user()->isPremium() ? null : 3,
+            'isPremium' => $isPremium,
+            'recipeLimit' => $isPremium ? null : 3,
         ]);
     }
 

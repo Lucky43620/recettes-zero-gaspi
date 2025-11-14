@@ -32,16 +32,17 @@ class AdminUserController extends Controller
 
     public function show(User $user)
     {
-        $user->load(['recipes', 'comments', 'ratings', 'collections', 'followers', 'following']);
+        $user->loadCount(['recipes', 'comments', 'ratings', 'collections', 'followers', 'following']);
+        $user->load(['recipes' => fn($q) => $q->select('id', 'author_id', 'is_public')]);
 
         $stats = [
-            'recipes_count' => $user->recipes()->count(),
-            'public_recipes' => $user->recipes()->where('is_public', true)->count(),
-            'comments_count' => $user->comments()->count(),
-            'ratings_count' => $user->ratings()->count(),
-            'followers_count' => $user->followers()->count(),
-            'following_count' => $user->following()->count(),
-            'collections_count' => $user->collections()->count(),
+            'recipes_count' => $user->recipes_count,
+            'public_recipes' => $user->recipes->where('is_public', true)->count(),
+            'comments_count' => $user->comments_count,
+            'ratings_count' => $user->ratings_count,
+            'followers_count' => $user->followers_count,
+            'following_count' => $user->following_count,
+            'collections_count' => $user->collections_count,
         ];
 
         return Inertia::render('Admin/Users/Show', [

@@ -28,9 +28,9 @@ class CommentController extends Controller
         ]);
 
         if ($comment->parent_id) {
-            $parentComment = Comment::find($comment->parent_id);
-            if ($parentComment && $parentComment->user_id !== Auth::id()) {
-                $parentComment->user->notify(new ReplyNotification($comment, $parentComment));
+            $comment->load('parent.user');
+            if ($comment->parent && $comment->parent->user_id !== Auth::id()) {
+                $comment->parent->user->notify(new ReplyNotification($comment, $comment->parent));
             }
         } else {
             if ($recipe->author_id !== Auth::id()) {

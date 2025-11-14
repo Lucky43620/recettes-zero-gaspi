@@ -14,6 +14,8 @@ class SubscriptionController extends Controller
     public function index(): Response
     {
         $user = auth()->user();
+        $isPremium = $user ? $user->isPremium() : false;
+        $subscription = $isPremium ? $user->subscription('default') : null;
 
         return Inertia::render('Subscription/Index', [
             'plans' => [
@@ -58,8 +60,8 @@ class SubscriptionController extends Controller
                 ],
             ],
             'currentPlan' => $user ? $user->planName() : 'free',
-            'isSubscribed' => $user && $user->isPremium(),
-            'subscription' => $user && $user->isPremium() ? $user->subscription('default') : null,
+            'isSubscribed' => $isPremium,
+            'subscription' => $subscription,
             'stripeKey' => env('STRIPE_KEY'),
         ]);
     }

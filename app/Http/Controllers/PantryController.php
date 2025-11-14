@@ -18,35 +18,40 @@ class PantryController extends Controller
     use AuthorizesRequests;
     public function index(Request $request)
     {
-        $query = $request->user()->pantryItems()
+        $allItems = $request->user()->pantryItems()
             ->with(['ingredient', 'unit'])
-            ->orderBy('expiration_date', 'asc');
+            ->orderBy('expiration_date', 'asc')
+            ->get();
 
         if ($request->has('filter')) {
             $filter = $request->filter;
             if ($filter === 'expiring') {
-                $query->expiringSoon();
+                $filteredItems = $allItems->filter(fn($item) => $item->isExpiringSoon());
             } elseif ($filter === 'expired') {
-                $query->expired();
+                $filteredItems = $allItems->filter(fn($item) => $item->isExpired());
+            } else {
+                $filteredItems = $allItems;
             }
+        } else {
+            $filteredItems = $allItems;
         }
 
         if ($request->has('storage')) {
-            $query->where('storage_location', $request->storage);
+            $filteredItems = $filteredItems->where('storage_location', $request->storage);
         }
 
-        $items = PantryItemResource::collection($query->get());
+        $items = PantryItemResource::collection($filteredItems);
 
         $stats = [
-            'total' => $request->user()->pantryItems()->count(),
-            'expiring_soon' => $request->user()->pantryItems()->expiringSoon()->count(),
-            'expired' => $request->user()->pantryItems()->expired()->count(),
+            'total' => $allItems->count(),
+            'expiring_soon' => $allItems->filter(fn($item) => $item->isExpiringSoon())->count(),
+            'expired' => $allItems->filter(fn($item) => $item->isExpired())->count(),
         ];
 
-        $storageLocations = $request->user()->pantryItems()
+        $storageLocations = $allItems
             ->whereNotNull('storage_location')
-            ->distinct()
             ->pluck('storage_location')
+            ->unique()
             ->values()
             ->all();
 

@@ -7,13 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Recipe extends Model implements HasMedia
 {
-    use HasFactory, Sluggable, Searchable, InteractsWithMedia;
+    use HasFactory, Sluggable, InteractsWithMedia;
 
     protected $fillable = [
         'author_id',
@@ -50,18 +49,6 @@ class Recipe extends Model implements HasMedia
             'slug' => [
                 'source' => 'title'
             ]
-        ];
-    }
-
-    public function toSearchableArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'summary' => $this->summary,
-            'difficulty' => $this->difficulty,
-            'cuisine' => $this->cuisine,
-            'author_name' => $this->author->name,
         ];
     }
 

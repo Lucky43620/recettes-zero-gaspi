@@ -96,10 +96,17 @@ class CollectionController extends Controller
 
         $recipeIds = $request->getRecipeIds();
 
+        $cases = [];
+        $ids = [];
         foreach ($recipeIds as $position => $recipeId) {
-            $collection->recipes()->updateExistingPivot($recipeId, [
-                'position' => $position + 1,
-            ]);
+            $cases[] = "WHEN {$recipeId} THEN " . ($position + 1);
+            $ids[] = $recipeId;
+        }
+
+        if (!empty($ids)) {
+            $casesString = implode(' ', $cases);
+            $idsString = implode(',', $ids);
+            \DB::update("UPDATE collection_recipe SET position = CASE recipe_id {$casesString} END WHERE collection_id = ? AND recipe_id IN ({$idsString})", [$collection->id]);
         }
 
         return back()->with('success', 'Ordre mis à jour');

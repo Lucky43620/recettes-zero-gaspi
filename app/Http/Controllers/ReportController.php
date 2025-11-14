@@ -12,7 +12,9 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $reports = Report::latest()->paginate(20);
+        $reports = Report::with(['reporter', 'reportable'])
+            ->latest()
+            ->paginate(20);
 
         return Inertia::render('Admin/Reports/Index', [
             'reports' => $reports,

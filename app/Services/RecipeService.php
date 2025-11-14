@@ -93,29 +93,40 @@ class RecipeService
 
     private function syncIngredients(Recipe $recipe, array $ingredients): void
     {
-        $recipe->ingredients()->detach();
+        $existingIds = array_filter(array_column($ingredients, 'ingredient_id'));
+        $existingIngredients = $existingIds
+            ? Ingredient::whereIn('id', $existingIds)->get()->keyBy('id')
+            : collect();
 
-        foreach ($ingredients as $index => $ingredientData) {
-            if (!empty($ingredientData['ingredient_id'])) {
-                $ingredient = Ingredient::find($ingredientData['ingredient_id']);
-            } elseif (!empty($ingredientData['name'])) {
-                $ingredient = Ingredient::firstOrCreate(
-                    ['name' => $ingredientData['name']]
-                );
-            } else {
-                continue;
+        $newNames = array_filter(array_column($ingredients, 'name'));
+        $newIngredients = [];
+        foreach ($newNames as $name) {
+            if (!$existingIngredients->contains('name', $name)) {
+                $newIngredients[$name] = Ingredient::firstOrCreate(['name' => $name]);
             }
-
-            if (!$ingredient) {
-                continue;
-            }
-
-            $recipe->ingredients()->attach($ingredient->id, [
-                'quantity' => $ingredientData['quantity'] ?? null,
-                'unit_code' => $ingredientData['unit_code'] ?? null,
-                'position' => $index,
-            ]);
         }
+
+        $syncData = [];
+        foreach ($ingredients as $index => $ingredientData) {
+            $ingredient = null;
+
+            if (!empty($ingredientData['ingredient_id'])) {
+                $ingredient = $existingIngredients->get($ingredientData['ingredient_id']);
+            } elseif (!empty($ingredientData['name'])) {
+                $ingredient = $newIngredients[$ingredientData['name']]
+                    ?? $existingIngredients->firstWhere('name', $ingredientData['name']);
+            }
+
+            if ($ingredient) {
+                $syncData[$ingredient->id] = [
+                    'quantity' => $ingredientData['quantity'] ?? null,
+                    'unit_code' => $ingredientData['unit_code'] ?? null,
+                    'position' => $index,
+                ];
+            }
+        }
+
+        $recipe->ingredients()->sync($syncData);
     }
 
     private function syncImages(Recipe $recipe, array $images): void
