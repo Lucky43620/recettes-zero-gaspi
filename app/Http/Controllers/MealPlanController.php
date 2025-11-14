@@ -8,6 +8,7 @@ use App\Models\MealPlan;
 use App\Models\MealPlanRecipe;
 use App\Models\Recipe;
 use App\Services\FeatureLimitService;
+use App\Services\MealPlanService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -92,7 +93,7 @@ class MealPlanController extends Controller
         return back();
     }
 
-    public function duplicate(Request $request, MealPlan $mealPlan)
+    public function duplicate(Request $request, MealPlan $mealPlan, MealPlanService $mealPlanService)
     {
         $this->authorize('view', $mealPlan);
 
@@ -100,33 +101,13 @@ class MealPlanController extends Controller
             'week_start_date' => 'required|date',
         ]);
 
-        $newWeekStart = Carbon::parse($validated['week_start_date']);
+        $newPlan = $mealPlanService->duplicateMealPlan(
+            Auth::user(),
+            $mealPlan,
+            $validated['week_start_date']
+        );
 
-        $existingPlan = Auth::user()->mealPlans()
-            ->where('week_start_date', $newWeekStart->format('Y-m-d'))
-            ->first();
-
-        if ($existingPlan) {
-            $existingPlan->mealPlanRecipes()->delete();
-            $newPlan = $existingPlan;
-        } else {
-            $newPlan = Auth::user()->mealPlans()->create([
-                'week_start_date' => $newWeekStart->format('Y-m-d'),
-                'name' => $mealPlan->name,
-            ]);
-        }
-
-        foreach ($mealPlan->mealPlanRecipes as $mealPlanRecipe) {
-            $newPlan->mealPlanRecipes()->create([
-                'recipe_id' => $mealPlanRecipe->recipe_id,
-                'planned_date' => $mealPlanRecipe->planned_date,
-                'meal_type' => $mealPlanRecipe->meal_type,
-                'servings' => $mealPlanRecipe->servings,
-                'notes' => $mealPlanRecipe->notes,
-            ]);
-        }
-
-        return redirect()->route('meal-plans.index', ['week' => $newWeekStart->format('Y-m-d')])
+        return redirect()->route('meal-plans.index', ['week' => $validated['week_start_date']])
             ->with('success', 'Semaine dupliquée avec succès');
     }
 }

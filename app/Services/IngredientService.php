@@ -68,6 +68,49 @@ class IngredientService
         }
     }
 
+    public function lookupBarcode(string $barcode): ?array
+    {
+        try {
+            $request = new GetProductByBarcodeRequest($barcode);
+            $response = $this->connector->send($request);
+
+            if (!$response->successful()) {
+                return null;
+            }
+
+            $data = $response->json();
+
+            if (!isset($data['product']) || ($data['status'] ?? 0) === 0) {
+                return null;
+            }
+
+            $product = $data['product'];
+
+            return [
+                'name' => $product['product_name'] ?? 'Produit sans nom',
+                'barcode' => $barcode,
+                'brand' => $product['brands'] ?? null,
+                'quantity' => $product['quantity'] ?? null,
+                'categories' => $product['categories'] ?? null,
+                'image_url' => $product['image_url'] ?? null,
+                'ingredients_text' => $product['ingredients_text_fr'] ?? $product['ingredients_text'] ?? null,
+                'nutriments' => [
+                    'energy' => $product['nutriments']['energy-kcal_100g'] ?? null,
+                    'fat' => $product['nutriments']['fat_100g'] ?? null,
+                    'carbohydrates' => $product['nutriments']['carbohydrates_100g'] ?? null,
+                    'proteins' => $product['nutriments']['proteins_100g'] ?? null,
+                    'salt' => $product['nutriments']['salt_100g'] ?? null,
+                ],
+            ];
+        } catch (\Exception $e) {
+            Log::error('OpenFoodFacts barcode lookup error', [
+                'barcode' => $barcode,
+                'error' => $e->getMessage(),
+            ]);
+            return null;
+        }
+    }
+
     public function findOrCreateByBarcode(string $barcode): ?Ingredient
     {
         $ingredient = Ingredient::where('barcode', $barcode)->first();

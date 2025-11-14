@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RecipeFilterRequest;
 use App\Http\Requests\StoreRecipeRequest;
 use App\Http\Requests\UpdateRecipeRequest;
 use App\Models\Recipe;
@@ -20,7 +21,7 @@ class RecipeController extends Controller
         private RecipeService $recipeService
     ) {}
 
-    public function index(Request $request)
+    public function index(RecipeFilterRequest $request)
     {
         $query = Recipe::with(['author', 'media'])
             ->where('is_public', true);
@@ -30,15 +31,11 @@ class RecipeController extends Controller
 
         return Inertia::render('Recipe/Index', [
             'recipes' => $recipes,
-            'filters' => [
-                'search' => $request->input('search', ''),
-                'difficulty' => $request->input('difficulty', ''),
-                'sort' => $request->input('sort', 'latest'),
-            ],
+            'filters' => $request->filters(),
         ]);
     }
 
-    public function myRecipes(Request $request)
+    public function myRecipes(RecipeFilterRequest $request)
     {
         $query = Recipe::with(['author', 'media'])
             ->where('author_id', Auth::id());
@@ -52,12 +49,7 @@ class RecipeController extends Controller
 
         return Inertia::render('Recipe/MyRecipes', [
             'recipes' => $recipes,
-            'filters' => [
-                'search' => $request->input('search', ''),
-                'difficulty' => $request->input('difficulty', ''),
-                'sort' => $request->input('sort', 'latest'),
-                'visibility' => $request->input('visibility', ''),
-            ],
+            'filters' => $request->filters(),
         ]);
     }
 

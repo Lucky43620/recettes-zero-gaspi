@@ -162,7 +162,7 @@ Route::middleware([
     Route::get('/gdpr/export', [GdprController::class, 'exportData'])->name('gdpr.export');
     Route::delete('/gdpr/delete-account', [GdprController::class, 'deleteAccount'])->name('gdpr.delete');
 
-    Route::post('/barcode/lookup', [\App\Http\Controllers\BarcodeController::class, 'lookup'])
+    Route::post('/barcode/lookup', [IngredientController::class, 'lookupBarcode'])
         ->middleware(['premium', 'throttle:60,1'])
         ->name('barcode.lookup');
 

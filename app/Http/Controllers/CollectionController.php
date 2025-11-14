@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CollectionReorderRequest;
 use App\Http\Requests\StoreCollectionRequest;
 use App\Models\Collection;
 use App\Models\Recipe;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -90,16 +90,13 @@ class CollectionController extends Controller
         return back()->with('success', 'Recette retirée de la collection');
     }
 
-    public function reorder(Collection $collection, Request $request)
+    public function reorder(CollectionReorderRequest $request, Collection $collection)
     {
         $this->authorize('update', $collection);
 
-        $validated = $request->validate([
-            'recipe_ids' => 'required|array',
-            'recipe_ids.*' => 'required|exists:recipes,id',
-        ]);
+        $recipeIds = $request->getRecipeIds();
 
-        foreach ($validated['recipe_ids'] as $position => $recipeId) {
+        foreach ($recipeIds as $position => $recipeId) {
             $collection->recipes()->updateExistingPivot($recipeId, [
                 'position' => $position + 1,
             ]);
