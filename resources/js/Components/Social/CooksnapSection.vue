@@ -1,12 +1,14 @@
 <script setup>
-import { ref } from 'vue';
-import { useForm, Link } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
-import { useDateFormat } from '@/composables/useDateFormat';
+import CooksnapForm from './CooksnapForm.vue';
+import CooksnapCard from './CooksnapCard.vue';
 
 const { t } = useI18n();
+const page = usePage();
 
 const props = defineProps({
     recipe: Object,
@@ -18,40 +20,20 @@ const form = useForm({
     photos: [],
 });
 
-const photoPreviews = ref([]);
+const cooksnapFormRef = ref(null);
 const confirmingDeletion = ref(false);
 const cooksnapToDelete = ref(null);
 const selectedImage = ref(null);
 
-function handlePhotoSelect(event) {
-    const files = Array.from(event.target.files);
-    if (files.length + form.photos.length > 5) {
-        alert(t('cooksnaps.max_photos_alert'));
-        return;
-    }
-
-    form.photos.push(...files);
-
-    files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            photoPreviews.value.push(e.target.result);
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-function removePhoto(index) {
-    form.photos.splice(index, 1);
-    photoPreviews.value.splice(index, 1);
-}
+const isAuthenticated = computed(() => !!page.props.auth.user);
+const currentUserId = computed(() => page.props.auth.user?.id);
 
 function submitCooksnap() {
     form.post(route('cooksnaps.store', props.recipe.slug), {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
-            photoPreviews.value = [];
+            cooksnapFormRef.value?.resetPreviews();
         },
     });
 }
@@ -78,8 +60,6 @@ function openImageModal(imageUrl) {
 function closeImageModal() {
     selectedImage.value = null;
 }
-
-const { formatRelativeTime } = useDateFormat();
 </script>
 
 <template>
@@ -89,100 +69,22 @@ const { formatRelativeTime } = useDateFormat();
         </h3>
         <p class="text-gray-600 text-sm">{{ t('cooksnaps.share_your_creation') }}</p>
 
-        <div v-if="!$page.props.auth.user" class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-            <p class="text-gray-700 mb-4">{{ t('cooksnaps.login_to_share') }}</p>
-            <Link :href="route('login')">
-                <PrimaryButton>
-                    {{ t('auth.login') }}
-                </PrimaryButton>
-            </Link>
-        </div>
-
-        <form v-else @submit.prevent="submitCooksnap" class="space-y-4 bg-gray-50 rounded-lg p-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    {{ t('cooksnaps.photos_1_5') }}
-                </label>
-                <input
-                    type="file"
-                    @change="handlePhotoSelect"
-                    accept="image/*"
-                    multiple
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
-                    :disabled="form.photos.length >= 5"
-                />
-                <div v-if="photoPreviews.length" class="grid grid-cols-3 gap-2 mt-4">
-                    <div v-for="(preview, index) in photoPreviews" :key="index" class="relative">
-                        <img :src="preview" class="w-full h-24 object-cover rounded-lg" />
-                        <button
-                            type="button"
-                            @click="removePhoto(index)"
-                            class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700"
-                        >
-                            ×
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    {{ t('cooksnaps.comment_optional') }}
-                </label>
-                <textarea
-                    v-model="form.comment"
-                    rows="3"
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
-                    :placeholder="t('cooksnaps.describe_experience')"
-                ></textarea>
-            </div>
-
-            <PrimaryButton type="submit" :loading="form.processing" :disabled="form.photos.length === 0">
-                {{ t('cooksnaps.publish_cooksnap') }}
-            </PrimaryButton>
-        </form>
+        <CooksnapForm
+            ref="cooksnapFormRef"
+            :form="form"
+            :is-authenticated="isAuthenticated"
+            @submit="submitCooksnap"
+        />
 
         <div v-if="cooksnaps?.length" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div
+            <CooksnapCard
                 v-for="cooksnap in cooksnaps"
                 :key="cooksnap.id"
-                class="bg-white border border-gray-200 rounded-lg overflow-hidden"
-            >
-                <div class="relative aspect-square">
-                    <img
-                        v-if="cooksnap.media?.[0]"
-                        :src="cooksnap.media[0].original_url"
-                        :alt="`Cooksnap par ${cooksnap.user.name}`"
-                        class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
-                        @click="openImageModal(cooksnap.media[0].original_url)"
-                    />
-                    <div v-if="cooksnap.media?.length > 1" class="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">
-                        +{{ cooksnap.media.length - 1 }}
-                    </div>
-                </div>
-
-                <div class="p-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <img
-                            :src="cooksnap.user.profile_photo_url"
-                            :alt="cooksnap.user.name"
-                            class="w-8 h-8 rounded-full"
-                        />
-                        <div class="flex-1">
-                            <span class="font-medium text-gray-900 text-sm">{{ cooksnap.user.name }}</span>
-                            <p class="text-xs text-gray-500">{{ formatRelativeTime(cooksnap.created_at) }}</p>
-                        </div>
-                        <button
-                            v-if="$page.props.auth.user?.id === cooksnap.user_id"
-                            @click="confirmDeleteCooksnap(cooksnap.id)"
-                            class="text-red-600 hover:text-red-800 text-sm"
-                        >
-                            {{ t('common.delete') }}
-                        </button>
-                    </div>
-                    <p v-if="cooksnap.comment" class="text-gray-700 text-sm">{{ cooksnap.comment }}</p>
-                </div>
-            </div>
+                :cooksnap="cooksnap"
+                :can-delete="currentUserId === cooksnap.user_id"
+                @open-image="openImageModal"
+                @delete="confirmDeleteCooksnap"
+            />
         </div>
 
         <div v-if="selectedImage" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4" @click="closeImageModal">

@@ -6,13 +6,17 @@ import PublicLayout from '@/Layouts/PublicLayout.vue';
 import BackButton from '@/Components/Common/BackButton.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
-import { useDifficultyLabels } from '@/composables/useDifficultyLabels';
 import RatingStars from '@/Components/Social/RatingStars.vue';
 import CommentSection from '@/Components/Social/CommentSection.vue';
 import CooksnapSection from '@/Components/Social/CooksnapSection.vue';
 import FavoriteButton from '@/Components/Social/FavoriteButton.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import RecipeHeader from '@/Components/Recipe/RecipeHeader.vue';
+import RecipeStats from '@/Components/Recipe/RecipeStats.vue';
+import RecipeIngredientsList from '@/Components/Recipe/RecipeIngredientsList.vue';
+import RecipeStepsList from '@/Components/Recipe/RecipeStepsList.vue';
+import RecipeReviewsList from '@/Components/Recipe/RecipeReviewsList.vue';
 
 const { t } = useI18n();
 
@@ -29,7 +33,6 @@ const props = defineProps({
     },
 });
 
-const { getDifficultyLabel } = useDifficultyLabels();
 const confirmingDeletion = ref(false);
 const page = usePage();
 const isAuthenticated = computed(() => !!page.props.auth.user);
@@ -77,20 +80,8 @@ function deleteRecipe() {
                     :href="props.usePrivateLayout ? route('recipes.my') : null"
                     class="mb-6"
                 />
-                <div v-if="!props.usePrivateLayout" class="mb-6">
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ recipe.title }}</h1>
-                </div>
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <div v-if="recipe.media && recipe.media.length > 0" class="h-96 bg-gray-100">
-                        <img
-                            :src="recipe.media[0].original_url"
-                            :alt="recipe.title"
-                            class="w-full h-full object-cover"
-                        />
-                    </div>
-                    <div v-else class="h-96 bg-gray-200 flex items-center justify-center">
-                        <span class="text-gray-400 text-xl">{{ t('recipe.no_image') }}</span>
-                    </div>
+                    <RecipeHeader :recipe="recipe" :show-title="!props.usePrivateLayout" />
 
                     <div class="p-6">
                         <div class="mb-6 flex items-start justify-between">
@@ -115,61 +106,11 @@ function deleteRecipe() {
                             />
                         </div>
 
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="text-sm text-gray-600">{{ t('recipe.servings') }}</p>
-                                <p class="text-lg font-semibold">{{ recipe.servings }}</p>
-                            </div>
-                            <div v-if="recipe.prep_minutes">
-                                <p class="text-sm text-gray-600">{{ t('recipe.preparation') }}</p>
-                                <p class="text-lg font-semibold">{{ recipe.prep_minutes }} min</p>
-                            </div>
-                            <div v-if="recipe.cook_minutes">
-                                <p class="text-sm text-gray-600">{{ t('recipe.cooking') }}</p>
-                                <p class="text-lg font-semibold">{{ recipe.cook_minutes }} min</p>
-                            </div>
-                            <div v-if="recipe.difficulty">
-                                <p class="text-sm text-gray-600">{{ t('recipe.difficulty') }}</p>
-                                <p class="text-lg font-semibold">{{ getDifficultyLabel(recipe.difficulty) }}</p>
-                            </div>
-                        </div>
+                        <RecipeStats :recipe="recipe" />
 
-                        <div v-if="recipe.ingredients && recipe.ingredients.length > 0" class="mb-6">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ t('recipe.ingredients') }}</h3>
-                            <div class="bg-white border border-gray-200 rounded-lg divide-y divide-gray-200">
-                                <div
-                                    v-for="ingredient in recipe.ingredients"
-                                    :key="ingredient.id"
-                                    class="px-4 py-3 flex items-center justify-between hover:bg-gray-50"
-                                >
-                                    <span class="text-gray-800">{{ ingredient.name }}</span>
-                                    <span v-if="ingredient.pivot.quantity" class="text-gray-600 font-medium">
-                                        {{ ingredient.pivot.quantity }} {{ ingredient.pivot.unit_code || '' }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                        <RecipeIngredientsList :ingredients="recipe.ingredients" />
 
-                        <div class="mb-6">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ t('recipe.steps') }}</h3>
-                            <ol class="space-y-4">
-                                <li
-                                    v-for="(step, index) in recipe.steps"
-                                    :key="step.id"
-                                    class="flex gap-4 p-4 bg-gray-50 rounded-lg"
-                                >
-                                    <span class="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-semibold">
-                                        {{ index + 1 }}
-                                    </span>
-                                    <div class="flex-1">
-                                        <p class="text-gray-800">{{ step.text }}</p>
-                                        <p v-if="step.timer_minutes" class="text-sm text-green-600 mt-2">
-                                            ⏱️ {{ step.timer_minutes }} min
-                                        </p>
-                                    </div>
-                                </li>
-                            </ol>
-                        </div>
+                        <RecipeStepsList :steps="recipe.steps" />
 
                         <div class="pt-6 border-t border-gray-200 mb-6">
                             <div class="flex items-center justify-between text-sm text-gray-600">
@@ -201,39 +142,7 @@ function deleteRecipe() {
                             />
                         </div>
 
-                        <div v-if="recipe.ratings?.length" class="pt-6 border-t border-gray-200 mb-6">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-4">
-                                {{ t('recipe.reviews_count', { count: recipe.ratings.length }) }}
-                            </h3>
-                            <div class="space-y-4">
-                                <div
-                                    v-for="rating in recipe.ratings"
-                                    :key="rating.user_id"
-                                    class="border-l-2 border-gray-200 pl-4"
-                                >
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="font-medium">{{ rating.user.name }}</span>
-                                        <div class="flex">
-                                            <svg
-                                                v-for="star in 5"
-                                                :key="star"
-                                                :class="[
-                                                    'w-4 h-4',
-                                                    star <= rating.rating ? 'text-yellow-400' : 'text-gray-300'
-                                                ]"
-                                                fill="currentColor"
-                                                viewBox="0 0 20 20"
-                                            >
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <p v-if="rating.review" class="text-gray-700 text-sm">
-                                        {{ rating.review }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        <RecipeReviewsList :ratings="recipe.ratings" />
 
                         <div class="pt-6 border-t border-gray-200 mb-6">
                             <CooksnapSection :recipe="recipe" :cooksnaps="recipe.cooksnaps" />

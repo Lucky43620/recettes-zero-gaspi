@@ -1,9 +1,14 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import MealPlanMobileCard from '@/Components/MealPlanMobileCard.vue';
+import RecipeDraggableList from '@/Components/MealPlan/RecipeDraggableList.vue';
+import WeekNavigation from '@/Components/MealPlan/WeekNavigation.vue';
+import FreeLimitBanner from '@/Components/MealPlan/FreeLimitBanner.vue';
+import MealPlanGrid from '@/Components/MealPlan/MealPlanGrid.vue';
+import DuplicateWeekModal from '@/Components/MealPlan/DuplicateWeekModal.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { ref, computed } from 'vue';
-import { Link, router, usePage } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -16,8 +21,6 @@ const props = defineProps({
     isPremium: Boolean,
     recipeLimit: Number,
 });
-
-const page = usePage();
 
 const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 const dayLabels = {
@@ -152,172 +155,54 @@ const getRecipeImage = (recipe) => {
 
         <div class="py-12">
             <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
-                <div class="mb-6 flex justify-between items-center">
-                    <PrimaryButton variant="secondary" @click="navigateWeek(prevWeek)">
-                        ← {{ t('meal_plan.previous_week') }}
-                    </PrimaryButton>
-                    <div class="text-lg font-semibold">
-                        {{ t('meal_plan.week_of') }} {{ new Date(weekStart).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) }}
-                    </div>
-                    <PrimaryButton variant="secondary" @click="navigateWeek(nextWeek)">
-                        {{ t('meal_plan.next_week') }} →
-                    </PrimaryButton>
-                </div>
+                <WeekNavigation
+                    :week-start="weekStart"
+                    :prev-week="prevWeek"
+                    :next-week="nextWeek"
+                    @navigate="navigateWeek"
+                />
 
-                <!-- Free user limit banner -->
-                <div v-if="!isPremium && recipeLimit" class="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg shadow-sm">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 text-yellow-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                            </svg>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-900">
-                                    {{ t('meal_plan.free_limit', { used: mealPlan.meal_plan_recipes.length, limit: recipeLimit }) }}
-                                </p>
-                                <p class="text-xs text-gray-600 mt-0.5">
-                                    {{ t('meal_plan.upgrade_unlimited_message') }}
-                                </p>
-                            </div>
-                        </div>
-                        <Link :href="route('subscription.index')" class="ml-4 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm font-semibold rounded-lg transition-all">
-                            {{ t('pantry.upgrade_to_premium') }}
-                        </Link>
-                    </div>
-                </div>
+                <FreeLimitBanner
+                    v-if="!isPremium && recipeLimit"
+                    :current-count="mealPlan.meal_plan_recipes.length"
+                    :limit="recipeLimit"
+                />
 
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    <div class="lg:col-span-1">
-                        <div class="bg-white rounded-lg shadow p-4 mb-6">
-                            <h3 class="font-semibold text-lg mb-4">{{ t('profile.my_recipes') }}</h3>
-                            <p v-if="!userRecipes || !userRecipes.length" class="text-sm text-gray-500 mb-4">
-                                {{ t('meal_plan.no_recipes_yet') }}
-                                <Link :href="route('recipes.create')" class="text-green-600 hover:underline">
-                                    {{ t('recipe.create_recipe') }}
-                                </Link>
-                            </p>
-                            <p v-else class="text-sm text-gray-500 mb-4">
-                                {{ t('meal_plan.drag_drop_recipes') }}
-                            </p>
-                            <div class="space-y-2 max-h-[400px] overflow-y-auto">
-                                <div
-                                    v-for="recipe in userRecipes"
-                                    :key="recipe.id"
-                                    draggable="true"
-                                    @dragstart="onDragStart(recipe)"
-                                    class="p-2 bg-gray-50 rounded cursor-move hover:bg-gray-100 transition"
-                                >
-                                    <div class="flex items-center gap-2">
-                                        <img
-                                            :src="getRecipeImage(recipe)"
-                                            :alt="recipe.title"
-                                            class="w-12 h-12 object-cover rounded"
-                                        />
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium truncate">{{ recipe.title }}</p>
-                                            <p class="text-xs text-gray-500">{{ recipe.servings }} {{ t('recipe.servings').toLowerCase() }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="lg:col-span-1 space-y-6">
+                        <RecipeDraggableList
+                            :recipes="userRecipes"
+                            :title="t('profile.my_recipes')"
+                            :empty-message="t('meal_plan.no_recipes_yet')"
+                            :empty-link-href="route('recipes.create')"
+                            :empty-link-text="t('recipe.create_recipe')"
+                            @dragstart="onDragStart"
+                        />
 
-                        <div v-if="favoriteRecipes && favoriteRecipes.length" class="bg-white rounded-lg shadow p-4">
-                            <h3 class="font-semibold text-lg mb-4">{{ t('profile.my_favorites') }}</h3>
-                            <p class="text-sm text-gray-500 mb-4">
-                                {{ t('meal_plan.drag_drop_favorites') }}
-                            </p>
-                            <div class="space-y-2 max-h-[400px] overflow-y-auto">
-                                <div
-                                    v-for="recipe in favoriteRecipes"
-                                    :key="'fav-' + recipe.id"
-                                    draggable="true"
-                                    @dragstart="onDragStart(recipe)"
-                                    class="p-2 bg-orange-50 rounded cursor-move hover:bg-orange-100 transition"
-                                >
-                                    <div class="flex items-center gap-2">
-                                        <img
-                                            :src="getRecipeImage(recipe)"
-                                            :alt="recipe.title"
-                                            class="w-12 h-12 object-cover rounded"
-                                        />
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium truncate">{{ recipe.title }}</p>
-                                            <p class="text-xs text-gray-500">{{ recipe.servings }} {{ t('recipe.servings').toLowerCase() }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <RecipeDraggableList
+                            v-if="favoriteRecipes && favoriteRecipes.length"
+                            :recipes="favoriteRecipes"
+                            :title="t('profile.my_favorites')"
+                            bg-class="bg-orange-50"
+                            hover-class="hover:bg-orange-100"
+                            @dragstart="onDragStart"
+                        />
                     </div>
 
                     <div class="lg:col-span-3">
-                        <!-- Desktop view: Table -->
-                        <div class="hidden md:block bg-white rounded-lg shadow overflow-hidden">
-                            <div class="overflow-x-auto">
-                                <table class="w-full">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-32">
-                                                {{ t('meal_plan.meals') }}
-                                            </th>
-                                            <th
-                                                v-for="day in daysOfWeek"
-                                                :key="day"
-                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
-                                            >
-                                                {{ dayLabels[day] }}
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200">
-                                        <tr v-for="mealType in mealTypes" :key="mealType">
-                                            <td class="px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50">
-                                                {{ mealTypeLabels[mealType] }}
-                                            </td>
-                                            <td
-                                                v-for="day in daysOfWeek"
-                                                :key="`${day}-${mealType}`"
-                                                @dragover="onDragOver"
-                                                @drop="onDrop(day, mealType)"
-                                                class="px-2 py-2 align-top border-l border-gray-200 min-h-[120px]"
-                                            >
-                                                <div class="space-y-2 min-h-[100px]">
-                                                    <div
-                                                        v-for="mpr in getMealPlanRecipes(day, mealType)"
-                                                        :key="mpr.id"
-                                                        class="p-2 bg-green-50 rounded border border-green-200 relative group cursor-pointer hover:bg-green-100 transition"
-                                                        @click="router.visit(route('recipes.show', mpr.recipe.slug))"
-                                                    >
-                                                        <button
-                                                            @click.stop="removeRecipe(mpr.id)"
-                                                            class="absolute top-1 right-1 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition"
-                                                        >
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                            </svg>
-                                                        </button>
-                                                        <div class="flex items-start gap-2">
-                                                            <img
-                                                                :src="getRecipeImage(mpr.recipe)"
-                                                                :alt="mpr.recipe.title"
-                                                                class="w-10 h-10 object-cover rounded"
-                                                            />
-                                                            <div class="flex-1 min-w-0">
-                                                                <p class="text-xs font-medium truncate">{{ mpr.recipe.title }}</p>
-                                                                <p class="text-xs text-gray-500">{{ mpr.servings }} {{ t('recipe.servings').toLowerCase() }}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="hidden md:block">
+                            <MealPlanGrid
+                                :days-of-week="daysOfWeek"
+                                :day-labels="dayLabels"
+                                :meal-types="mealTypes"
+                                :meal-type-labels="mealTypeLabels"
+                                :get-meal-plan-recipes="getMealPlanRecipes"
+                                :on-drag-over="onDragOver"
+                                :on-drop="onDrop"
+                                :remove-recipe="removeRecipe"
+                            />
                         </div>
 
-                        <!-- Mobile view: Cards -->
                         <div class="md:hidden space-y-4">
                             <MealPlanMobileCard
                                 v-for="day in daysOfWeek"
@@ -338,39 +223,12 @@ const getRecipeImage = (recipe) => {
             </div>
         </div>
 
-        <div
-            v-if="showDuplicateModal"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            @click.self="showDuplicateModal = false"
-        >
-            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                <h3 class="text-lg font-semibold mb-4">{{ t('meal_plan.duplicate_week') }}</h3>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        {{ t('meal_plan.duplicate_to_week') }}
-                    </label>
-                    <input
-                        v-model="duplicateWeekStart"
-                        type="date"
-                        class="w-full px-3 py-2 border rounded-md"
-                    />
-                </div>
-                <div class="flex gap-3 justify-end">
-                    <PrimaryButton
-                        variant="secondary"
-                        @click="showDuplicateModal = false"
-                        :disabled="isDuplicating"
-                    >
-                        {{ t('common.cancel') }}
-                    </PrimaryButton>
-                    <PrimaryButton
-                        @click="duplicateWeek"
-                        :loading="isDuplicating"
-                    >
-                        {{ t('meal_plan.duplicate') }}
-                    </PrimaryButton>
-                </div>
-            </div>
-        </div>
+        <DuplicateWeekModal
+            :show="showDuplicateModal"
+            v-model:week-start="duplicateWeekStart"
+            :is-duplicating="isDuplicating"
+            @close="showDuplicateModal = false"
+            @duplicate="duplicateWeek"
+        />
     </AppLayout>
 </template>
