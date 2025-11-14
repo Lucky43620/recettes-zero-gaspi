@@ -55,9 +55,9 @@ Route::get('/recipes/{recipe:slug}/cook', [RecipeController::class, 'cook'])->na
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show'])->name('ingredients.show');
 
-Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
-Route::get('/profile/{user}/followers', [ProfileController::class, 'followers'])->name('profile.followers');
-Route::get('/profile/{user}/following', [ProfileController::class, 'following'])->name('profile.following');
+Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('user.profile');
+Route::get('/profile/{user}/followers', [ProfileController::class, 'followers'])->name('user.followers');
+Route::get('/profile/{user}/following', [ProfileController::class, 'following'])->name('user.following');
 
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{event:slug}', [EventController::class, 'show'])->name('events.show');

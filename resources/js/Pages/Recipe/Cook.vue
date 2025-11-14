@@ -37,7 +37,7 @@
           </div>
 
           <div class="p-8">
-            <div v-if="currentStep" class="space-y-6">
+            <div v-if="currentStep && recipe && recipe.steps" class="space-y-6">
               <div class="flex items-start gap-4">
                 <div class="flex-shrink-0 w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center text-xl font-bold">
                   {{ currentStepIndex + 1 }}
@@ -116,7 +116,7 @@
               </summary>
               <div class="mt-4 space-y-2">
                 <button
-                  v-for="(step, index) in recipe.steps"
+                  v-for="(step, index) in (recipe && recipe.steps ? recipe.steps : [])"
                   :key="index"
                   @click="goToStep(index)"
                   :class="[

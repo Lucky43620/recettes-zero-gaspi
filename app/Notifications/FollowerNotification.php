@@ -27,7 +27,7 @@ class FollowerNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("Nouveau follower")
             ->line("{$this->follower->name} vous suit désormais !")
-            ->action('Voir son profil', route('profile.show', $this->follower))
+            ->action('Voir son profil', route('user.profile', $this->follower))
             ->line('Merci d\'utiliser Recettes Zéro Gaspi !');
     }
 
@@ -38,7 +38,7 @@ class FollowerNotification extends Notification implements ShouldQueue
             'follower_id' => $this->follower->id,
             'follower_name' => $this->follower->name,
             'follower_avatar' => $this->follower->profile_photo_url,
-            'url' => route('profile.show', $this->follower),
+            'url' => route('user.profile', $this->follower),
         ];
     }
 }

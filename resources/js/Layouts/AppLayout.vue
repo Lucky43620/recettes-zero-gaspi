@@ -95,7 +95,7 @@ const logout = () => {
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink :href="route('profile.show')">
+                                        <DropdownLink :href="route('user.profile')">
                                             {{ t('profile.title') }}
                                         </DropdownLink>
 
@@ -201,7 +201,7 @@ const logout = () => {
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.show')" :active="route().current('profile.show')">
+                            <ResponsiveNavLink :href="route('user.profile')" :active="route().current('user.profile')">
                                 {{ t('profile.title') }}
                             </ResponsiveNavLink>
 
