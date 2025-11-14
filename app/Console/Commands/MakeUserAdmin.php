@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+use Spatie\Permission\Models\Role;
 
 class MakeUserAdmin extends Command
 {
@@ -21,6 +22,8 @@ class MakeUserAdmin extends Command
             $this->error("User with email '{$email}' not found.");
             return Command::FAILURE;
         }
+
+        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
 
         if ($user->hasRole('admin')) {
             $this->warn("User '{$user->name}' is already an admin.");

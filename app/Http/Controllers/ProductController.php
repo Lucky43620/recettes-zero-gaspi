@@ -31,7 +31,7 @@ class ProductController extends Controller
 
             $products = $results->skip($offset)->take($perPage)->map(function ($ingredient) {
                 $data = $this->ingredientService->transformToArray($ingredient);
-                $data['exists'] = $ingredient->exists ?? false;
+                $data['exists'] = !empty($ingredient->id);
                 return $data;
             })->values()->all();
         }
