@@ -34,7 +34,7 @@ class SubscriptionController extends Controller
                 'monthly' => [
                     'name' => 'monthly',
                     'price' => 4.99,
-                    'price_id' => env('STRIPE_PRICE_MONTHLY'),
+                    'price_id' => config('stripe.price_monthly'),
                     'interval' => 'month',
                     'features' => [
                         'all_free_features',
@@ -50,7 +50,7 @@ class SubscriptionController extends Controller
                 'yearly' => [
                     'name' => 'yearly',
                     'price' => 49.90,
-                    'price_id' => env('STRIPE_PRICE_YEARLY'),
+                    'price_id' => config('stripe.price_yearly'),
                     'interval' => 'year',
                     'savings' => '2 mois offerts',
                     'features' => [
@@ -62,7 +62,7 @@ class SubscriptionController extends Controller
             'currentPlan' => $user ? $user->planName() : 'free',
             'isSubscribed' => $isPremium,
             'subscription' => $subscription,
-            'stripeKey' => env('STRIPE_KEY'),
+            'stripeKey' => config('stripe.key'),
         ]);
     }
 
@@ -78,8 +78,8 @@ class SubscriptionController extends Controller
         $user = auth()->user();
 
         $priceId = $request->plan === 'monthly'
-            ? env('STRIPE_PRICE_MONTHLY')
-            : env('STRIPE_PRICE_YEARLY');
+            ? config('stripe.price_monthly')
+            : config('stripe.price_yearly');
 
         \Log::info('Subscription checkout attempt', [
             'plan' => $request->plan,
@@ -206,7 +206,7 @@ class SubscriptionController extends Controller
 
         return Inertia::render('Subscription/PaymentMethod', [
             'intent' => $user->createSetupIntent(),
-            'stripeKey' => env('STRIPE_KEY'),
+            'stripeKey' => config('stripe.key'),
         ]);
     }
 }
