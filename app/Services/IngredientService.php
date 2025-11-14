@@ -42,7 +42,6 @@ class IngredientService
         }
 
         try {
-            // Première recherche API avec filtre strict (nom du produit uniquement)
             $remainingLimit = $limit - $localResults->count();
             $apiResults = $this->searchFromOpenFoodFacts($searchTerm, 50, true);
 
@@ -50,7 +49,6 @@ class IngredientService
                 return $item->id ?? $item->openfoodfacts_id ?? $item->name;
             });
 
-            // Si on n'a toujours pas assez de résultats, faire une recherche plus large
             if ($combined->count() < $limit) {
                 $broadResults = $this->searchFromOpenFoodFacts($searchTerm, 50, false);
                 $combined = $combined->concat($broadResults)->unique(function ($item) {
@@ -189,7 +187,6 @@ class IngredientService
 
             $results = collect($products);
 
-            // Appliquer le filtre strict uniquement si demandé
             if ($strictFilter) {
                 $results = $results->filter(function ($product) use ($searchTerm) {
                     $productName = strtolower($product['product_name'] ?? '');

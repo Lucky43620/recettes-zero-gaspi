@@ -96,7 +96,6 @@ class RecipeService
         $recipe->ingredients()->detach();
 
         foreach ($ingredients as $index => $ingredientData) {
-            // Handle both ingredient_id (from tests/API) and name (from form)
             if (!empty($ingredientData['ingredient_id'])) {
                 $ingredient = Ingredient::find($ingredientData['ingredient_id']);
             } elseif (!empty($ingredientData['name'])) {
