@@ -13,15 +13,15 @@ defineProps({
 
 <template>
     <div class="bg-white rounded-lg shadow">
-        <div class="p-6 border-b">
+        <div class="p-4 md:p-6 border-b">
             <div class="flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-gray-900">{{ t('admin.recent_users') }}</h2>
-                <Link href="/admin/users" class="text-sm text-green-600 hover:text-green-700">
+                <h2 class="text-base md:text-lg font-semibold text-gray-900">{{ t('admin.recent_users') }}</h2>
+                <Link href="/admin/users" class="text-xs md:text-sm text-green-600 hover:text-green-700 whitespace-nowrap">
                     {{ t('admin.view_all') }}
                 </Link>
             </div>
         </div>
-        <div class="overflow-x-auto">
+        <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -53,6 +53,23 @@ defineProps({
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="md:hidden divide-y divide-gray-200">
+            <div v-for="user in users" :key="user.id" class="p-4 hover:bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center flex-1 min-w-0">
+                        <img :src="user.profile_photo_url" :alt="user.name" class="w-10 h-10 rounded-full flex-shrink-0" />
+                        <div class="ml-3 min-w-0 flex-1">
+                            <div class="text-sm font-medium text-gray-900 truncate">{{ user.name }}</div>
+                            <div class="text-xs text-gray-500 truncate">{{ user.email }}</div>
+                            <div class="text-xs text-gray-400 mt-0.5">{{ formatRelativeTime(user.created_at) }}</div>
+                        </div>
+                    </div>
+                    <Link :href="`/admin/users/${user.id}`" class="ml-4 text-xs text-green-600 hover:text-green-700 font-medium whitespace-nowrap">
+                        {{ t('common.view') }}
+                    </Link>
+                </div>
+            </div>
         </div>
     </div>
 </template>

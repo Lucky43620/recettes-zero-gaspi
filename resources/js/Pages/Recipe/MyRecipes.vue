@@ -18,13 +18,13 @@ const props = defineProps({
 <template>
     <AppLayout :title="t('nav.my_recipes')">
         <template #header>
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ t('nav.my_recipes') }}
                 </h2>
                 <Link
                     :href="route('recipes.create')"
-                    class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                    class="w-full sm:w-auto text-center bg-green-600 text-white px-5 py-3 rounded-md hover:bg-green-700 active:bg-green-800 transition font-medium"
                 >
                     {{ t('recipe.create_recipe') }}
                 </Link>
@@ -34,13 +34,13 @@ const props = defineProps({
         <div class="py-12">
             <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8 min-h-[60vh]">
                 <div class="mb-6 bg-white rounded-lg shadow p-4">
-                    <div class="flex gap-4 items-center">
-                        <div class="flex gap-2">
+                    <div class="flex gap-2 md:gap-4 items-center">
+                        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                             <Link
                                 :href="route('recipes.my')"
                                 :class="[
-                                    'px-4 py-2 rounded-md text-sm font-medium transition',
-                                    !filters.visibility ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    'px-4 py-2 rounded-md text-sm font-medium transition text-center',
+                                    !filters.visibility ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
                                 ]"
                             >
                                 {{ t('recipe.all_recipes') }}
@@ -48,8 +48,8 @@ const props = defineProps({
                             <Link
                                 :href="route('recipes.my', { visibility: 'public' })"
                                 :class="[
-                                    'px-4 py-2 rounded-md text-sm font-medium transition',
-                                    filters.visibility === 'public' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    'px-4 py-2 rounded-md text-sm font-medium transition text-center',
+                                    filters.visibility === 'public' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
                                 ]"
                             >
                                 {{ t('recipe.public_recipes') }}
@@ -57,8 +57,8 @@ const props = defineProps({
                             <Link
                                 :href="route('recipes.my', { visibility: 'private' })"
                                 :class="[
-                                    'px-4 py-2 rounded-md text-sm font-medium transition',
-                                    filters.visibility === 'private' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    'px-4 py-2 rounded-md text-sm font-medium transition text-center',
+                                    filters.visibility === 'private' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
                                 ]"
                             >
                                 {{ t('recipe.private_recipes') }}

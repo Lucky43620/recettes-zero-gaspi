@@ -91,11 +91,11 @@ const updatePassword = () => {
         </template>
 
         <template #actions>
-            <ActionMessage :on="form.recentlySuccessful" class="me-3">
+            <ActionMessage :on="form.recentlySuccessful" class="order-2 sm:order-1">
                 {{ t('common.saved') }}
             </ActionMessage>
 
-            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <PrimaryButton class="w-full sm:w-auto order-1 sm:order-2" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                 {{ t('common.save') }}
             </PrimaryButton>
         </template>

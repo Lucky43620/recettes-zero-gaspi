@@ -48,8 +48,8 @@
 
                         <div class="lg:col-span-2">
                             <div class="mb-6">
-                                <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ ingredient.name }}</h1>
-                                <p v-if="ingredient.brands" class="text-xl text-gray-600">{{ ingredient.brands }}</p>
+                                <h1 class="text-2xl md:text-4xl font-bold text-gray-900 mb-2">{{ ingredient.name }}</h1>
+                                <p v-if="ingredient.brands" class="text-lg md:text-xl text-gray-600">{{ ingredient.brands }}</p>
                             </div>
 
                             <div v-if="ingredient.category" class="mb-6">
@@ -169,14 +169,14 @@
                                 </div>
                             </div>
 
-                            <div class="flex gap-4 mt-6">
+                            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6">
                                 <a
                                     v-if="ingredient.openfoodfacts_id"
                                     :href="`https://world.openfoodfacts.org/product/${ingredient.openfoodfacts_id}`"
                                     target="_blank"
-                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl font-semibold"
+                                    class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 active:from-green-800 active:to-emerald-800 transition-all shadow-lg hover:shadow-xl font-semibold text-center"
                                 >
-                                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
                                         <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
                                     </svg>

@@ -37,8 +37,8 @@ const { formatRelativeTime } = useDateFormat();
             </div>
 
             <div class="bg-white rounded-lg shadow">
-                <div class="p-6 border-b">
-                    <div class="flex items-center gap-4">
+                <div class="p-4 md:p-6 border-b">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                         <input
                             v-model="search"
                             type="text"
@@ -48,14 +48,14 @@ const { formatRelativeTime } = useDateFormat();
                         />
                         <button
                             @click="searchUsers"
-                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition whitespace-nowrap"
                         >
                             {{ t('common.search') }}
                         </button>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
+                <div class="hidden md:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -101,17 +101,51 @@ const { formatRelativeTime } = useDateFormat();
                     </table>
                 </div>
 
-                <div v-if="users.links" class="px-6 py-4 border-t flex items-center justify-between">
-                    <div class="text-sm text-gray-500">
+                <div class="md:hidden divide-y divide-gray-200">
+                    <div v-for="user in users.data" :key="user.id" class="p-4 hover:bg-gray-50">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center">
+                                <img :src="user.profile_photo_url" :alt="user.name" class="w-12 h-12 rounded-full" />
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+                                    <div class="text-xs text-gray-500">{{ user.email }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 mb-3 text-center">
+                            <div class="bg-gray-50 rounded-lg p-2">
+                                <div class="text-xs text-gray-500">{{ t('admin.recipes_column') }}</div>
+                                <div class="text-sm font-semibold text-gray-900">{{ user.recipes_count || 0 }}</div>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-2">
+                                <div class="text-xs text-gray-500">{{ t('admin.comments_column') }}</div>
+                                <div class="text-sm font-semibold text-gray-900">{{ user.comments_count || 0 }}</div>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-2">
+                                <div class="text-xs text-gray-500">{{ t('admin.followers_column') }}</div>
+                                <div class="text-sm font-semibold text-gray-900">{{ user.followers_count || 0 }}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-500">{{ formatRelativeTime(user.created_at) }}</span>
+                            <Link :href="`/admin/users/${user.id}`" class="text-green-600 hover:text-green-700 font-medium">
+                                {{ t('admin.view_details') }}
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="users.links" class="px-4 md:px-6 py-4 border-t flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="text-xs sm:text-sm text-gray-500">
                         {{ users.from }} - {{ users.to }} {{ t('admin.pagination_of') }} {{ users.total }} {{ t('admin.users_count') }}
                     </div>
-                    <div class="flex gap-2">
+                    <div class="flex flex-wrap gap-1 sm:gap-2 justify-center">
                         <Link
                             v-for="(link, index) in users.links"
                             :key="index"
                             :href="link.url"
                             :class="[
-                                'px-3 py-2 rounded-lg text-sm transition',
+                                'px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition',
                                 link.active
                                     ? 'bg-green-600 text-white'
                                     : link.url

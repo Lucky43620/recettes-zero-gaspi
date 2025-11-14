@@ -51,11 +51,11 @@ const closeDeleteModal = () => {
 <template>
     <AppLayout :title="t('shopping_list.title')">
         <template #header>
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ t('shopping_list.my_lists') }}
                 </h2>
-                <PrimaryButton @click="showCreateModal = true">
+                <PrimaryButton @click="showCreateModal = true" class="w-full sm:w-auto">
                     {{ t('shopping_list.new_list') }}
                 </PrimaryButton>
             </div>
@@ -102,11 +102,11 @@ const closeDeleteModal = () => {
 
         <div
             v-if="showCreateModal"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
             @click.self="showCreateModal = false"
         >
-            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                <h3 class="text-lg font-semibold mb-4">{{ t('shopping_list.new_list') }}</h3>
+            <div class="bg-white rounded-lg p-4 md:p-6 max-w-md w-full">
+                <h3 class="text-base md:text-lg font-semibold mb-4">{{ t('shopping_list.new_list') }}</h3>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         {{ t('shopping_list.list_name') }}
@@ -114,16 +114,16 @@ const closeDeleteModal = () => {
                     <input
                         v-model="newListName"
                         type="text"
-                        class="w-full px-3 py-2 border rounded-md"
+                        class="w-full px-3 py-3 border rounded-md text-base"
                         :placeholder="t('shopping_list.list_name_placeholder')"
                         @keyup.enter="createList"
                     />
                 </div>
-                <div class="flex gap-3 justify-end">
-                    <PrimaryButton variant="secondary" @click="showCreateModal = false">
+                <div class="flex flex-col sm:flex-row gap-3 justify-end">
+                    <PrimaryButton variant="secondary" @click="showCreateModal = false" class="w-full sm:w-auto">
                         {{ t('common.cancel') }}
                     </PrimaryButton>
-                    <PrimaryButton @click="createList">
+                    <PrimaryButton @click="createList" class="w-full sm:w-auto">
                         {{ t('common.create') }}
                     </PrimaryButton>
                 </div>
