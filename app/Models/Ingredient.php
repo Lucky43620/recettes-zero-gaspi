@@ -6,11 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Laravel\Scout\Searchable;
 
 class Ingredient extends Model
 {
-    use HasFactory, Searchable;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -32,16 +31,6 @@ class Ingredient extends Model
         'labels' => 'array',
         'openfoodfacts_synced_at' => 'datetime',
     ];
-
-    public function toSearchableArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'category' => $this->category,
-            'brands' => $this->brands,
-        ];
-    }
 
     public function needsSync(): bool
     {

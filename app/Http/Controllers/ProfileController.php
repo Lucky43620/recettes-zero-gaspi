@@ -13,31 +13,40 @@ class ProfileController extends Controller
     {
         $user->loadCount(['recipes', 'followers', 'following']);
 
-        $allPublicRecipes = $user->recipes()
+        $topRecipes = $user->recipes()
             ->where('is_public', true)
+            ->whereNotNull('rating_avg')
             ->with('media')
             ->select('id', 'author_id', 'title', 'slug', 'rating_avg', 'rating_count', 'created_at')
+            ->orderByDesc('rating_avg')
+            ->orderByDesc('rating_count')
+            ->limit(3)
             ->get();
 
-        $topRecipes = $allPublicRecipes
-            ->filter(fn($r) => $r->rating_avg !== null)
-            ->sortByDesc('rating_avg')
-            ->sortByDesc('rating_count')
-            ->take(3)
-            ->values();
+        $topRecipeIds = $topRecipes->pluck('id');
 
-        $recentRecipes = $allPublicRecipes
-            ->whereNotIn('id', $topRecipes->pluck('id'))
-            ->sortByDesc('created_at')
-            ->take(6)
-            ->values();
+        $recentRecipes = $user->recipes()
+            ->where('is_public', true)
+            ->whereNotIn('id', $topRecipeIds)
+            ->with('media')
+            ->select('id', 'author_id', 'title', 'slug', 'rating_avg', 'rating_count', 'created_at')
+            ->latest()
+            ->limit(6)
+            ->get();
 
-        $averageRating = $allPublicRecipes
-            ->filter(fn($r) => $r->rating_avg !== null)
+        $averageRating = $user->recipes()
+            ->where('is_public', true)
+            ->whereNotNull('rating_avg')
             ->avg('rating_avg');
 
-        $isFollowing = Auth::check() ? Auth::user()->isFollowing($user) : false;
-        $isOwnProfile = Auth::check() ? Auth::id() === $user->id : false;
+        $isFollowing = false;
+        $isOwnProfile = false;
+
+        if (Auth::check()) {
+            $authUser = Auth::user();
+            $isFollowing = $authUser->following()->where('following_id', $user->id)->exists();
+            $isOwnProfile = $authUser->id === $user->id;
+        }
 
         return Inertia::render('Profile/PublicProfile', [
             'profileUser' => $user,

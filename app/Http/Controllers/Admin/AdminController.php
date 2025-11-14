@@ -91,7 +91,10 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
-        $recentUsers = User::latest()->limit(10)->get();
+        $recentUsers = User::select('id', 'name', 'email', 'created_at')
+            ->latest()
+            ->limit(10)
+            ->get();
 
         return Inertia::render('Admin/Dashboard', [
             'stats' => $stats,

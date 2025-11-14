@@ -71,14 +71,25 @@ Route::middleware([
     Route::get('/dashboard', function () {
         $user = Auth::user();
 
+        $recipes = $user->recipes()
+            ->select('id', 'author_id', 'is_public', 'rating_count', 'rating_avg')
+            ->get();
+
         $stats = [
-            'totalRecipes' => $user->recipes()->count(),
-            'publicRecipes' => $user->recipes()->where('is_public', true)->count(),
-            'privateRecipes' => $user->recipes()->where('is_public', false)->count(),
-            'totalRatings' => $user->recipes()->withCount('ratings')->get()->sum('ratings_count'),
-            'averageRating' => $user->recipes()->whereNotNull('rating_avg')->avg('rating_avg'),
-            'totalComments' => $user->recipes()->withCount('comments')->get()->sum('comments_count'),
-            'recentRecipes' => $user->recipes()->with(['media'])->latest()->limit(3)->get(),
+            'totalRecipes' => $recipes->count(),
+            'publicRecipes' => $recipes->where('is_public', true)->count(),
+            'privateRecipes' => $recipes->where('is_public', false)->count(),
+            'totalRatings' => $recipes->sum('rating_count'),
+            'averageRating' => $recipes->whereNotNull('rating_avg')->avg('rating_avg'),
+            'totalComments' => $user->recipes()
+                ->selectRaw('COALESCE(SUM((SELECT COUNT(*) FROM comments WHERE comments.recipe_id = recipes.id)), 0) as total')
+                ->value('total'),
+            'recentRecipes' => $user->recipes()
+                ->select('id', 'author_id', 'title', 'slug', 'created_at')
+                ->with('media')
+                ->latest()
+                ->limit(3)
+                ->get(),
         ];
 
         return Inertia::render('Dashboard', [

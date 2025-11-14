@@ -15,7 +15,8 @@ class FollowController extends Controller
             return back()->withErrors(['error' => 'Vous ne pouvez pas vous suivre vous-même']);
         }
 
-        if (Auth::user()->isFollowing($user)) {
+        $isFollowing = Auth::user()->isFollowing($user);
+        if ($isFollowing) {
             return back()->withErrors(['error' => 'Vous suivez déjà cet utilisateur']);
         }
 
@@ -28,7 +29,8 @@ class FollowController extends Controller
 
     public function unfollow(User $user)
     {
-        if (!Auth::user()->isFollowing($user)) {
+        $isFollowing = Auth::user()->isFollowing($user);
+        if (!$isFollowing) {
             return back()->withErrors(['error' => 'Vous ne suivez pas cet utilisateur']);
         }
 

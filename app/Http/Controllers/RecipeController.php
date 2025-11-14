@@ -55,7 +55,7 @@ class RecipeController extends Controller
 
     public function create()
     {
-        $units = Unit::all();
+        $units = Unit::select('id', 'name', 'abbreviation')->get();
 
         return Inertia::render('Recipe/Create', [
             'units' => $units,
@@ -147,7 +147,7 @@ class RecipeController extends Controller
         $this->authorize('update', $recipe);
 
         $recipe->load(['steps', 'ingredients', 'media']);
-        $units = Unit::all();
+        $units = Unit::select('id', 'name', 'abbreviation')->get();
 
         return Inertia::render('Recipe/Edit', [
             'recipe' => $recipe,
