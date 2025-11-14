@@ -54,6 +54,25 @@ Une fois déployé :
 - **Mailpit**: http://votre-ip:8025
 - **Meilisearch**: http://votre-ip:7700
 
+## Mise à Jour
+
+Pour mettre à jour l'application après un `git pull` :
+
+```bash
+chmod +x update.sh
+./update.sh
+```
+
+Le script `update.sh` gère automatiquement :
+- 📥 Pull des dernières modifications
+- 📦 Mise à jour des dépendances (Composer + NPM)
+- 🔨 Rebuild des assets Vite
+- 🗄️ Migrations de base de données
+- ⚡ Clear et rebuild du cache
+- 🔄 Redémarrage des containers
+
+**Durée**: ~2-3 minutes
+
 ## Commandes Utiles
 
 ```bash
@@ -81,6 +100,8 @@ docker compose restart
 - ✅ Routes: Conflit de noms avec Jetstream
 - ✅ Mode cuisine: Page blanche
 - ✅ NPM: Conflit de versions vite/plugin-vue
+- ✅ Traductions: Clés i18n manquantes (auth.register_button, etc.)
+- ✅ Routes: Erreur Ziggy user.profile sans paramètre
 
 ## Support
 
