@@ -11,7 +11,7 @@ Tous les jalons 0 à 5 sont implémentés et fonctionnels.
 
 ### Jalon 0 — Fondations
 - ✅ Repository & CI/CD (Docker, lint, staging)
-- ✅ Base PostgreSQL & migrations
+- ✅ Base MySQL & migrations
 - ✅ Auth & RGPD (Laravel Fortify/Jetstream, pages légales)
 
 ### Jalon 1 — Recettes cœur
@@ -119,7 +119,7 @@ Tous les jalons 0 à 5 sont implémentés et fonctionnels.
 
 ### Backend
 - Laravel 12
-- PostgreSQL
+- MySQL 8.0
 - Fortify (Auth)
 - Jetstream (Dashboard)
 - Sanctum (API)
