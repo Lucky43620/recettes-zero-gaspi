@@ -3,6 +3,7 @@ import PublicLayout from '@/Layouts/PublicLayout.vue';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
 import FollowButton from '@/Components/Social/FollowButton.vue';
 import BackButton from '@/Components/Common/BackButton.vue';
+import PremiumBadge from '@/Components/PremiumBadge.vue';
 import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
@@ -37,9 +38,12 @@ const props = defineProps({
                                     class="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white relative z-10"
                                 />
                                 <div class="pb-2">
-                                    <h1 class="text-3xl font-bold text-gray-900">
-                                        {{ profileUser.name }}
-                                    </h1>
+                                    <div class="flex items-center gap-2">
+                                        <h1 class="text-3xl font-bold text-gray-900">
+                                            {{ profileUser.name }}
+                                        </h1>
+                                        <PremiumBadge v-if="profileUser.is_premium" size="md" />
+                                    </div>
                                     <p v-if="profileUser.bio" class="text-gray-600 mt-1">
                                         {{ profileUser.bio }}
                                     </p>

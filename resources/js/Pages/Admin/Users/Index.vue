@@ -107,8 +107,8 @@ const { formatRelativeTime } = useDateFormat();
                     </div>
                     <div class="flex gap-2">
                         <Link
-                            v-for="link in users.links"
-                            :key="link.label"
+                            v-for="(link, index) in users.links"
+                            :key="index"
                             :href="link.url"
                             :class="[
                                 'px-3 py-2 rounded-lg text-sm transition',
@@ -118,8 +118,11 @@ const { formatRelativeTime } = useDateFormat();
                                     ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     : 'bg-gray-50 text-gray-400 cursor-not-allowed'
                             ]"
-                            v-html="link.label"
-                        />
+                        >
+                            <span v-if="link.label === 'pagination.previous'">{{ t('common.previous') }}</span>
+                            <span v-else-if="link.label === 'pagination.next'">{{ t('common.next') }}</span>
+                            <span v-else v-html="link.label"></span>
+                        </Link>
                     </div>
                 </div>
             </div>

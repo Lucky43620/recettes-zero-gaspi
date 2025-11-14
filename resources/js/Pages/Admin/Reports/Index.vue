@@ -77,29 +77,34 @@ const getReasonLabel = (reason) => {
                         <tbody class="bg-white divide-y divide-gray-200">
                             <tr v-for="report in reports.data" :key="report.id" class="hover:bg-gray-50">
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center">
+                                    <div v-if="report.reporter" class="flex items-center">
                                         <img :src="report.reporter.profile_photo_url" :alt="report.reporter.name" class="w-8 h-8 rounded-full" />
                                         <span class="ml-3 text-sm font-medium text-gray-900">{{ report.reporter.name }}</span>
                                     </div>
+                                    <div v-else class="text-sm text-gray-400 italic">
+                                        {{ t('common.deleted_user') }}
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-900">
-                                    {{ report.reportable_type.split('\\').pop() }}
+                                    {{ report.reportable_type ? report.reportable_type.split('\\').pop() : '-' }}
                                 </td>
                                 <td class="px-6 py-4 text-sm">
-                                    <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
+                                    <span v-if="report.reason" class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
                                         {{ getReasonLabel(report.reason) }}
                                     </span>
+                                    <span v-else class="text-gray-400">-</span>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
                                     {{ report.description || '-' }}
                                 </td>
                                 <td class="px-6 py-4 text-sm">
-                                    <span :class="['px-2 py-1 rounded-full text-xs font-medium', getStatusColor(report.status)]">
+                                    <span v-if="report.status" :class="['px-2 py-1 rounded-full text-xs font-medium', getStatusColor(report.status)]">
                                         {{ getStatusLabel(report.status) }}
                                     </span>
+                                    <span v-else class="text-gray-400">-</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ formatRelativeTime(report.created_at) }}
+                                    {{ report.created_at ? formatRelativeTime(report.created_at) : '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
                                     <button
@@ -135,8 +140,8 @@ const getReasonLabel = (reason) => {
                     </div>
                     <div class="flex gap-2">
                         <Link
-                            v-for="link in reports.links"
-                            :key="link.label"
+                            v-for="(link, index) in reports.links"
+                            :key="index"
                             :href="link.url"
                             :class="[
                                 'px-3 py-2 rounded-lg text-sm transition',
@@ -146,8 +151,11 @@ const getReasonLabel = (reason) => {
                                     ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     : 'bg-gray-50 text-gray-400 cursor-not-allowed'
                             ]"
-                            v-html="link.label"
-                        />
+                        >
+                            <span v-if="link.label === 'pagination.previous'">{{ t('common.previous') }}</span>
+                            <span v-else-if="link.label === 'pagination.next'">{{ t('common.next') }}</span>
+                            <span v-else v-html="link.label"></span>
+                        </Link>
                     </div>
                 </div>
             </div>

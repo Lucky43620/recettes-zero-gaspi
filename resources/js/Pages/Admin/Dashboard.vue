@@ -1,4 +1,5 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
@@ -15,20 +16,33 @@ const props = defineProps({
     topRecipes: Array,
     recentUsers: Array,
 });
+
+const sectionsVisible = ref([]);
+
+onMounted(() => {
+    [0, 1, 2, 3, 4, 5, 6].forEach((index) => {
+        setTimeout(() => {
+            sectionsVisible.value[index] = true;
+        }, index * 100);
+    });
+});
 </script>
 
 <template>
     <Head :title="t('admin.dashboard_title')" />
 
     <AdminLayout>
-        <div class="space-y-8">
-            <div>
+        <div class="space-y-6">
+            <div class="transition-all duration-500 opacity-100 transform translate-y-0">
                 <h1 class="text-3xl font-bold text-gray-900">{{ t('admin.dashboard') }}</h1>
                 <p class="mt-2 text-gray-600">{{ t('admin.platform_overview') }}</p>
             </div>
 
-            <div>
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('admin.users') }}</h2>
+            <div
+                class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 transition-all duration-500"
+                :class="sectionsVisible[0] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+            >
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-200">{{ t('admin.users') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <StatCard
                         :title="t('admin.total_users')"
@@ -51,8 +65,11 @@ const props = defineProps({
                 </div>
             </div>
 
-            <div>
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('admin.recipes') }}</h2>
+            <div
+                class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 transition-all duration-500"
+                :class="sectionsVisible[1] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+            >
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-200">{{ t('admin.recipes') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <StatCard
                         :title="t('admin.total_recipes')"
@@ -81,8 +98,11 @@ const props = defineProps({
                 </div>
             </div>
 
-            <div>
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('admin.engagement') }}</h2>
+            <div
+                class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 transition-all duration-500"
+                :class="sectionsVisible[2] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+            >
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-200">{{ t('admin.engagement') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <StatCard
                         :title="t('admin.comments')"
@@ -111,8 +131,11 @@ const props = defineProps({
                 </div>
             </div>
 
-            <div>
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('admin.moderation') }}</h2>
+            <div
+                class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 transition-all duration-500"
+                :class="sectionsVisible[3] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+            >
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-200">{{ t('admin.moderation') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <StatCard
                         :title="t('admin.pending_reports')"
@@ -135,8 +158,11 @@ const props = defineProps({
                 </div>
             </div>
 
-            <div>
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('admin.events') }}</h2>
+            <div
+                class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 transition-all duration-500"
+                :class="sectionsVisible[4] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+            >
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-200">{{ t('admin.events') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <StatCard
                         :title="t('admin.active_events')"
@@ -159,12 +185,22 @@ const props = defineProps({
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-8"></div>
+
+            <div
+                class="grid grid-cols-1 lg:grid-cols-2 gap-6 transition-all duration-500"
+                :class="sectionsVisible[5] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+            >
                 <RecentReportsCard :reports="recentReports" />
                 <TopRecipesCard :recipes="topRecipes" />
             </div>
 
-            <RecentUsersTable :users="recentUsers" />
+            <div
+                class="transition-all duration-500"
+                :class="sectionsVisible[6] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+            >
+                <RecentUsersTable :users="recentUsers" />
+            </div>
         </div>
     </AdminLayout>
 </template>

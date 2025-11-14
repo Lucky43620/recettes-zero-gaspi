@@ -1,6 +1,6 @@
 <template>
   <AppLayout :title="t('cook.title')">
-    <div class="min-h-screen bg-gray-50 pb-20">
+    <div v-if="recipe && recipe.title && recipe.steps && recipe.steps.length > 0" class="min-h-screen bg-gray-50 pb-20">
       <div class="max-w-4xl mx-auto px-4 py-8">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
           <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
@@ -149,6 +149,20 @@
               </div>
             </details>
           </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div class="max-w-md mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ t('cook.no_steps_title') }}</h2>
+          <p class="text-gray-600 mb-6">{{ t('cook.no_steps_message') }}</p>
+          <button
+            @click="router.visit('/recipes')"
+            class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          >
+            {{ t('common.back') }}
+          </button>
         </div>
       </div>
     </div>

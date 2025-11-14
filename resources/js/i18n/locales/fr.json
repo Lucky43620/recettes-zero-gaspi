@@ -360,6 +360,7 @@
   },
   "admin": {
     "title": "Administration",
+    "panel": "Panel Admin",
     "dashboard": "Tableau de bord",
     "dashboard_title": "Administration - Dashboard",
     "platform_overview": "Vue d'ensemble de la plateforme",
@@ -537,7 +538,9 @@
     "see_details": "Voir les détails",
     "product_not_registered": "Produit non enregistré",
     "proteins_g": "{g}g protéines",
-    "search_ingredient_placeholder": "Rechercher un ingrédient..."
+    "search_ingredient_placeholder": "Rechercher un ingrédient...",
+    "deleted_user": "Utilisateur supprimé",
+    "description_column": "Description"
   },
   "time": {
     "minutes": "minutes",
@@ -752,7 +755,9 @@
     "start": "Commencer",
     "completed_steps": "{completed} / {total} étapes terminées",
     "step_completed": "Étape {step} terminée !",
-    "minutes": "minutes"
+    "minutes": "minutes",
+    "no_steps_title": "Aucune étape disponible",
+    "no_steps_message": "Cette recette ne contient pas d'étapes de préparation."
   },
   "events": {
     "title": "Événements",
@@ -782,7 +787,8 @@
     "plans": {
       "free": "Gratuit",
       "monthly": "Mensuel",
-      "yearly": "Annuel"
+      "yearly": "Annuel",
+      "premium": "Premium"
     },
     "current_plan": "Plan actuel",
     "active_subscription": "Vous avez un abonnement actif",

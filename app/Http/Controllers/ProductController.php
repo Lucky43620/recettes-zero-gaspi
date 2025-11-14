@@ -17,23 +17,22 @@ class ProductController extends Controller
     {
         $query = $request->getQuery();
         $page = $request->getPage();
-        $perPage = 20;
+        $perPage = 24;
         $products = [];
         $hasMore = false;
 
         if ($query && strlen($query) >= 2) {
-            $limit = $perPage * $page;
-            $results = $this->ingredientService->searchIngredients($query, $limit + 1);
+            $offset = ($page - 1) * $perPage;
+            $limit = $perPage + 1;
 
-            $hasMore = $results->count() > $limit;
+            $results = $this->ingredientService->searchIngredients($query, $offset + $limit);
 
-            $products = $results->take($limit)->map(function ($ingredient) {
-                if (!$ingredient->exists) {
-                    $ingredient = $this->ingredientService->findOrCreateByName($ingredient->name);
-                }
+            $hasMore = $results->count() > ($offset + $perPage);
 
+            $products = $results->skip($offset)->take($perPage)->map(function ($ingredient) {
                 $data = $this->ingredientService->transformToArray($ingredient);
-                $data['exists'] = true;
+                $data['exists'] = !empty($ingredient->id);
+                $data['openfoodfacts_id'] = $ingredient->openfoodfacts_id ?? null;
                 return $data;
             })->values()->all();
         }

@@ -103,10 +103,18 @@ const logout = () => {
                                             {{ t('profile.view_public') }}
                                         </DropdownLink>
 
+                                        <template v-if="$page.props.auth.user.is_admin">
+                                            <div class="border-t border-gray-200" />
+
+                                            <DropdownLink :href="route('admin.dashboard')">
+                                                {{ t('admin.panel') }}
+                                            </DropdownLink>
+                                        </template>
+
                                         <div class="border-t border-gray-200" />
 
                                         <DropdownLink :href="route('subscription.index')">
-                                            ⭐ {{ t('subscription.title') }}
+                                            {{ t('subscription.title') }}
                                         </DropdownLink>
 
                                         <div class="border-t border-gray-200" />
@@ -209,8 +217,12 @@ const logout = () => {
                                 {{ t('profile.view_public') }}
                             </ResponsiveNavLink>
 
+                            <ResponsiveNavLink v-if="$page.props.auth.user.is_admin" :href="route('admin.dashboard')" :active="route().current('admin.*')">
+                                {{ t('admin.panel') }}
+                            </ResponsiveNavLink>
+
                             <ResponsiveNavLink :href="route('subscription.index')" :active="route().current('subscription.*')">
-                                ⭐ {{ t('subscription.title') }}
+                                {{ t('subscription.title') }}
                             </ResponsiveNavLink>
 
                             <form method="POST" @submit.prevent="logout">

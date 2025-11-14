@@ -101,7 +101,9 @@ class ProfileController extends Controller
         }
 
         return Inertia::render('Profile/PublicProfile', [
-            'profileUser' => $user,
+            'profileUser' => array_merge($user->toArray(), [
+                'is_premium' => $user->isPremium(),
+            ]),
             'topRecipes' => $topRecipes,
             'recentRecipes' => $recentRecipes,
             'averageRating' => $averageRating ? round($averageRating, 1) : null,
