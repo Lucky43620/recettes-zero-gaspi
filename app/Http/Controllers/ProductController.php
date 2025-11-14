@@ -30,6 +30,10 @@ class ProductController extends Controller
             $hasMore = $results->count() > ($offset + $perPage);
 
             $products = $results->skip($offset)->take($perPage)->map(function ($ingredient) {
+                if (empty($ingredient->id) && !empty($ingredient->name)) {
+                    $ingredient = $this->ingredientService->findOrCreateByName($ingredient->name);
+                }
+
                 $data = $this->ingredientService->transformToArray($ingredient);
                 $data['exists'] = !empty($ingredient->id);
                 return $data;

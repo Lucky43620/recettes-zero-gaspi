@@ -25,16 +25,34 @@ const cancelForm = useForm({});
 const resumeForm = useForm({});
 
 const cancelSubscription = () => {
+    if (cancelForm.processing) return;
+
     cancelForm.post(route('subscription.cancel'), {
+        preserveState: false,
+        preserveScroll: false,
         onSuccess: () => {
+            showCancelModal.value = false;
+            window.location.reload();
+        },
+        onError: (errors) => {
+            console.error('Cancel subscription error:', errors);
             showCancelModal.value = false;
         },
     });
 };
 
 const resumeSubscription = () => {
+    if (resumeForm.processing) return;
+
     resumeForm.post(route('subscription.resume'), {
+        preserveState: false,
+        preserveScroll: false,
         onSuccess: () => {
+            showResumeModal.value = false;
+            window.location.reload();
+        },
+        onError: (errors) => {
+            console.error('Resume subscription error:', errors);
             showResumeModal.value = false;
         },
     });

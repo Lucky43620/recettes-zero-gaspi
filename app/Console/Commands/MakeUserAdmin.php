@@ -32,7 +32,11 @@ class MakeUserAdmin extends Command
 
         $user->assignRole('admin');
 
+        \Artisan::call('cache:clear');
+        \Artisan::call('config:clear');
+
         $this->info("User '{$user->name}' ({$email}) has been promoted to admin.");
+        $this->warn("Cache cleared. Please ask the user to logout and login again.");
 
         return Command::SUCCESS;
     }
