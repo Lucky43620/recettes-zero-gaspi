@@ -51,7 +51,7 @@ class MealPlanRecipe extends Model
 
                 $weekStart = Carbon::parse($this->mealPlan->week_start_date);
                 $plannedDate = Carbon::parse($this->planned_date);
-                $dayIndex = $plannedDate->diffInDays($weekStart);
+                $dayIndex = $weekStart->diffInDays($plannedDate);
 
                 return $daysMap[$dayIndex] ?? 'monday';
             }

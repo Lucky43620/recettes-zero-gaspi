@@ -19,32 +19,48 @@ const selectedPlan = ref('monthly');
 const isProcessing = ref(false);
 
 const subscribe = (plan) => {
+    console.log('=== SUBSCRIBE FUNCTION CALLED ===');
+    console.log('Plan:', plan);
+    console.log('isProcessing:', isProcessing.value);
+
     if (isProcessing.value) {
-        console.log('Already processing...');
+        console.log('Already processing, returning...');
         return;
     }
 
-    console.log('Subscribing to plan:', plan);
-    isProcessing.value = true;
+    try {
+        const routeUrl = route('subscription.checkout');
+        console.log('Route URL:', routeUrl);
 
-    router.post(route('subscription.checkout'), {
-        plan: plan,
-    }, {
-        preserveState: true,
-        preserveScroll: true,
-        onFinish: () => {
-            console.log('Subscription request finished');
-            isProcessing.value = false;
-        },
-        onError: (errors) => {
-            console.error('Subscription errors:', errors);
-            isProcessing.value = false;
-            alert('Erreur lors de la souscription : ' + (errors.plan || errors.error || 'Erreur inconnue'));
-        },
-        onSuccess: () => {
-            console.log('Subscription request successful');
-        },
-    });
+        isProcessing.value = true;
+        console.log('Starting router.post...');
+
+        router.post(routeUrl, {
+            plan: plan,
+        }, {
+            preserveState: false,
+            preserveScroll: false,
+            onStart: () => {
+                console.log('Request started');
+            },
+            onFinish: () => {
+                console.log('Request finished');
+                isProcessing.value = false;
+            },
+            onError: (errors) => {
+                console.error('Request errors:', errors);
+                isProcessing.value = false;
+                alert('Erreur : ' + JSON.stringify(errors));
+            },
+            onSuccess: (page) => {
+                console.log('Request successful', page);
+            },
+        });
+    } catch (error) {
+        console.error('Exception in subscribe:', error);
+        isProcessing.value = false;
+        alert('Exception: ' + error.message);
+    }
 };
 
 const getPlanFeatures = (features) => {
@@ -124,6 +140,7 @@ const getPlanFeatures = (features) => {
                         </ul>
                         <PrimaryButton
                             v-if="currentPlan !== 'monthly'"
+                            type="button"
                             @click="subscribe('monthly')"
                             :disabled="isProcessing"
                             class="w-full justify-center py-3"
@@ -160,6 +177,7 @@ const getPlanFeatures = (features) => {
                         </ul>
                         <PrimaryButton
                             v-if="currentPlan !== 'yearly'"
+                            type="button"
                             @click="subscribe('yearly')"
                             :disabled="isProcessing"
                             class="w-full justify-center py-3"
