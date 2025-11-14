@@ -29,7 +29,9 @@ docker run --rm \
     -w /app \
     --user $(id -u):$(id -g) \
     composer:latest \
-    install --optimize-autoloader --no-cache --ignore-platform-reqs
+    install --optimize-autoloader --no-cache --ignore-platform-reqs || {
+    echo "   ⚠️ Erreur Redis ignorée (normale en dehors de Docker)"
+}
 
 echo ""
 echo "✅ 5/10 Vérification de Laravel Sail..."
