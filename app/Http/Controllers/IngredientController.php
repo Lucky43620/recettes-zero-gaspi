@@ -15,7 +15,7 @@ class IngredientController extends Controller
 
     public function show($identifier)
     {
-        if (is_numeric($identifier)) {
+        if (is_numeric($identifier) && $identifier < 1000000) {
             $ingredient = Ingredient::findOrFail($identifier);
         } else {
             $ingredient = Ingredient::where('openfoodfacts_id', $identifier)->first();

@@ -360,6 +360,7 @@
   },
   "admin": {
     "title": "Administration",
+    "panel": "Panel Admin",
     "dashboard": "Tableau de bord",
     "dashboard_title": "Administration - Dashboard",
     "platform_overview": "Vue d'ensemble de la plateforme",
