@@ -9,12 +9,12 @@
     <div class="py-12">
       <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+          <div class="p-4 md:p-6 border-b border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h3 class="text-lg font-semibold text-gray-900">
+              <h3 class="text-base md:text-lg font-semibold text-gray-900">
                 {{ t('notifications.all_notifications') }}
               </h3>
-              <p class="text-sm text-gray-600 mt-1">
+              <p class="text-xs md:text-sm text-gray-600 mt-1">
                 {{ t('notifications.unread_count', { count: unreadCount }) }}
               </p>
             </div>
@@ -23,7 +23,7 @@
               :href="route('notifications.read-all')"
               method="post"
               as="button"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+              class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition text-sm whitespace-nowrap text-center"
             >
               {{ t('notifications.mark_all_as_read') }}
             </Link>
@@ -79,22 +79,22 @@
             </div>
           </div>
 
-          <div v-if="notifications.last_page > 1" class="p-6 border-t border-gray-200">
-            <div class="flex items-center justify-between">
+          <div v-if="notifications.last_page > 1" class="p-4 md:p-6 border-t border-gray-200">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
               <Link
                 v-if="notifications.prev_page_url"
                 :href="notifications.prev_page_url"
-                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                class="w-full sm:w-auto px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition text-center"
               >
                 {{ t('common.previous') }}
               </Link>
-              <span class="text-sm text-gray-600">
+              <span class="text-xs sm:text-sm text-gray-600 order-first sm:order-none">
                 {{ t('notifications.page_of', { current: notifications.current_page, total: notifications.last_page }) }}
               </span>
               <Link
                 v-if="notifications.next_page_url"
                 :href="notifications.next_page_url"
-                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                class="w-full sm:w-auto px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition text-center"
               >
                 {{ t('common.next') }}
               </Link>
