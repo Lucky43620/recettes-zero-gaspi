@@ -23,8 +23,8 @@ const props = defineProps({
         <div class="space-y-3">
             <div v-for="mealType in mealTypes" :key="`${day}-${mealType}`">
                 <div
-                    @dragover="onDragOver"
-                    @drop="onDrop(day, mealType)"
+                    @dragover="(event) => onDragOver(event)"
+                    @drop="(event) => onDrop(event, day, mealType)"
                     class="border-2 border-dashed border-gray-200 rounded-lg p-3 min-h-[80px]"
                 >
                     <p class="text-sm font-medium text-gray-600 mb-2">{{ mealTypeLabels[mealType] }}</p>

@@ -81,6 +81,10 @@ class SubscriptionController extends Controller
             ? env('STRIPE_PRICE_MONTHLY')
             : env('STRIPE_PRICE_YEARLY');
 
+        if (empty($priceId)) {
+            return redirect()->route('subscription.index')->with('error', 'Les abonnements ne sont pas encore configurés. Veuillez réessayer plus tard.');
+        }
+
         try {
             return $user->newSubscription('default', $priceId)
                 ->checkout([

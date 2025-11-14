@@ -44,7 +44,7 @@ const getRecipeImage = (recipe) => {
                 v-for="recipe in recipes"
                 :key="recipe.id"
                 draggable="true"
-                @dragstart="emit('dragstart', recipe)"
+                @dragstart="(event) => emit('dragstart', event, recipe)"
                 :class="[bgClass, hoverClass]"
                 class="p-2 rounded cursor-move transition"
             >
