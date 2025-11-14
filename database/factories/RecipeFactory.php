@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\RecipeStep;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -27,5 +28,21 @@ class RecipeFactory extends Factory
             'rating_avg' => 0,
             'rating_count' => 0,
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function ($recipe) {
+            $numSteps = fake()->numberBetween(3, 8);
+
+            for ($i = 1; $i <= $numSteps; $i++) {
+                RecipeStep::create([
+                    'recipe_id' => $recipe->id,
+                    'position' => $i,
+                    'text' => fake()->paragraph(fake()->numberBetween(2, 4)),
+                    'timer_minutes' => $i % 3 === 0 ? fake()->numberBetween(5, 30) : null,
+                ]);
+            }
+        });
     }
 }
