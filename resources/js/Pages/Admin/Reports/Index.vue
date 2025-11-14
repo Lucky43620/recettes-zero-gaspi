@@ -86,23 +86,25 @@ const getReasonLabel = (reason) => {
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-900">
-                                    {{ report.reportable_type.split('\\').pop() }}
+                                    {{ report.reportable_type ? report.reportable_type.split('\\').pop() : '-' }}
                                 </td>
                                 <td class="px-6 py-4 text-sm">
-                                    <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
+                                    <span v-if="report.reason" class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
                                         {{ getReasonLabel(report.reason) }}
                                     </span>
+                                    <span v-else class="text-gray-400">-</span>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
                                     {{ report.description || '-' }}
                                 </td>
                                 <td class="px-6 py-4 text-sm">
-                                    <span :class="['px-2 py-1 rounded-full text-xs font-medium', getStatusColor(report.status)]">
+                                    <span v-if="report.status" :class="['px-2 py-1 rounded-full text-xs font-medium', getStatusColor(report.status)]">
                                         {{ getStatusLabel(report.status) }}
                                     </span>
+                                    <span v-else class="text-gray-400">-</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ formatRelativeTime(report.created_at) }}
+                                    {{ report.created_at ? formatRelativeTime(report.created_at) : '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
                                     <button
