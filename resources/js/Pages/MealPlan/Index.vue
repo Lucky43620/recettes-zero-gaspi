@@ -131,7 +131,7 @@ const generateShoppingList = () => {
 };
 
 const getRecipeImage = (recipe) => {
-    return recipe.media?.[0]?.original_url || '/images/placeholder-recipe.jpg';
+    return recipe.media?.[0]?.original_url || '/images/placeholder-recipe.svg';
 };
 </script>
 
