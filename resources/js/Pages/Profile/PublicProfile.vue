@@ -29,22 +29,22 @@ const props = defineProps({
                         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE0YzYuMDc1IDAgMTEgNC45MjUgMTEgMTEtMCA2LjA3NS00LjkyNSAxMS0xMSAxMS02LjA3NSAwLTExLTQuOTI1LTExLTExIDAtNi4wNzUgNC45MjUtMTEgMTEtMTF6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
                     </div>
 
-                    <div class="px-6 pb-6">
-                        <div class="flex flex-col md:flex-row md:items-end md:justify-between -mt-20 mb-6">
-                            <div class="flex items-end gap-4">
+                    <div class="px-4 md:px-6 pb-6">
+                        <div class="flex flex-col md:flex-row md:items-end md:justify-between -mt-16 md:-mt-20 mb-6">
+                            <div class="flex flex-col sm:flex-row items-center sm:items-end gap-3 md:gap-4 w-full md:w-auto">
                                 <img
                                     :src="profileUser.profile_photo_url"
                                     :alt="profileUser.name"
-                                    class="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white relative z-10"
+                                    class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg bg-white relative z-10"
                                 />
-                                <div class="pb-2">
-                                    <div class="flex items-center gap-2">
-                                        <h1 class="text-3xl font-bold text-gray-900">
+                                <div class="pb-2 text-center sm:text-left">
+                                    <div class="flex flex-col sm:flex-row items-center gap-2">
+                                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
                                             {{ profileUser.name }}
                                         </h1>
                                         <PremiumBadge v-if="profileUser.is_premium" size="md" />
                                     </div>
-                                    <p v-if="profileUser.bio" class="text-gray-600 mt-1">
+                                    <p v-if="profileUser.bio" class="text-sm md:text-base text-gray-600 mt-1">
                                         {{ profileUser.bio }}
                                     </p>
                                 </div>
@@ -85,7 +85,7 @@ const props = defineProps({
 
                         <!-- Top 3 recettes -->
                         <div v-if="topRecipes && topRecipes.length" class="mb-8">
-                            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                            <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
                                 {{ t('profile.top_3_recipes') }}
                             </h2>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
