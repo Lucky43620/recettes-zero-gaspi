@@ -131,13 +131,46 @@ class SubscriptionController extends Controller
      */
     public function success(Request $request)
     {
+        $sessionId = $request->query('session_id');
+
+        if ($sessionId) {
+            $user = auth()->user();
+            $stripe = new \Stripe\StripeClient(config('stripe.secret'));
+
+            try {
+                $session = $stripe->checkout->sessions->retrieve($sessionId);
+
+                if ($session->payment_status === 'paid' && $session->subscription) {
+                    $stripeSubscription = $stripe->subscriptions->retrieve($session->subscription);
+
+                    $subscription = $user->subscriptions()
+                        ->where('stripe_id', $session->subscription)
+                        ->first();
+
+                    if (!$subscription) {
+                        $user->subscriptions()->create([
+                            'type' => 'default',
+                            'stripe_id' => $stripeSubscription->id,
+                            'stripe_status' => $stripeSubscription->status,
+                            'stripe_price' => $stripeSubscription->items->data[0]->price->id,
+                            'quantity' => 1,
+                            'trial_ends_at' => null,
+                            'ends_at' => null,
+                        ]);
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error processing subscription success: ' . $e->getMessage());
+            }
+        }
+
         return Inertia::render('Subscription/Success');
     }
 
     /**
      * Show the subscription management page.
      */
-    public function manage(): Response
+    public function manage()
     {
         $user = auth()->user();
 
