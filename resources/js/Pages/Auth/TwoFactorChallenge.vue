@@ -87,8 +87,8 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.recovery_code" />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <button type="button" class="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer" @click.prevent="toggleRecovery">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 mt-4">
+                <button type="button" class="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer text-center sm:text-left order-2 sm:order-1" @click.prevent="toggleRecovery">
                     <template v-if="! recovery">
                         {{ t('auth.use_recovery_code') }}
                     </template>
@@ -98,7 +98,7 @@ const submit = () => {
                     </template>
                 </button>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton class="w-full sm:w-auto order-1 sm:order-2" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     {{ t('auth.log_in') }}
                 </PrimaryButton>
             </div>

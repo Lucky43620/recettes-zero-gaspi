@@ -38,12 +38,12 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
         </div>
 
         <form @submit.prevent="submit">
-            <div class="mt-4 flex items-center justify-between">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <div class="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <PrimaryButton class="w-full sm:w-auto text-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     {{ t('auth.resend_verification_email') }}
                 </PrimaryButton>
 
-                <div>
+                <div class="flex flex-col sm:flex-row gap-2 text-center sm:text-left">
                     <Link
                         :href="route('user.profile')"
                         class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -54,7 +54,7 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
                         :href="route('logout')"
                         method="post"
                         as="button"
-                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ms-2"
+                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                         {{ t('auth.log_out') }}
                     </Link>

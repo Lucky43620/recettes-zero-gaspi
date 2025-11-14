@@ -86,12 +86,12 @@ const closeModal = () => {
                 </template>
 
                 <template #footer>
-                    <SecondaryButton @click="closeModal">
+                    <SecondaryButton class="w-full sm:w-auto" @click="closeModal">
                         {{ t('common.cancel') }}
                     </SecondaryButton>
 
                     <DangerButton
-                        class="ms-3"
+                        class="w-full sm:w-auto"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                         @click="deleteUser"

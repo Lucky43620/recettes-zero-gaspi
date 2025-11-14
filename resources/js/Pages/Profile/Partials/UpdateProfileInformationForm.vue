@@ -115,14 +115,15 @@ const clearPhotoFileInput = () => {
                     />
                 </div>
 
-                <div class="flex gap-3 mt-3">
-                    <SecondaryButton type="button" @click.prevent="selectNewPhoto">
+                <div class="flex flex-col sm:flex-row gap-3 mt-3">
+                    <SecondaryButton type="button" class="w-full sm:w-auto text-center" @click.prevent="selectNewPhoto">
                         {{ t('profile.select_new_photo') }}
                     </SecondaryButton>
 
                     <SecondaryButton
                         v-if="user.profile_photo_path"
                         type="button"
+                        class="w-full sm:w-auto text-center"
                         @click.prevent="deletePhoto"
                     >
                         {{ t('common.delete') }}
@@ -182,11 +183,11 @@ const clearPhotoFileInput = () => {
         </template>
 
         <template #actions>
-            <ActionMessage :on="form.recentlySuccessful" class="me-3">
+            <ActionMessage :on="form.recentlySuccessful" class="order-2 sm:order-1">
                 {{ t('common.saved') }}
             </ActionMessage>
 
-            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <PrimaryButton class="w-full sm:w-auto order-1 sm:order-2" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                 {{ t('common.save') }}
             </PrimaryButton>
         </template>

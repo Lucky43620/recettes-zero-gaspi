@@ -56,8 +56,8 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="flex justify-end mt-4">
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-4">
+                <PrimaryButton class="w-full sm:w-auto" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     {{ t('auth.confirm') }}
                 </PrimaryButton>
             </div>
