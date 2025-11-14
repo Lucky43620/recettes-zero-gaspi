@@ -79,8 +79,8 @@ function getUserVote(commentId) {
 </script>
 
 <template>
-    <div class="space-y-6">
-        <h3 class="text-xl font-semibold text-gray-900">
+    <div class="space-y-4 md:space-y-6">
+        <h3 class="text-lg md:text-xl font-semibold text-gray-900">
             {{ t('profile.comments_count', { count: comments?.length || 0 }) }}
         </h3>
 
