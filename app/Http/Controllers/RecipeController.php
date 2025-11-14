@@ -78,7 +78,9 @@ class RecipeController extends Controller
 
         $loadRelations = [
             'author',
-            'steps',
+            'steps' => function ($query) {
+                $query->orderBy('position');
+            },
             'ingredients',
             'media',
             'ratings.user',
@@ -138,7 +140,13 @@ class RecipeController extends Controller
         }
 
         return Inertia::render('Recipe/Cook', [
-            'recipe' => $recipe,
+            'recipe' => [
+                'id' => $recipe->id,
+                'slug' => $recipe->slug,
+                'title' => $recipe->title,
+                'author' => $recipe->author,
+                'steps' => $recipe->steps->values()->toArray(),
+            ],
         ]);
     }
 
