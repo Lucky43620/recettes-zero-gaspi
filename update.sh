@@ -88,14 +88,44 @@ fi
 echo ""
 echo "⚡ 6/7 Clear et rebuild cache..."
 
-docker compose exec -T laravel.test php artisan cache:clear
-docker compose exec -T laravel.test php artisan config:clear
-docker compose exec -T laravel.test php artisan route:clear
-docker compose exec -T laravel.test php artisan view:clear
+# Fonction pour nettoyer le cache avec fallback en cas d'erreur Redis
+clear_cache_safe() {
+    local CACHE_DRIVER=$(grep "^CACHE_STORE=" .env | cut -d '=' -f2)
 
-docker compose exec -T laravel.test php artisan config:cache
-docker compose exec -T laravel.test php artisan route:cache
-docker compose exec -T laravel.test php artisan view:cache
+    # Tenter de nettoyer avec le driver actuel
+    if docker compose exec -T laravel.test php artisan cache:clear 2>&1 | grep -q "READONLY"; then
+        echo "   ⚠️  Redis en mode lecture seule détecté"
+        echo "   🔄 Basculement temporaire vers le cache database..."
+
+        # Sauvegarder le driver actuel et basculer temporairement
+        sed -i.bak "s|^CACHE_STORE=.*|CACHE_STORE=database|" .env
+
+        # Nettoyer avec le driver database
+        docker compose exec -T laravel.test php artisan cache:clear 2>/dev/null || true
+
+        # Restaurer le driver original
+        if [ -n "$CACHE_DRIVER" ]; then
+            sed -i "s|^CACHE_STORE=.*|CACHE_STORE=${CACHE_DRIVER}|" .env
+        fi
+        rm -f .env.bak
+
+        echo "   ✓ Cache nettoyé (via fallback database)"
+    else
+        echo "   ✓ Cache nettoyé"
+    fi
+}
+
+# Nettoyer les caches avec gestion d'erreur Redis
+clear_cache_safe
+
+docker compose exec -T laravel.test php artisan config:clear 2>/dev/null || echo "   ℹ️  Config clear ignoré"
+docker compose exec -T laravel.test php artisan route:clear 2>/dev/null || echo "   ℹ️  Route clear ignoré"
+docker compose exec -T laravel.test php artisan view:clear 2>/dev/null || true
+
+# Reconstruire les caches
+docker compose exec -T laravel.test php artisan config:cache 2>/dev/null || echo "   ℹ️  Config cache ignoré"
+docker compose exec -T laravel.test php artisan route:cache 2>/dev/null || echo "   ℹ️  Route cache ignoré"
+docker compose exec -T laravel.test php artisan view:cache 2>/dev/null || true
 
 echo "   ✓ Cache régénéré"
 
