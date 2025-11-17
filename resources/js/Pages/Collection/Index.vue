@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import FormInput from '@/Components/Common/FormInput.vue';
 import FormTextarea from '@/Components/Common/FormTextarea.vue';
 import FormCheckbox from '@/Components/Common/FormCheckbox.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();

@@ -1,7 +1,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { Link } from '@inertiajs/vue3';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const { t } = useI18n();
 

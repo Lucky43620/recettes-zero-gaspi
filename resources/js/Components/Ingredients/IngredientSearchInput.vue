@@ -133,7 +133,6 @@ const handleSearch = () => {
             });
             results.value = response.data.data || [];
         } catch (error) {
-            console.error('Error searching ingredients:', error);
             results.value = [];
         } finally {
             isSearching.value = false;

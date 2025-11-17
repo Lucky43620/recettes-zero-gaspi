@@ -1,8 +1,10 @@
 <script setup>
 import { router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { useMediaConversions } from '@/composables/useMediaConversions';
 
 const { t } = useI18n();
+const { getConversionUrl } = useMediaConversions();
 
 const props = defineProps({
     daysOfWeek: Array,
@@ -16,7 +18,7 @@ const props = defineProps({
 });
 
 const getRecipeImage = (recipe) => {
-    return recipe.media?.[0]?.original_url || '/images/placeholder-recipe.svg';
+    return recipe.media?.[0] ? getConversionUrl(recipe.media[0], 'thumb') : '/images/placeholder-recipe.svg';
 };
 
 const handleDragOver = (event) => {

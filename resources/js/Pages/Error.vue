@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     status: Number,

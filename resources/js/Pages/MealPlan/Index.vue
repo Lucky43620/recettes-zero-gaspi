@@ -6,12 +6,14 @@ import WeekNavigation from '@/Components/MealPlan/WeekNavigation.vue';
 import FreeLimitBanner from '@/Components/MealPlan/FreeLimitBanner.vue';
 import MealPlanGrid from '@/Components/MealPlan/MealPlanGrid.vue';
 import DuplicateWeekModal from '@/Components/MealPlan/DuplicateWeekModal.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { useMediaConversions } from '@/composables/useMediaConversions';
 
 const { t } = useI18n();
+const { getConversionUrl } = useMediaConversions();
 
 const props = defineProps({
     mealPlan: Object,
@@ -131,26 +133,27 @@ const generateShoppingList = () => {
 };
 
 const getRecipeImage = (recipe) => {
-    return recipe.media?.[0]?.original_url || '/images/placeholder-recipe.svg';
+    return recipe.media?.[0] ? getConversionUrl(recipe.media[0], 'thumb') : '/images/placeholder-recipe.svg';
 };
 </script>
 
 <template>
     <AppLayout :title="t('meal_plan.title')">
         <template #header>
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ t('meal_plan.title') }}
                 </h2>
-                <div class="flex gap-3">
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <PrimaryButton
                         @click="generateShoppingList"
                         :loading="isGeneratingShoppingList"
                         variant="warning"
+                        class="w-full sm:w-auto"
                     >
                         {{ t('meal_plan.generate_shopping_list') }}
                     </PrimaryButton>
-                    <PrimaryButton @click="openDuplicateModal">
+                    <PrimaryButton @click="openDuplicateModal" class="w-full sm:w-auto">
                         {{ t('meal_plan.duplicate_week') }}
                     </PrimaryButton>
                 </div>

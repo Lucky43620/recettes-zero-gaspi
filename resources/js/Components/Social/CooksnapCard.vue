@@ -1,9 +1,11 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { useDateFormat } from '@/composables/useDateFormat';
+import { useMediaConversions } from '@/composables/useMediaConversions';
 
 const { t } = useI18n();
 const { formatRelativeTime } = useDateFormat();
+const { getConversionUrl, getSrcset, getSizes } = useMediaConversions();
 
 defineProps({
     cooksnap: Object,
@@ -18,8 +20,11 @@ const emit = defineEmits(['openImage', 'delete']);
         <div class="relative aspect-square">
             <img
                 v-if="cooksnap.media?.[0]"
-                :src="cooksnap.media[0].original_url"
+                :src="getConversionUrl(cooksnap.media[0], 'medium')"
+                :srcset="getSrcset(cooksnap.media[0])"
+                :sizes="getSizes('cooksnap')"
                 :alt="`Cooksnap par ${cooksnap.user.name}`"
+                loading="lazy"
                 class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
                 @click="emit('openImage', cooksnap.media[0].original_url)"
             />
@@ -33,6 +38,7 @@ const emit = defineEmits(['openImage', 'delete']);
                 <img
                     :src="cooksnap.user.profile_photo_url"
                     :alt="cooksnap.user.name"
+                    loading="lazy"
                     class="w-8 h-8 rounded-full"
                 />
                 <div class="flex-1">

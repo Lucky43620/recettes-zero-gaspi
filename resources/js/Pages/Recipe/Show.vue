@@ -11,7 +11,7 @@ import CommentSection from '@/Components/Social/CommentSection.vue';
 import CooksnapSection from '@/Components/Social/CooksnapSection.vue';
 import FavoriteButton from '@/Components/Social/FavoriteButton.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import RecipeHeader from '@/Components/Recipe/RecipeHeader.vue';
 import RecipeStats from '@/Components/Recipe/RecipeStats.vue';
 import RecipeIngredientsList from '@/Components/Recipe/RecipeIngredientsList.vue';

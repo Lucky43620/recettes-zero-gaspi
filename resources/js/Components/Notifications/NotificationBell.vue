@@ -18,7 +18,7 @@
       class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50"
     >
       <div class="p-4 border-b border-gray-200 flex items-center justify-between">
-        <h3 class="font-semibold text-gray-900">Notifications</h3>
+        <h3 class="font-semibold text-gray-900">{{ t('notifications.title') }}</h3>
         <Link
           v-if="unreadCount > 0"
           :href="route('notifications.read-all')"
@@ -26,13 +26,13 @@
           as="button"
           class="text-xs text-blue-600 hover:text-blue-800"
         >
-          Tout marquer comme lu
+          {{ t('notifications.mark_all_as_read') }}
         </Link>
       </div>
 
       <div class="max-h-96 overflow-y-auto">
         <div v-if="notifications.length === 0" class="p-8 text-center text-gray-500">
-          Aucune notification
+          {{ t('notifications.no_notifications') }}
         </div>
 
         <Link
@@ -70,7 +70,7 @@
           :href="route('notifications.index')"
           class="text-sm text-blue-600 hover:text-blue-800 font-medium"
         >
-          Voir toutes les notifications
+          {{ t('notifications.see_all') }}
         </Link>
       </div>
     </div>
@@ -80,8 +80,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+import { useI18n } from 'vue-i18n'
 import { BellIcon, ChatBubbleLeftIcon, UserPlusIcon, ClockIcon } from '@heroicons/vue/24/outline'
 
+const { t } = useI18n()
 const page = usePage()
 const isOpen = ref(false)
 
@@ -128,10 +130,10 @@ const formatDate = (dateString) => {
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(hours / 24)
 
-  if (minutes < 1) return 'À l\'instant'
-  if (minutes < 60) return `Il y a ${minutes} min`
-  if (hours < 24) return `Il y a ${hours}h`
-  if (days < 7) return `Il y a ${days}j`
+  if (minutes < 1) return t('notifications.just_now')
+  if (minutes < 60) return t('notifications.minutes_ago', { count: minutes })
+  if (hours < 24) return t('notifications.hours_ago', { count: hours })
+  if (days < 7) return t('notifications.days_ago', { count: days })
   return date.toLocaleDateString('fr-FR')
 }
 </script>

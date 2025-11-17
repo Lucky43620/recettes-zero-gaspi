@@ -20,12 +20,7 @@ const isProcessing = ref(false);
 const errorMessage = ref(null);
 
 const subscribe = (plan) => {
-    console.log('=== SUBSCRIBE FUNCTION CALLED ===');
-    console.log('Plan:', plan);
-    console.log('isProcessing:', isProcessing.value);
-
     if (isProcessing.value) {
-        console.log('Already processing, returning...');
         return;
     }
 
@@ -33,25 +28,17 @@ const subscribe = (plan) => {
 
     try {
         const routeUrl = route('subscription.checkout');
-        console.log('Route URL:', routeUrl);
-
         isProcessing.value = true;
-        console.log('Starting router.post...');
 
         router.post(routeUrl, {
             plan: plan,
         }, {
             preserveState: true,
             preserveScroll: true,
-            onStart: () => {
-                console.log('Request started');
-            },
             onFinish: () => {
-                console.log('Request finished');
                 isProcessing.value = false;
             },
             onError: (errors) => {
-                console.error('Request errors:', errors);
                 isProcessing.value = false;
 
                 if (errors.plan) {
@@ -61,15 +48,9 @@ const subscribe = (plan) => {
                 } else {
                     errorMessage.value = t('common.error_occurred');
                 }
-
-                console.log('Error message set to:', errorMessage.value);
-            },
-            onSuccess: (page) => {
-                console.log('Request successful', page);
             },
         });
     } catch (error) {
-        console.error('Exception in subscribe:', error);
         isProcessing.value = false;
         errorMessage.value = error.message;
     }
@@ -128,7 +109,7 @@ const getPlanFeatures = (features) => {
                 </div>
 
                 <!-- Pricing Cards -->
-                <div class="grid md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     <!-- Free Plan -->
                     <div class="bg-white rounded-lg shadow-lg p-8">
                         <h3 class="text-2xl font-bold text-gray-900 mb-4">

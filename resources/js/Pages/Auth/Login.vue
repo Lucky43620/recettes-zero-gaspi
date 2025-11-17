@@ -84,12 +84,12 @@ const submit = () => {
                 </label>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link v-if="canResetPassword" :href="route('password.request')" class="underline text-sm text-green-600 hover:text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4 mt-4">
+                <Link v-if="canResetPassword" :href="route('password.request')" class="underline text-sm text-center sm:text-left text-green-600 hover:text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     {{ t('auth.forgot_password') }}
                 </Link>
 
-                <PrimaryButton class="ms-4 bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton class="bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500 w-full sm:w-auto" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     {{ t('auth.login_button') }}
                 </PrimaryButton>
             </div>

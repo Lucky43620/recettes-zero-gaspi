@@ -1,7 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 

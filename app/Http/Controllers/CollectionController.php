@@ -8,6 +8,7 @@ use App\Models\Collection;
 use App\Models\Recipe;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class CollectionController extends Controller
@@ -96,18 +97,12 @@ class CollectionController extends Controller
 
         $recipeIds = $request->getRecipeIds();
 
-        $cases = [];
-        $ids = [];
-        foreach ($recipeIds as $position => $recipeId) {
-            $cases[] = "WHEN {$recipeId} THEN " . ($position + 1);
-            $ids[] = $recipeId;
-        }
-
-        if (!empty($ids)) {
-            $casesString = implode(' ', $cases);
-            $idsString = implode(',', $ids);
-            \DB::update("UPDATE collection_recipe SET position = CASE recipe_id {$casesString} END WHERE collection_id = ? AND recipe_id IN ({$idsString})", [$collection->id]);
-        }
+        DB::transaction(function () use ($collection, $recipeIds) {
+            foreach ($recipeIds as $position => $recipeId) {
+                $collection->recipes()
+                    ->updateExistingPivot($recipeId, ['position' => $position + 1]);
+            }
+        });
 
         return back()->with('success', 'Ordre mis à jour');
     }

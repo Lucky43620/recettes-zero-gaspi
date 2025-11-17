@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Cooksnap;
 use App\Models\Event;
+use App\Models\Rating;
 use App\Models\Recipe;
 use App\Models\Report;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class AdminController extends Controller
@@ -29,13 +29,12 @@ class AdminController extends Controller
             SUM(CASE WHEN MONTH(created_at) = ? AND YEAR(created_at) = ? THEN 1 ELSE 0 END) as new_this_month
         ', [now()->month, now()->year])->first();
 
-        $engagementStats = DB::selectOne('
-            SELECT
-                (SELECT COUNT(*) FROM comments) as comments,
-                (SELECT COUNT(*) FROM cooksnaps) as cooksnaps,
-                (SELECT COUNT(*) FROM ratings) as total_ratings,
-                (SELECT ROUND(AVG(rating), 2) FROM ratings) as avg_rating
-        ');
+        $engagementStats = (object) [
+            'comments' => Comment::count(),
+            'cooksnaps' => Cooksnap::count(),
+            'total_ratings' => Rating::count(),
+            'avg_rating' => round(Rating::avg('rating') ?? 0, 2),
+        ];
 
         $reportStats = Report::selectRaw('
             COUNT(*) as total,

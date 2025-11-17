@@ -518,6 +518,7 @@
     "submit": "Soumettre",
     "send": "Envoyer",
     "language": "Langue",
+    "menu": "Menu",
     "actions": "Actions",
     "details": "Détails",
     "status": "Statut",
@@ -756,6 +757,7 @@
     "completed_steps": "{completed} / {total} étapes terminées",
     "step_completed": "Étape {step} terminée !",
     "minutes": "minutes",
+    "mark_completed": "Marquer comme complété",
     "no_steps_title": "Aucune étape disponible",
     "no_steps_message": "Cette recette ne contient pas d'étapes de préparation."
   },
@@ -869,6 +871,27 @@
       "pantry_limit": "Limite de {limit} articles atteinte pour les utilisateurs gratuits",
       "meal_plan_limit": "Limite de {limit} recettes par semaine pour les utilisateurs gratuits"
     }
+  },
+  "products": {
+    "search_title": "Recherche de Produits",
+    "page_title": "Recherche de Produits Alimentaires",
+    "page_description": "Explorez notre base de données de produits alimentaires et découvrez leurs informations nutritionnelles complètes",
+    "search_placeholder": "Rechercher un produit par nom, marque ou code-barres...",
+    "search_button": "Rechercher",
+    "searching": "Recherche en cours...",
+    "products_found": "{count} produit trouvé | {count} produits trouvés",
+    "load_more": "Afficher plus",
+    "no_products_found": "Aucun produit trouvé",
+    "try_different_terms": "Essayez avec d'autres termes de recherche",
+    "start_search_title": "Commencez votre recherche",
+    "start_search_description": "Recherchez un produit pour voir les résultats",
+    "about_database": "À propos de notre base de données",
+    "verified_data": "Données vérifiées",
+    "verified_data_desc": "Base de données collaborative OpenFoodFacts",
+    "complete_info": "Informations complètes",
+    "complete_info_desc": "Nutrition, allergènes, labels et origine",
+    "regular_updates": "Mise à jour régulière",
+    "regular_updates_desc": "Données synchronisées automatiquement"
   },
   "jetstream": {
     "welcome_title": "Bienvenue dans votre application Jetstream !",

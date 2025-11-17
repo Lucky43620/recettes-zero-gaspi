@@ -174,8 +174,8 @@ import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import FormInput from '@/Components/Common/FormInput.vue';
 import FormSelect from '@/Components/Common/FormSelect.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
-import SecondaryButton from '@/Components/Common/SecondaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { useStorageLocationLabels } from '@/composables/useEnumLabels';
 
 const { t } = useI18n();

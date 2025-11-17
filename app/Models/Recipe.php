@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Recipe extends Model implements HasMedia
 {
@@ -100,6 +102,27 @@ class Recipe extends Model implements HasMedia
     {
         $this->addMediaCollection('images')
             ->useFallbackUrl('/images/recipe-placeholder.jpg');
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->fit(Fit::Crop, 300, 300)
+            ->format('webp')
+            ->quality(85)
+            ->performOnCollections('images');
+
+        $this->addMediaConversion('medium')
+            ->fit(Fit::Max, 800, 800)
+            ->format('webp')
+            ->quality(85)
+            ->performOnCollections('images');
+
+        $this->addMediaConversion('large')
+            ->fit(Fit::Max, 1200, 1200)
+            ->format('webp')
+            ->quality(90)
+            ->performOnCollections('images');
     }
 
     public function scopePublic($query)

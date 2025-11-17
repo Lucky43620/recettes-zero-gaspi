@@ -1,7 +1,9 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
+import { useMediaConversions } from '@/composables/useMediaConversions';
 
 const { t } = useI18n();
+const { getConversionUrl, getSrcset, getSizes } = useMediaConversions();
 
 defineProps({
     recipe: Object,
@@ -19,8 +21,11 @@ defineProps({
         </div>
         <div v-if="recipe.media && recipe.media.length > 0" class="h-64 md:h-96 bg-gray-100 rounded-lg overflow-hidden">
             <img
-                :src="recipe.media[0].original_url"
+                :src="getConversionUrl(recipe.media[0], 'large')"
+                :srcset="getSrcset(recipe.media[0])"
+                :sizes="getSizes('header')"
                 :alt="recipe.title"
+                loading="eager"
                 class="w-full h-full object-cover"
             />
         </div>

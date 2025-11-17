@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import CooksnapForm from './CooksnapForm.vue';
 import CooksnapCard from './CooksnapCard.vue';
 
