@@ -54,12 +54,16 @@ class AdminUserController extends Controller
 
     public function destroy(User $user)
     {
-        $user->recipes()->each(function ($recipe) {
-            $recipe->clearMediaCollection('images');
-            $recipe->delete();
-        });
+        \DB::transaction(function () use ($user) {
+            $recipes = $user->recipes()->with('media')->get();
 
-        $user->delete();
+            foreach ($recipes as $recipe) {
+                $recipe->clearMediaCollection('images');
+                $recipe->delete();
+            }
+
+            $user->delete();
+        });
 
         return redirect()->route('admin.users.index')
             ->with('success', 'Utilisateur supprimé');

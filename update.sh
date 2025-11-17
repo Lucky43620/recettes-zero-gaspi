@@ -13,7 +13,7 @@ cd "$(dirname "$0")"
 # ============================================
 # 1. GIT PULL
 # ============================================
-echo "📥 1/7 Pull des dernières modifications..."
+echo "📥 1/8 Pull des dernières modifications..."
 
 git fetch origin
 git pull origin claude/incomplete-description-01MTTFhy38f8SXHgnckz2QMk
@@ -24,7 +24,7 @@ echo "   ✓ Code mis à jour"
 # 2. COMPOSER UPDATE
 # ============================================
 echo ""
-echo "📦 2/7 Mise à jour Composer..."
+echo "📦 2/8 Mise à jour Composer..."
 
 docker compose exec -T laravel.test composer install --optimize-autoloader 2>&1 | grep -v "Class \"Redis\" not found" || {
     echo "   ℹ️  Installation terminée (erreurs Redis ignorées)"
@@ -36,7 +36,7 @@ echo "   ✓ Dépendances Composer mises à jour"
 # 3. NPM UPDATE & BUILD
 # ============================================
 echo ""
-echo "📦 3/7 Mise à jour NPM et rebuild des assets..."
+echo "📦 3/8 Mise à jour NPM et rebuild des assets..."
 
 docker compose exec -T laravel.test bash -c "npm install && npm run build"
 
@@ -46,7 +46,7 @@ echo "   ✓ Assets reconstruits"
 # 4. MIGRATIONS
 # ============================================
 echo ""
-echo "🗄️  4/7 Migrations de base de données..."
+echo "🗄️  4/8 Migrations de base de données..."
 
 docker compose exec -T laravel.test php artisan migrate --force
 
@@ -56,7 +56,7 @@ echo "   ✓ Migrations exécutées"
 # 5. STRIPE CONFIGURATION
 # ============================================
 echo ""
-echo "💳 5/7 Configuration Stripe..."
+echo "💳 5/8 Configuration Stripe..."
 
 STRIPE_KEY_SET=$(grep -c "^STRIPE_KEY=pk_" .env 2>/dev/null || echo "0")
 STRIPE_SECRET_SET=$(grep -c "^STRIPE_SECRET=sk_" .env 2>/dev/null || echo "0")
@@ -83,15 +83,21 @@ else
 fi
 
 # ============================================
-# 6. STORAGE LINK
+# 6. STORAGE LINK & PERMISSIONS
 # ============================================
 echo ""
-echo "🔗 6/8 Configuration storage link..."
+echo "🔗 6/8 Configuration storage link et permissions..."
 
 docker compose exec -T laravel.test php artisan storage:link 2>/dev/null || echo "   ℹ️  Storage link déjà créé"
 
-docker compose exec -T laravel.test chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || echo "   ℹ️  Permissions déjà configurées"
-docker compose exec -T laravel.test chmod -R 775 /var/www/html/storage 2>/dev/null || echo "   ℹ️  Permissions déjà configurées"
+echo "   🔄 Régénération des conversions d'images manquantes..."
+docker compose exec -T laravel.test php artisan media-library:regenerate 2>/dev/null || echo "   ℹ️  Pas de conversions à régénérer"
+
+echo "   🔒 Application des permissions correctes..."
+docker compose exec -T laravel.test chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
+docker compose exec -T laravel.test chmod -R 775 /var/www/html/storage 2>/dev/null || true
+docker compose exec -T laravel.test find /var/www/html/storage -type f -exec chmod 664 {} \; 2>/dev/null || true
+docker compose exec -T laravel.test find /var/www/html/storage -type d -exec chmod 775 {} \; 2>/dev/null || true
 
 echo "   ✓ Storage link et permissions configurés"
 

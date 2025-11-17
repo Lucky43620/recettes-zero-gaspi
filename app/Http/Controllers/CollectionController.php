@@ -6,20 +6,22 @@ use App\Http\Requests\CollectionReorderRequest;
 use App\Http\Requests\StoreCollectionRequest;
 use App\Models\Collection;
 use App\Models\Recipe;
+use App\Services\CollectionService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class CollectionController extends Controller
 {
     use AuthorizesRequests;
+
+    public function __construct(
+        private CollectionService $collectionService
+    ) {}
+
     public function index()
     {
-        $collections = Auth::user()->collections()
-            ->withCount('recipes')
-            ->latest()
-            ->get();
+        $collections = $this->collectionService->getUserCollections(Auth::user(), 100);
 
         return Inertia::render('Collection/Index', [
             'collections' => $collections,
@@ -30,7 +32,7 @@ class CollectionController extends Controller
     {
         $this->authorize('view', $collection);
 
-        $collection->load(['recipes.author', 'recipes.media', 'user']);
+        $collection = $this->collectionService->getCollectionWithRecipes($collection);
 
         return Inertia::render('Collection/Show', [
             'collection' => $collection,
@@ -40,7 +42,7 @@ class CollectionController extends Controller
 
     public function store(StoreCollectionRequest $request)
     {
-        $collection = Auth::user()->collections()->create($request->validated());
+        $collection = $this->collectionService->createCollection(Auth::user(), $request->validated());
 
         return redirect()->route('collections.show', $collection)
             ->with('success', 'Collection créée');
@@ -50,7 +52,7 @@ class CollectionController extends Controller
     {
         $this->authorize('update', $collection);
 
-        $collection->update($request->validated());
+        $this->collectionService->updateCollection($collection, $request->validated());
 
         return back()->with('success', 'Collection mise à jour');
     }
@@ -59,7 +61,7 @@ class CollectionController extends Controller
     {
         $this->authorize('delete', $collection);
 
-        $collection->delete();
+        $this->collectionService->deleteCollection($collection);
 
         return redirect()->route('collections.index')
             ->with('success', 'Collection supprimée');
@@ -69,24 +71,19 @@ class CollectionController extends Controller
     {
         $this->authorize('update', $collection);
 
-        if ($collection->recipes()->where('recipe_id', $recipe->id)->exists()) {
-            return back()->withErrors(['error' => 'Cette recette est déjà dans la collection']);
+        try {
+            $this->collectionService->addRecipe($collection, $recipe);
+            return back()->with('success', 'Recette ajoutée à la collection');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        $maxPosition = $collection->recipes()->max('collection_recipe.position') ?? -1;
-
-        $collection->recipes()->attach($recipe->id, [
-            'position' => $maxPosition + 1,
-        ]);
-
-        return back()->with('success', 'Recette ajoutée à la collection');
     }
 
     public function removeRecipe(Collection $collection, Recipe $recipe)
     {
         $this->authorize('update', $collection);
 
-        $collection->recipes()->detach($recipe->id);
+        $this->collectionService->removeRecipe($collection, $recipe);
 
         return back()->with('success', 'Recette retirée de la collection');
     }
@@ -95,14 +92,7 @@ class CollectionController extends Controller
     {
         $this->authorize('update', $collection);
 
-        $recipeIds = $request->getRecipeIds();
-
-        DB::transaction(function () use ($collection, $recipeIds) {
-            foreach ($recipeIds as $position => $recipeId) {
-                $collection->recipes()
-                    ->updateExistingPivot($recipeId, ['position' => $position + 1]);
-            }
-        });
+        $this->collectionService->reorderRecipes($collection, $request->getRecipeIds());
 
         return back()->with('success', 'Ordre mis à jour');
     }

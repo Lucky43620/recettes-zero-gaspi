@@ -97,13 +97,17 @@ class RecipeController extends Controller
 
         $recipe->load($loadRelations);
 
+        if (Auth::check()) {
+            $recipe->loadExists(['favorites' => fn($query) => $query->where('user_id', Auth::id())]);
+        }
+
         $userRating = null;
         $isFavorited = false;
         $commentVotes = [];
 
         if (Auth::check()) {
             $userRating = $recipe->ratings->where('user_id', Auth::id())->first();
-            $isFavorited = Auth::user()->favorites()->where('recipe_id', $recipe->id)->exists();
+            $isFavorited = $recipe->favorites_exists ?? false;
 
             $commentVotes = $recipe->comments->flatMap(function ($comment) {
                 return $comment->votes;

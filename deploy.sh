@@ -197,10 +197,16 @@ echo "🔗 12/12 Configuration finale..."
 
 docker compose exec -T laravel.test php artisan storage:link 2>/dev/null || echo "   ℹ️  Storage link déjà créé"
 
-# Fix permissions
-docker compose exec -T laravel.test chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache
+echo "   🔄 Régénération des conversions d'images..."
+docker compose exec -T laravel.test php artisan media-library:regenerate 2>/dev/null || echo "   ℹ️  Pas de conversions à régénérer"
 
-echo "   ✓ Permissions configurées"
+echo "   🔒 Application des permissions correctes..."
+docker compose exec -T laravel.test chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
+docker compose exec -T laravel.test chmod -R 775 /var/www/html/storage 2>/dev/null || true
+docker compose exec -T laravel.test find /var/www/html/storage -type f -exec chmod 664 {} \; 2>/dev/null || true
+docker compose exec -T laravel.test find /var/www/html/storage -type d -exec chmod 775 {} \; 2>/dev/null || true
+
+echo "   ✓ Storage link et permissions configurés"
 
 # ============================================
 # FIN
