@@ -14,10 +14,9 @@ class HashFileNamer extends FileNamer
 
     public function conversionFileName(string $fileName, Conversion $conversion): string
     {
-        $extension = pathinfo($fileName, PATHINFO_EXTENSION);
         $baseName = pathinfo($fileName, PATHINFO_FILENAME);
 
-        return $baseName . '-' . $conversion->getName() . '.' . $extension;
+        return $baseName . '-' . $conversion->getName();
     }
 
     public function responsiveFileName(string $fileName): string
