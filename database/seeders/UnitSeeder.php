@@ -30,6 +30,12 @@ class UnitSeeder extends Seeder
             ['code' => 'can', 'label' => 'boîte'],
             ['code' => 'jar', 'label' => 'pot'],
             ['code' => 'package', 'label' => 'paquet'],
+            ['code' => 'branch', 'label' => 'branche(s)'],
+            ['code' => 'leaf', 'label' => 'feuille(s)'],
+            ['code' => 'clove', 'label' => 'gousse(s)'],
+            ['code' => 'sachet', 'label' => 'sachet(s)'],
+            ['code' => 'roll', 'label' => 'rouleau(x)'],
+            ['code' => 'grain', 'label' => 'grain(s)'],
         ];
 
         foreach ($units as $unit) {

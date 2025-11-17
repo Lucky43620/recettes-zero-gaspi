@@ -21,9 +21,11 @@ class IngredientSeeder extends Seeder
         $units = [
             ['code' => 'g', 'label' => 'gramme'],
             ['code' => 'kg', 'label' => 'kilogramme'],
+            ['code' => 'mg', 'label' => 'milligramme'],
             ['code' => 'ml', 'label' => 'millilitre'],
             ['code' => 'l', 'label' => 'litre'],
             ['code' => 'cl', 'label' => 'centilitre'],
+            ['code' => 'dl', 'label' => 'décilitre'],
             ['code' => 'piece', 'label' => 'pièce'],
             ['code' => 'pinch', 'label' => 'pincée'],
             ['code' => 'tbsp', 'label' => 'cuillère à soupe'],
@@ -33,6 +35,13 @@ class IngredientSeeder extends Seeder
             ['code' => 'slice', 'label' => 'tranche'],
             ['code' => 'can', 'label' => 'boîte'],
             ['code' => 'pack', 'label' => 'paquet'],
+            ['code' => 'jar', 'label' => 'pot'],
+            ['code' => 'branch', 'label' => 'branche'],
+            ['code' => 'leaf', 'label' => 'feuille'],
+            ['code' => 'clove', 'label' => 'gousse'],
+            ['code' => 'sachet', 'label' => 'sachet'],
+            ['code' => 'roll', 'label' => 'rouleau'],
+            ['code' => 'grain', 'label' => 'grain'],
         ];
 
         foreach ($units as $unit) {
