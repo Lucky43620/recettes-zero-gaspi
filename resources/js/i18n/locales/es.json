@@ -778,6 +778,8 @@
     "publish_cooksnap": "Publicar mi cooksnap",
     "delete_cooksnap": "Eliminar cooksnap",
     "delete_confirmation": "¿Estás seguro de que quieres eliminar este cooksnap? Esta acción es irreversible.",
+    "select_photos": "Seleccionar fotos",
+    "add_more_photos": "Añadir más fotos",
     "max_photos_alert": "Máximo 5 fotos permitidas"
   },
   "subscription": {
