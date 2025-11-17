@@ -8,6 +8,7 @@ use App\Models\Collection;
 use App\Models\Recipe;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class CollectionController extends Controller
