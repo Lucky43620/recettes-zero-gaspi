@@ -138,11 +138,20 @@ class RecipeController extends Controller
 
         $recipe->load(['steps' => function ($query) {
             $query->orderBy('position');
-        }, 'author']);
+        }, 'author', 'ingredients.ingredient']);
 
         if ($recipe->steps->isEmpty()) {
             return redirect()->route('recipes.show', $recipe->slug)
                 ->with('error', 'Cette recette n\'a pas d\'étapes définies.');
+        }
+
+        $authorData = null;
+        if ($recipe->author) {
+            $authorData = [
+                'id' => $recipe->author->id,
+                'name' => $recipe->author->name,
+                'profile_photo_url' => $recipe->author->profile_photo_url ?? null,
+            ];
         }
 
         return Inertia::render('Recipe/Cook', [
@@ -150,11 +159,17 @@ class RecipeController extends Controller
                 'id' => $recipe->id,
                 'slug' => $recipe->slug,
                 'title' => $recipe->title,
-                'author' => [
-                    'id' => $recipe->author->id,
-                    'name' => $recipe->author->name,
-                    'profile_photo_url' => $recipe->author->profile_photo_url,
-                ],
+                'servings' => $recipe->servings,
+                'prep_minutes' => $recipe->prep_minutes,
+                'cook_minutes' => $recipe->cook_minutes,
+                'author' => $authorData,
+                'ingredients' => $recipe->ingredients->map(function ($recipeIngredient) {
+                    return [
+                        'name' => $recipeIngredient->ingredient->name ?? '',
+                        'quantity' => $recipeIngredient->quantity,
+                        'unit_code' => $recipeIngredient->unit_code,
+                    ];
+                })->toArray(),
                 'steps' => $recipe->steps->map(function ($step) {
                     return [
                         'id' => $step->id,

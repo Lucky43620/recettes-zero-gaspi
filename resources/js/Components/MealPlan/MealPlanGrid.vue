@@ -157,13 +157,15 @@ const isDragOver = (day, mealType) => {
 
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
 
-                                    <div class="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center">
-                                        <p class="text-[10px] font-semibold text-white line-clamp-2 leading-tight text-center drop-shadow w-full px-1">
-                                            {{ mpr.recipe.title }}
-                                        </p>
-                                        <p class="text-[9px] text-white/90 text-center mt-0.5">
-                                            {{ mpr.servings }} pers.
-                                        </p>
+                                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center p-2">
+                                        <div class="text-center">
+                                            <p class="text-xs font-bold text-white line-clamp-3 leading-tight drop-shadow-lg mb-1">
+                                                {{ mpr.recipe.title }}
+                                            </p>
+                                            <p class="text-[10px] text-white/95 font-medium">
+                                                {{ mpr.servings }} pers.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
