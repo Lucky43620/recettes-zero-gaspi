@@ -185,7 +185,7 @@ import PantryItemCard from '@/Components/Pantry/PantryItemCard.vue';
 import AddPantryItemModal from '@/Components/Pantry/AddPantryItemModal.vue';
 import EditPantryItemModal from '@/Components/Pantry/EditPantryItemModal.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 

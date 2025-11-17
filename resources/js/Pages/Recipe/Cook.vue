@@ -229,7 +229,7 @@ const requestWakeLock = async () => {
   try {
     wakeLock = await navigator.wakeLock.request('screen')
   } catch (err) {
-    console.error('Wake Lock error:', err)
+    // WakeLock API not supported or permission denied
   }
 }
 

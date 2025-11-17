@@ -34,8 +34,7 @@ const cancelSubscription = () => {
             showCancelModal.value = false;
             window.location.reload();
         },
-        onError: (errors) => {
-            console.error('Cancel subscription error:', errors);
+        onError: () => {
             showCancelModal.value = false;
         },
     });
@@ -51,8 +50,7 @@ const resumeSubscription = () => {
             showResumeModal.value = false;
             window.location.reload();
         },
-        onError: (errors) => {
-            console.error('Resume subscription error:', errors);
+        onError: () => {
             showResumeModal.value = false;
         },
     });

@@ -154,7 +154,7 @@
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Link } from '@inertiajs/vue3';
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
@@ -182,7 +182,6 @@ onMounted(async () => {
         message.value = response.data.message || '';
         pantryIngredientsCount.value = response.data.pantry_ingredients_count || 0;
     } catch (error) {
-        console.error('Error fetching recipes:', error);
         message.value = t('anti_waste.search_error');
     } finally {
         loading.value = false;

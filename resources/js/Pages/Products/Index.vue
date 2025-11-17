@@ -123,7 +123,7 @@
 <script setup>
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import ProductCard from '@/Components/Ingredients/ProductCard.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';

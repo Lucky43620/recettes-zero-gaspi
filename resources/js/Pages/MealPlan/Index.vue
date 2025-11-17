@@ -6,7 +6,7 @@ import WeekNavigation from '@/Components/MealPlan/WeekNavigation.vue';
 import FreeLimitBanner from '@/Components/MealPlan/FreeLimitBanner.vue';
 import MealPlanGrid from '@/Components/MealPlan/MealPlanGrid.vue';
 import DuplicateWeekModal from '@/Components/MealPlan/DuplicateWeekModal.vue';
-import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
