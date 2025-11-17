@@ -136,6 +136,7 @@ Route::middleware([
     Route::post('/meal-plans/{mealPlan}/recipes', [MealPlanController::class, 'addRecipe'])->name('meal-plans.recipes.add');
     Route::delete('/meal-plan-recipes/{mealPlanRecipe}', [MealPlanController::class, 'removeRecipe'])->name('meal-plans.recipes.remove');
     Route::put('/meal-plan-recipes/{mealPlanRecipe}', [MealPlanController::class, 'updateRecipe'])->name('meal-plans.recipes.update');
+    Route::post('/meal-plan-recipes/{mealPlanRecipe}/move', [MealPlanController::class, 'moveRecipe'])->name('meal-plans.recipes.move');
     Route::post('/meal-plans/{mealPlan}/duplicate', [MealPlanController::class, 'duplicate'])->name('meal-plans.duplicate');
 
     Route::get('/shopping-lists', [ShoppingListController::class, 'index'])->name('shopping-lists.index');
