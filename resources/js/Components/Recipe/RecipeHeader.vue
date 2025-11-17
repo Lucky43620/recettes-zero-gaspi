@@ -16,8 +16,8 @@ defineProps({
 
 <template>
     <div>
-        <div v-if="showTitle" class="mb-4 md:mb-6">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{{ recipe.title }}</h1>
+        <div v-if="showTitle" class="px-4 md:px-6 pt-6 pb-4 md:pb-6">
+            <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 text-center">{{ recipe.title }}</h1>
         </div>
         <div v-if="recipe.media && recipe.media.length > 0" class="h-64 md:h-96 bg-gray-100 rounded-lg overflow-hidden">
             <img
