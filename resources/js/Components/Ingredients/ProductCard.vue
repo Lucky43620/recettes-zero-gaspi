@@ -8,6 +8,7 @@
                 <img
                     :src="product.image_url"
                     :alt="product.name"
+                    loading="lazy"
                     class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
                 >
             </div>

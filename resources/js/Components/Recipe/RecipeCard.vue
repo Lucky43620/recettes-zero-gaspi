@@ -34,6 +34,7 @@ const recipeUrl = computed(() => {
                 <img
                     :src="recipe.media[0].original_url"
                     :alt="recipe.title"
+                    loading="lazy"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
             </div>

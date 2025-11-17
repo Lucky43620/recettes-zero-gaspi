@@ -52,9 +52,9 @@ const variantClass = computed(() => {
 
 const sizeClass = computed(() => {
     const sizes = {
-        sm: 'px-3 py-1.5 text-xs',
-        md: 'px-4 py-2 text-xs',
-        lg: 'px-6 py-3 text-sm',
+        sm: 'px-3 py-2 sm:py-1.5 text-xs',
+        md: 'px-4 py-3 sm:py-2 text-xs',
+        lg: 'px-6 py-4 sm:py-3 text-sm',
     };
     return sizes[props.size];
 });

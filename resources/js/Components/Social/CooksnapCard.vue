@@ -20,6 +20,7 @@ const emit = defineEmits(['openImage', 'delete']);
                 v-if="cooksnap.media?.[0]"
                 :src="cooksnap.media[0].original_url"
                 :alt="`Cooksnap par ${cooksnap.user.name}`"
+                loading="lazy"
                 class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
                 @click="emit('openImage', cooksnap.media[0].original_url)"
             />
@@ -33,6 +34,7 @@ const emit = defineEmits(['openImage', 'delete']);
                 <img
                     :src="cooksnap.user.profile_photo_url"
                     :alt="cooksnap.user.name"
+                    loading="lazy"
                     class="w-8 h-8 rounded-full"
                 />
                 <div class="flex-1">
