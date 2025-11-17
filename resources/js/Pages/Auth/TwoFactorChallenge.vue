@@ -98,7 +98,7 @@ const submit = () => {
                     </template>
                 </button>
 
-                <PrimaryButton class="w-full sm:w-auto order-1 sm:order-2" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton type="submit" class="w-full sm:w-auto order-1 sm:order-2" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     {{ t('auth.log_in') }}
                 </PrimaryButton>
             </div>

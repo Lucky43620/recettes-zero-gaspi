@@ -107,7 +107,7 @@ const submit = () => {
             </div>
 
             <div class="flex flex-col gap-4 mt-6">
-                <PrimaryButton class="w-full justify-center bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton type="submit" class="w-full justify-center bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     {{ t('auth.register_button') }}
                 </PrimaryButton>
 

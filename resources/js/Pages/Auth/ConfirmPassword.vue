@@ -57,7 +57,7 @@ const submit = () => {
             </div>
 
             <div class="flex flex-col sm:flex-row justify-end gap-3 mt-4">
-                <PrimaryButton class="w-full sm:w-auto" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton type="submit" class="w-full sm:w-auto" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     {{ t('auth.confirm') }}
                 </PrimaryButton>
             </div>
