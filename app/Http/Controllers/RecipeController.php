@@ -138,7 +138,7 @@ class RecipeController extends Controller
 
         $recipe->load(['steps' => function ($query) {
             $query->orderBy('position');
-        }, 'author', 'ingredients.ingredient']);
+        }, 'author', 'ingredients']);
 
         if ($recipe->steps->isEmpty()) {
             return redirect()->route('recipes.show', $recipe->slug)
@@ -163,11 +163,11 @@ class RecipeController extends Controller
                 'prep_minutes' => $recipe->prep_minutes,
                 'cook_minutes' => $recipe->cook_minutes,
                 'author' => $authorData,
-                'ingredients' => $recipe->ingredients->map(function ($recipeIngredient) {
+                'ingredients' => $recipe->ingredients->map(function ($ingredient) {
                     return [
-                        'name' => $recipeIngredient->ingredient->name ?? '',
-                        'quantity' => $recipeIngredient->quantity,
-                        'unit_code' => $recipeIngredient->unit_code,
+                        'name' => $ingredient->name ?? '',
+                        'quantity' => $ingredient->pivot->quantity,
+                        'unit_code' => $ingredient->pivot->unit_code,
                     ];
                 })->toArray(),
                 'steps' => $recipe->steps->map(function ($step) {
