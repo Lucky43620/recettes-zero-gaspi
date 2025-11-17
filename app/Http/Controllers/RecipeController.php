@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateRecipeRequest;
 use App\Models\Recipe;
 use App\Models\Unit;
 use App\Services\RecipeService;
+use App\Services\UnitService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,8 @@ class RecipeController extends Controller
     use AuthorizesRequests;
 
     public function __construct(
-        private RecipeService $recipeService
+        private RecipeService $recipeService,
+        private UnitService $unitService
     ) {}
 
     public function index(RecipeFilterRequest $request)
@@ -55,7 +57,7 @@ class RecipeController extends Controller
 
     public function create()
     {
-        $units = Unit::all();
+        $units = $this->unitService->getAllUnits();
 
         return Inertia::render('Recipe/Create', [
             'units' => $units,
@@ -170,7 +172,7 @@ class RecipeController extends Controller
         $this->authorize('update', $recipe);
 
         $recipe->load(['steps', 'ingredients', 'media']);
-        $units = Unit::all();
+        $units = $this->unitService->getAllUnits();
 
         return Inertia::render('Recipe/Edit', [
             'recipe' => $recipe,
