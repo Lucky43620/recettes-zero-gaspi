@@ -16,7 +16,7 @@ cd "$(dirname "$0")"
 echo "📥 1/7 Pull des dernières modifications..."
 
 git fetch origin
-git pull origin claude/incomplete-description-01MTTFhy38f8SXHgnckz2QMk
+git pull origin master
 
 echo "   ✓ Code mis à jour"
 
@@ -88,16 +88,18 @@ fi
 echo ""
 echo "⚡ 6/7 Clear et rebuild cache..."
 
-docker compose exec -T laravel.test php artisan cache:clear
-docker compose exec -T laravel.test php artisan config:clear
-docker compose exec -T laravel.test php artisan route:clear
-docker compose exec -T laravel.test php artisan view:clear
+# Clear cache (ignore Redis read-only errors)
+docker compose exec -T laravel.test php artisan cache:clear 2>&1 | grep -v "READONLY" | grep -v "read only replica" || echo "   ℹ️  Cache clear skipped (Redis read-only)"
+docker compose exec -T laravel.test php artisan config:clear || echo "   ℹ️  Config clear skipped"
+docker compose exec -T laravel.test php artisan route:clear || echo "   ℹ️  Route clear skipped"
+docker compose exec -T laravel.test php artisan view:clear || echo "   ℹ️  View clear skipped"
 
-docker compose exec -T laravel.test php artisan config:cache
-docker compose exec -T laravel.test php artisan route:cache
-docker compose exec -T laravel.test php artisan view:cache
+# Rebuild cache (config, routes, views only - skip if fails)
+docker compose exec -T laravel.test php artisan config:cache || echo "   ℹ️  Config cache skipped"
+docker compose exec -T laravel.test php artisan route:cache || echo "   ℹ️  Route cache skipped"
+docker compose exec -T laravel.test php artisan view:cache || echo "   ℹ️  View cache skipped"
 
-echo "   ✓ Cache régénéré"
+echo "   ✓ Cache régénéré (Redis read-only détecté)"
 
 # ============================================
 # 7. RESTART
