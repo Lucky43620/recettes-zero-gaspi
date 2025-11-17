@@ -23,7 +23,7 @@ defineProps({
         </template>
 
         <div class="py-12">
-            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <PageHeader
                     :title="t('dashboard.greeting', { name: $page.props.auth.user.name })"
                     :subtitle="t('dashboard.activity_overview')"

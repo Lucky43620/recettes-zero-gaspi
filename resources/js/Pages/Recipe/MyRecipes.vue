@@ -32,7 +32,7 @@ const props = defineProps({
         </template>
 
         <div class="py-12">
-            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8 min-h-[60vh]">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 min-h-[60vh]">
                 <div class="mb-6 bg-white rounded-lg shadow p-4">
                     <div class="flex gap-2 md:gap-4 items-center">
                         <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">

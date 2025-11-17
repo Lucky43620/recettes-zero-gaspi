@@ -161,7 +161,7 @@ const getRecipeImage = (recipe) => {
         </template>
 
         <div class="py-12">
-            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <WeekNavigation
                     :week-start="weekStart"
                     :prev-week="prevWeek"

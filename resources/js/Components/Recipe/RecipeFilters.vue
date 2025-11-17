@@ -38,7 +38,7 @@ watch([search, difficulty, sort], () => {
 </script>
 
 <template>
-    <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+    <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-4 sm:p-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormInput
                 v-model="search"

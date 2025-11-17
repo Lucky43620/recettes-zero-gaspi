@@ -15,7 +15,7 @@
         </template>
 
         <div class="py-12">
-            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Free user limit banner -->
                 <div v-if="!isPremium && itemLimit" class="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg shadow-sm">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">

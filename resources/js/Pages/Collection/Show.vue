@@ -44,7 +44,7 @@ function deleteCollection() {
         </template>
 
         <div class="py-12">
-            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="mb-6 flex items-center justify-between">
                     <div class="text-sm text-gray-600">
                         {{ collection.recipes.length }} {{ t('collections.recipes_count') }} •

@@ -9,7 +9,7 @@ const { t } = useI18n();
 <template>
     <AppLayout :title="t('subscription.success_title')">
         <div class="py-12">
-            <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white rounded-lg shadow-lg p-12 text-center">
                     <!-- Success Icon -->
                     <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-8">

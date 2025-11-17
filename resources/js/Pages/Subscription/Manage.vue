@@ -75,7 +75,7 @@ const formatDate = (date) => {
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div v-if="showSuccessAlert && $page.props.flash?.success" class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-start justify-between">
                     <div class="flex items-start gap-3">
                         <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">

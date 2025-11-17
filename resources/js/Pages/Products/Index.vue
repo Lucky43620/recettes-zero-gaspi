@@ -1,7 +1,7 @@
 <template>
     <PublicLayout :title="t('products.search_title')">
         <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8 p-4 md:p-8">
                     <div class="text-center mb-6 md:mb-8">
                         <h1 class="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">

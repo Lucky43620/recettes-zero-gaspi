@@ -17,7 +17,7 @@ defineProps({
 <template>
     <PublicLayout :title="t('nav.recipes')">
         <div class="py-8">
-            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8 min-h-[60vh]">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 min-h-[60vh]">
                 <PageHeader
                     :title="t('recipe.all_recipes')"
                     :subtitle="t('recipe.discover_recipes_community')"
