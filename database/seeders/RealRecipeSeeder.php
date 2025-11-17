@@ -60,7 +60,8 @@ class RealRecipeSeeder extends Seeder
 
                     $unit = null;
                     if (isset($ingredientData['unit'])) {
-                        $unit = Unit::where('symbol', $ingredientData['unit'])->first();
+                        $unitCode = $this->mapUnitToCode($ingredientData['unit']);
+                        $unit = Unit::where('code', $unitCode)->first();
                     }
 
                     $recipe->ingredients()->attach($ingredient->id, [
@@ -72,6 +73,32 @@ class RealRecipeSeeder extends Seeder
         }
 
         $this->command->info('✅ ' . count($recipes) . ' recettes réalistes créées avec succès !');
+    }
+
+    private function mapUnitToCode(string $unit): string
+    {
+        $mapping = [
+            'g' => 'g',
+            'kg' => 'kg',
+            'ml' => 'ml',
+            'l' => 'l',
+            'pièce' => 'piece',
+            'tranches' => 'slice',
+            'c. à soupe' => 'tbsp',
+            'c. à café' => 'tsp',
+            'gousses' => 'clove',
+            'branches' => 'branch',
+            'feuilles' => 'leaf',
+            'pot' => 'jar',
+            'pots' => 'jar',
+            'sachet' => 'sachet',
+            'rouleau' => 'roll',
+            'pincée' => 'pinch',
+            'grains' => 'grain',
+            'gousse ou c. à café' => 'piece',
+        ];
+
+        return $mapping[$unit] ?? $unit;
     }
 
     private function getRealRecipes(): array
