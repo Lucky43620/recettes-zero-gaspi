@@ -778,6 +778,8 @@
     "publish_cooksnap": "Meinen Cooksnap veröffentlichen",
     "delete_cooksnap": "Cooksnap löschen",
     "delete_confirmation": "Sind Sie sicher, dass Sie diesen Cooksnap löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "select_photos": "Fotos auswählen",
+    "add_more_photos": "Weitere Fotos hinzufügen",
     "max_photos_alert": "Maximal 5 Fotos erlaubt"
   },
   "subscription": {

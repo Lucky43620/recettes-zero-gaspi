@@ -20,6 +20,7 @@ const props = defineProps({
 
 const draggedMealPlanRecipe = ref(null);
 const dragOverCell = ref(null);
+const isDragging = ref(false);
 
 const getRecipeImage = (recipe) => {
     return recipe.media?.[0] ? getConversionUrl(recipe.media[0], 'thumb') : '/images/placeholder-recipe.svg';
@@ -28,8 +29,6 @@ const getRecipeImage = (recipe) => {
 const getGridClasses = (recipeCount) => {
     if (recipeCount === 0) return '';
     if (recipeCount === 1) return 'grid-cols-1';
-    if (recipeCount === 2) return 'grid-cols-2';
-    if (recipeCount === 3) return 'grid-cols-3';
     return 'grid-cols-2';
 };
 
@@ -60,9 +59,22 @@ const onDragLeave = () => {
 };
 
 const startDragFromCalendar = (event, mealPlanRecipe) => {
+    isDragging.value = true;
     draggedMealPlanRecipe.value = mealPlanRecipe;
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', mealPlanRecipe.id);
+};
+
+const endDrag = () => {
+    setTimeout(() => {
+        isDragging.value = false;
+    }, 100);
+};
+
+const handleCardClick = (slug) => {
+    if (!isDragging.value) {
+        router.visit(route('recipes.show', slug));
+    }
 };
 
 const isDragOver = (day, mealType) => {
@@ -106,7 +118,7 @@ const isDragOver = (day, mealType) => {
                         >
                             <div
                                 :class="[
-                                    'grid gap-1.5 h-full',
+                                    'grid gap-1.5 h-full auto-rows-fr',
                                     getGridClasses(getMealPlanRecipes(day, mealType).length)
                                 ]"
                             >
@@ -115,9 +127,10 @@ const isDragOver = (day, mealType) => {
                                     :key="mpr.id"
                                     draggable="true"
                                     @dragstart="(event) => startDragFromCalendar(event, mpr)"
-                                    @dragend="draggedMealPlanRecipe = null"
-                                    @click.prevent="router.visit(route('recipes.show', mpr.recipe.slug))"
-                                    class="group relative cursor-move aspect-square bg-gray-100 rounded-lg border-2 border-green-200 hover:border-green-400 hover:shadow-lg transition-all duration-200 hover:scale-105 overflow-hidden"
+                                    @dragend="() => { draggedMealPlanRecipe = null; endDrag(); }"
+                                    @click="() => handleCardClick(mpr.recipe.slug)"
+                                    class="group relative cursor-move bg-gray-100 rounded-lg border-2 border-green-200 hover:border-green-400 hover:shadow-lg transition-all duration-200 hover:scale-105 overflow-hidden min-h-0"
+                                    style="aspect-ratio: 1/1;"
                                     :title="`${mpr.recipe.title} (${mpr.servings} pers.)`"
                                 >
                                     <button
@@ -144,8 +157,8 @@ const isDragOver = (day, mealType) => {
 
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
 
-                                    <div class="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                        <p class="text-[10px] font-semibold text-white line-clamp-2 leading-tight text-center drop-shadow">
+                                    <div class="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center">
+                                        <p class="text-[10px] font-semibold text-white line-clamp-2 leading-tight text-center drop-shadow w-full px-1">
                                             {{ mpr.recipe.title }}
                                         </p>
                                         <p class="text-[9px] text-white/90 text-center mt-0.5">
