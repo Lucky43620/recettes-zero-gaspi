@@ -83,10 +83,20 @@ else
 fi
 
 # ============================================
-# 6. CACHE
+# 6. STORAGE LINK
 # ============================================
 echo ""
-echo "⚡ 6/7 Clear et rebuild cache..."
+echo "🔗 6/8 Configuration storage link..."
+
+docker compose exec -T laravel.test php artisan storage:link 2>/dev/null || echo "   ℹ️  Storage link déjà créé"
+
+echo "   ✓ Storage link configuré"
+
+# ============================================
+# 7. CACHE
+# ============================================
+echo ""
+echo "⚡ 7/8 Clear et rebuild cache..."
 
 # Fonction pour nettoyer le cache avec fallback en cas d'erreur Redis
 clear_cache_safe() {
@@ -130,10 +140,10 @@ docker compose exec -T laravel.test php artisan view:cache 2>/dev/null || true
 echo "   ✓ Cache régénéré"
 
 # ============================================
-# 7. RESTART
+# 8. RESTART
 # ============================================
 echo ""
-echo "🔄 7/7 Redémarrage des containers..."
+echo "🔄 8/8 Redémarrage des containers..."
 
 docker compose restart
 
