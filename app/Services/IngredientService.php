@@ -156,20 +156,23 @@ class IngredientService
 
         $query = Ingredient::query()->whereNotIn('id', $exactIds);
 
-        if (strlen($searchTerm) >= 3 && DB::getDriverName() === 'mysql') {
+        $sanitizedSearch = preg_replace('/[^a-zA-Z0-9\s\-]/', '', $searchTerm);
+        $escapedSearch = str_replace(['%', '_'], ['\%', '\_'], $searchTerm);
+
+        if (strlen($sanitizedSearch) >= 3 && DB::getDriverName() === 'mysql') {
             try {
-                $query->whereRaw('MATCH(name) AGAINST(? IN BOOLEAN MODE)', [$searchTerm . '*'])
-                    ->orWhere('brands', 'like', "%{$searchTerm}%")
-                    ->orWhere('barcode', 'like', "%{$searchTerm}%");
+                $query->whereRaw('MATCH(name) AGAINST(? IN BOOLEAN MODE)', [$sanitizedSearch . '*'])
+                    ->orWhere('brands', 'like', "%{$escapedSearch}%")
+                    ->orWhere('barcode', 'like', "%{$escapedSearch}%");
             } catch (\Exception $e) {
-                $query->where('name', 'like', "%{$searchTerm}%")
-                    ->orWhere('brands', 'like', "%{$searchTerm}%")
-                    ->orWhere('barcode', 'like', "%{$searchTerm}%");
+                $query->where('name', 'like', "%{$escapedSearch}%")
+                    ->orWhere('brands', 'like', "%{$escapedSearch}%")
+                    ->orWhere('barcode', 'like', "%{$escapedSearch}%");
             }
         } else {
-            $query->where('name', 'like', "%{$searchTerm}%")
-                ->orWhere('brands', 'like', "%{$searchTerm}%")
-                ->orWhere('barcode', 'like', "%{$searchTerm}%");
+            $query->where('name', 'like', "%{$escapedSearch}%")
+                ->orWhere('brands', 'like', "%{$escapedSearch}%")
+                ->orWhere('barcode', 'like', "%{$escapedSearch}%");
         }
 
         $otherMatches = $query->limit($remainingLimit)->get();

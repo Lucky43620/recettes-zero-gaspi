@@ -55,9 +55,10 @@ class RecipeService
     public function applyFilters(\Illuminate\Database\Eloquent\Builder $query, Request $request): \Illuminate\Database\Eloquent\Builder
     {
         if ($request->has('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                    ->orWhere('summary', 'like', '%' . $request->search . '%');
+            $search = str_replace(['%', '_'], ['\%', '\_'], $request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('summary', 'like', '%' . $search . '%');
             });
         }
 

@@ -90,7 +90,10 @@ echo "🔗 6/8 Configuration storage link..."
 
 docker compose exec -T laravel.test php artisan storage:link 2>/dev/null || echo "   ℹ️  Storage link déjà créé"
 
-echo "   ✓ Storage link configuré"
+docker compose exec -T laravel.test chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || echo "   ℹ️  Permissions déjà configurées"
+docker compose exec -T laravel.test chmod -R 775 /var/www/html/storage 2>/dev/null || echo "   ℹ️  Permissions déjà configurées"
+
+echo "   ✓ Storage link et permissions configurés"
 
 # ============================================
 # 7. CACHE
