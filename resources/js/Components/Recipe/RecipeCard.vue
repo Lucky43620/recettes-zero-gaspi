@@ -2,11 +2,13 @@
 import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import { useDifficultyLabels } from '@/composables/useEnumLabels';
+import { useMediaConversions } from '@/composables/useMediaConversions';
 import { computed } from 'vue';
 import { ClockIcon, UserIcon, StarIcon } from '@heroicons/vue/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/vue/24/solid';
 
 const { t } = useI18n();
+const { getConversionUrl, getSrcset, getSizes } = useMediaConversions();
 
 const props = defineProps({
     recipe: Object,
@@ -32,7 +34,9 @@ const recipeUrl = computed(() => {
         <div class="relative overflow-hidden">
             <div v-if="recipe.media && recipe.media.length > 0" class="h-56 bg-gray-100">
                 <img
-                    :src="recipe.media[0].original_url"
+                    :src="getConversionUrl(recipe.media[0], 'medium')"
+                    :srcset="getSrcset(recipe.media[0])"
+                    :sizes="getSizes('card')"
                     :alt="recipe.title"
                     loading="lazy"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

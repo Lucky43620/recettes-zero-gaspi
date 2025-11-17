@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Cooksnap extends Model implements HasMedia
 {
@@ -33,5 +35,26 @@ class Cooksnap extends Model implements HasMedia
     {
         $this->addMediaCollection('photos')
             ->useDisk('public');
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->fit(Fit::Crop, 300, 300)
+            ->format('webp')
+            ->quality(85)
+            ->performOnCollections('photos');
+
+        $this->addMediaConversion('medium')
+            ->fit(Fit::Max, 800, 800)
+            ->format('webp')
+            ->quality(85)
+            ->performOnCollections('photos');
+
+        $this->addMediaConversion('large')
+            ->fit(Fit::Max, 1200, 1200)
+            ->format('webp')
+            ->quality(90)
+            ->performOnCollections('photos');
     }
 }
