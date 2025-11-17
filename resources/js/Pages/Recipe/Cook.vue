@@ -1,7 +1,7 @@
 <template>
   <AppLayout :title="t('cook.title')">
     <div v-if="recipe && recipe.title && recipe.steps && recipe.steps.length > 0" class="min-h-screen bg-gray-50 pb-20">
-      <div class="max-w-4xl mx-auto px-4 py-8">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
           <div class="bg-gradient-to-r from-green-600 to-green-700 px-4 sm:px-6 py-4">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -151,6 +151,12 @@
           </div>
         </div>
       </div>
+
+      <CongratulationsModal
+        :show="showCongratulations"
+        @close="closeCongratulations"
+        @share="shareRecipe"
+      />
     </div>
     <div v-else class="min-h-screen bg-gray-50 flex items-center justify-center">
       <div class="max-w-md mx-auto px-4">
@@ -177,6 +183,7 @@ import { useCookingModeStore } from '@/stores/cookingMode'
 import { storeToRefs } from 'pinia'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import RecipeTimer from '@/Components/Recipe/RecipeTimer.vue'
+import CongratulationsModal from '@/Components/Common/CongratulationsModal.vue'
 import {
   XMarkIcon,
   ChevronLeftIcon,
@@ -248,12 +255,27 @@ const exitCooking = () => {
   }
 }
 
+const showCongratulations = ref(false)
+
 const finishCooking = () => {
+  showCongratulations.value = true
+}
+
+const closeCongratulations = () => {
+  showCongratulations.value = false
   releaseWakeLock()
   exitStore()
+  router.visit(`/recipes/${props.recipe.slug}`)
+}
+
+const shareRecipe = () => {
+  closeCongratulations()
   router.visit(`/recipes/${props.recipe.slug}`, {
     onSuccess: () => {
-      alert(t('cook.congratulations_message'))
+      const cooksnapSection = document.querySelector('[data-cooksnap-section]')
+      if (cooksnapSection) {
+        cooksnapSection.scrollIntoView({ behavior: 'smooth' })
+      }
     }
   })
 }

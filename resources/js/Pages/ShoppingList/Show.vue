@@ -61,7 +61,7 @@ const removeItem = (itemId) => {
         </template>
 
         <div class="py-12">
-            <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <BackButton
                     :href="route('shopping-lists.index')"
                     :label="t('shopping_list.back_to_lists')"

@@ -22,7 +22,7 @@ const props = defineProps({
 <template>
     <PublicLayout :title="profileUser.name">
         <div class="py-8">
-            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <BackButton class="mb-6" />
                 <div class="bg-white overflow-hidden shadow-xl rounded-xl">
                     <div class="relative h-48 bg-gradient-to-r from-green-600 to-orange-500">

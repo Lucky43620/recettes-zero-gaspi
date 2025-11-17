@@ -48,7 +48,7 @@ function submitCollection() {
         </template>
 
         <div class="py-12">
-            <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8 space-y-6">
+            <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
                 <div v-if="showForm" class="bg-white rounded-lg shadow p-6">
                     <form @submit.prevent="submitCollection" class="space-y-4">
                         <FormInput

@@ -70,7 +70,7 @@ const getPlanFeatures = (features) => {
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Current Plan Info -->
                 <div v-if="isSubscribed" class="mb-8 bg-green-50 border border-green-200 rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-green-900 mb-2">

@@ -77,7 +77,7 @@ function deleteRecipe() {
         </template>
 
         <div :class="props.usePrivateLayout ? 'py-12' : 'py-8'">
-            <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <BackButton
                     :href="props.usePrivateLayout ? route('recipes.my') : null"
                     class="mb-6"
