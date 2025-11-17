@@ -16,7 +16,8 @@ cd "$(dirname "$0")"
 echo "📥 1/8 Pull des dernières modifications..."
 
 git fetch origin
-git pull origin claude/incomplete-description-01MTTFhy38f8SXHgnckz2QMk
+CURRENT_BRANCH=$(git branch --show-current)
+git pull origin "$CURRENT_BRANCH"
 
 echo "   ✓ Code mis à jour"
 
@@ -93,11 +94,11 @@ docker compose exec -T laravel.test php artisan storage:link 2>/dev/null || echo
 echo "   🔄 Régénération des conversions d'images manquantes..."
 docker compose exec -T laravel.test php artisan media-library:regenerate 2>/dev/null || echo "   ℹ️  Pas de conversions à régénérer"
 
-echo "   🔒 Application des permissions correctes..."
+echo "   🔒 Application des permissions correctes (mode ouvert)..."
 docker compose exec -T laravel.test chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
-docker compose exec -T laravel.test chmod -R 775 /var/www/html/storage 2>/dev/null || true
-docker compose exec -T laravel.test find /var/www/html/storage -type f -exec chmod 664 {} \; 2>/dev/null || true
-docker compose exec -T laravel.test find /var/www/html/storage -type d -exec chmod 775 {} \; 2>/dev/null || true
+docker compose exec -T laravel.test chmod -R 777 /var/www/html/storage 2>/dev/null || true
+docker compose exec -T laravel.test find /var/www/html/storage -type f -exec chmod 666 {} \; 2>/dev/null || true
+docker compose exec -T laravel.test find /var/www/html/storage -type d -exec chmod 777 {} \; 2>/dev/null || true
 
 echo "   ✓ Storage link et permissions configurés"
 

@@ -9,6 +9,7 @@ use App\Http\Resources\PantryItemResource;
 use App\Models\PantryItem;
 use App\Models\Unit;
 use App\Services\FeatureLimitService;
+use App\Services\UnitService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,6 +17,11 @@ use Inertia\Inertia;
 class PantryController extends Controller
 {
     use AuthorizesRequests;
+
+    public function __construct(
+        private UnitService $unitService
+    ) {}
+
     public function index(Request $request)
     {
         $allItems = $request->user()->pantryItems()
@@ -59,7 +65,7 @@ class PantryController extends Controller
             'items' => $items->resolve(),
             'stats' => $stats,
             'storageLocations' => StorageLocation::values(),
-            'units' => Unit::all()->values()->all(),
+            'units' => $this->unitService->getAllUnits()->values()->all(),
             'isPremium' => $request->user()->isPremium(),
             'itemLimit' => $request->user()->isPremium() ? null : 10,
         ]);
