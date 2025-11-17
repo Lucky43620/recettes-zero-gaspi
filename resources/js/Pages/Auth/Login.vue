@@ -89,7 +89,7 @@ const submit = () => {
                     {{ t('auth.forgot_password') }}
                 </Link>
 
-                <PrimaryButton class="bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500 w-full sm:w-auto" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton type="submit" class="bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:ring-green-500 w-full sm:w-auto" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     {{ t('auth.login_button') }}
                 </PrimaryButton>
             </div>

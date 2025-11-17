@@ -39,7 +39,7 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 
         <form @submit.prevent="submit">
             <div class="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <PrimaryButton class="w-full sm:w-auto text-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton type="submit" class="w-full sm:w-auto text-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     {{ t('auth.resend_verification_email') }}
                 </PrimaryButton>
 
