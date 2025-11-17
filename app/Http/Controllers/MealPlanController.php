@@ -117,6 +117,38 @@ class MealPlanController extends Controller
         return back();
     }
 
+    public function moveRecipe(Request $request, MealPlanRecipe $mealPlanRecipe)
+    {
+        $this->authorize('update', $mealPlanRecipe->mealPlan);
+
+        $validated = $request->validate([
+            'day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'meal_type' => 'required|in:breakfast,lunch,dinner,snack',
+        ]);
+
+        $mealPlan = $mealPlanRecipe->mealPlan;
+        $weekStart = Carbon::parse($mealPlan->week_start_date);
+
+        $daysMap = [
+            'monday' => 0,
+            'tuesday' => 1,
+            'wednesday' => 2,
+            'thursday' => 3,
+            'friday' => 4,
+            'saturday' => 5,
+            'sunday' => 6,
+        ];
+
+        $plannedDate = $weekStart->copy()->addDays($daysMap[$validated['day_of_week']]);
+
+        $mealPlanRecipe->update([
+            'planned_date' => $plannedDate->format('Y-m-d'),
+            'meal_type' => $validated['meal_type'],
+        ]);
+
+        return back();
+    }
+
     public function duplicate(Request $request, MealPlan $mealPlan, MealPlanService $mealPlanService)
     {
         $this->authorize('view', $mealPlan);

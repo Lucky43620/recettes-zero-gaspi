@@ -37,11 +37,11 @@
               </div>
 
               <h3 class="text-3xl font-bold text-gray-900 mb-4">
-                {{ title }}
+                {{ displayTitle }}
               </h3>
 
               <p class="text-lg text-gray-700 mb-8 leading-relaxed">
-                {{ message }}
+                {{ displayMessage }}
               </p>
 
               <div class="flex flex-col sm:flex-row gap-3 justify-center">
@@ -51,14 +51,14 @@
                   class="px-6 py-3 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 active:bg-orange-800 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
                 >
                   <ShareIcon class="w-5 h-5" />
-                  {{ shareButtonText }}
+                  {{ displayShareButtonText }}
                 </button>
                 <button
                   @click="close"
                   class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 active:bg-green-800 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
                 >
                   <ArrowLeftIcon class="w-5 h-5" />
-                  {{ closeButtonText }}
+                  {{ displayCloseButtonText }}
                 </button>
               </div>
             </div>
@@ -72,37 +72,43 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { CheckCircleIcon, ShareIcon, ArrowLeftIcon } from '@heroicons/vue/24/solid';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-defineProps({
+const props = defineProps({
   show: {
     type: Boolean,
     default: false
   },
   title: {
     type: String,
-    default: () => t('cook.congratulations_title')
+    default: ''
   },
   message: {
     type: String,
-    default: () => t('cook.congratulations_message')
+    default: ''
   },
   closeButtonText: {
     type: String,
-    default: () => t('cook.back_to_recipe')
+    default: ''
   },
   shareButtonText: {
     type: String,
-    default: () => t('cook.share_cooksnap')
+    default: ''
   },
   showShareButton: {
     type: Boolean,
     default: true
   }
 });
+
+const displayTitle = computed(() => props.title || t('cook.congratulations_title'));
+const displayMessage = computed(() => props.message || t('cook.congratulations_message'));
+const displayCloseButtonText = computed(() => props.closeButtonText || t('cook.back_to_recipe'));
+const displayShareButtonText = computed(() => props.shareButtonText || t('cook.share_cooksnap'));
 
 const emit = defineEmits(['close', 'share']);
 
