@@ -58,15 +58,14 @@ class RealRecipeSeeder extends Seeder
                         ['category' => $ingredientData['category'] ?? 'Autre']
                     );
 
-                    $unit = null;
+                    $unitCode = null;
                     if (isset($ingredientData['unit'])) {
                         $unitCode = $this->mapUnitToCode($ingredientData['unit']);
-                        $unit = Unit::where('code', $unitCode)->first();
                     }
 
                     $recipe->ingredients()->attach($ingredient->id, [
                         'quantity' => $ingredientData['quantity'] ?? null,
-                        'unit_id' => $unit?->id,
+                        'unit_code' => $unitCode,
                     ]);
                 }
             }
