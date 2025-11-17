@@ -138,19 +138,20 @@ const getRecipeImage = (recipe) => {
 <template>
     <AppLayout :title="t('meal_plan.title')">
         <template #header>
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ t('meal_plan.title') }}
                 </h2>
-                <div class="flex gap-3">
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <PrimaryButton
                         @click="generateShoppingList"
                         :loading="isGeneratingShoppingList"
                         variant="warning"
+                        class="w-full sm:w-auto"
                     >
                         {{ t('meal_plan.generate_shopping_list') }}
                     </PrimaryButton>
-                    <PrimaryButton @click="openDuplicateModal">
+                    <PrimaryButton @click="openDuplicateModal" class="w-full sm:w-auto">
                         {{ t('meal_plan.duplicate_week') }}
                     </PrimaryButton>
                 </div>

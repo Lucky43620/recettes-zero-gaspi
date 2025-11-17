@@ -173,6 +173,9 @@ const logout = () => {
                         <ResponsiveNavLink :href="route('pantry.index')" :active="route().current('pantry.*')">
                             {{ t('nav.pantry') }}
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('anti-waste.index')" :active="route().current('anti-waste.*')">
+                            {{ t('nav.anti_waste') }}
+                        </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('meal-plans.index')" :active="route().current('meal-plans.*')">
                             {{ t('nav.meal_plans') }}
                         </ResponsiveNavLink>

@@ -3,15 +3,15 @@
     <div v-if="recipe && recipe.title && recipe.steps && recipe.steps.length > 0" class="min-h-screen bg-gray-50 pb-20">
       <div class="max-w-4xl mx-auto px-4 py-8">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h1 class="text-2xl font-bold text-white">{{ recipe.title }}</h1>
-                <p class="text-green-100 text-sm">{{ t('cook.step_by_step_mode') }}</p>
+          <div class="bg-gradient-to-r from-green-600 to-green-700 px-4 sm:px-6 py-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div class="flex-1 min-w-0">
+                <h1 class="text-xl sm:text-2xl font-bold text-white truncate">{{ recipe.title }}</h1>
+                <p class="text-green-100 text-xs sm:text-sm">{{ t('cook.step_by_step_mode') }}</p>
               </div>
               <button
                 @click="exitCooking"
-                class="px-4 py-2 bg-white text-green-700 rounded-lg hover:bg-gray-100 transition flex items-center gap-2"
+                class="px-4 py-2 bg-white text-green-700 rounded-lg hover:bg-gray-100 transition flex items-center gap-2 w-full sm:w-auto justify-center"
               >
                 <XMarkIcon class="w-5 h-5" />
                 {{ t('cook.exit') }}

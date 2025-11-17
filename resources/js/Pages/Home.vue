@@ -39,7 +39,7 @@ const features = computed(() => [
 </script>
 
 <template>
-    <PublicLayout title="Accueil">
+    <PublicLayout :title="t('nav.home')">
         <div class="relative overflow-hidden bg-gradient-to-br from-green-600 via-green-700 to-orange-600 py-24 md:py-32">
             <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE0YzYuMDc1IDAgMTEgNC45MjUgMTEgMTEtMCA2LjA3NS00LjkyNSAxMS0xMSAxMS02LjA3NSAwLTExLTQuOTI1LTExLTExIDAtNi4wNzUgNC45MjUtMTEgMTEtMTF6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
 

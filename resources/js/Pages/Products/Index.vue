@@ -1,14 +1,14 @@
 <template>
-    <PublicLayout title="Recherche de Produits">
+    <PublicLayout :title="t('products.search_title')">
         <div class="py-12 bg-gray-50 min-h-screen">
             <div class="max-w-[1920px] mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8 p-4 md:p-8">
                     <div class="text-center mb-6 md:mb-8">
                         <h1 class="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
-                            Recherche de Produits Alimentaires
+                            {{ t('products.page_title') }}
                         </h1>
                         <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
-                            Explorez notre base de données de produits alimentaires et découvrez leurs informations nutritionnelles complètes
+                            {{ t('products.page_description') }}
                         </p>
                     </div>
 
@@ -18,14 +18,14 @@
                                 v-model="searchQuery"
                                 @keyup.enter="performSearch(searchQuery)"
                                 type="text"
-                                placeholder="Rechercher un produit par nom, marque ou code-barres..."
+                                :placeholder="t('products.search_placeholder')"
                                 class="flex-1 w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm py-3 text-base"
                             >
                             <PrimaryButton
                                 @click="performSearch(searchQuery)"
                                 class="w-full sm:w-auto whitespace-nowrap"
                             >
-                                Rechercher
+                                {{ t('products.search_button') }}
                             </PrimaryButton>
                         </div>
                     </div>
@@ -36,13 +36,13 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <p class="mt-4 text-gray-600">Recherche en cours...</p>
+                    <p class="mt-4 text-gray-600">{{ t('products.searching') }}</p>
                 </div>
 
                 <div v-else-if="allProducts.length > 0">
                     <div class="mb-6 flex items-center justify-between px-4 md:px-0">
                         <p class="text-sm md:text-base text-gray-600">
-                            <span class="font-semibold text-gray-900">{{ allProducts.length }}</span> produit(s) trouvé(s)
+                            {{ t('products.products_found', { count: allProducts.length }) }}
                         </p>
                     </div>
 
@@ -56,7 +56,7 @@
 
                     <div v-if="hasMore" class="mt-8 flex justify-center">
                         <PrimaryButton variant="secondary" @click="loadMore" :loading="isSearching">
-                            Afficher plus
+                            {{ t('products.load_more') }}
                         </PrimaryButton>
                     </div>
                 </div>
@@ -65,20 +65,20 @@
                     <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun produit trouvé</h3>
-                    <p class="text-gray-500">Essayez avec d'autres termes de recherche</p>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ t('products.no_products_found') }}</h3>
+                    <p class="text-gray-500">{{ t('products.try_different_terms') }}</p>
                 </div>
 
                 <div v-else class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-12 text-center">
                     <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Commencez votre recherche</h3>
-                    <p class="text-gray-500">Recherchez un produit pour voir les résultats</p>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ t('products.start_search_title') }}</h3>
+                    <p class="text-gray-500">{{ t('products.start_search_description') }}</p>
                 </div>
 
                 <div class="mt-12 bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 md:p-6">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6 text-center">À propos de notre base de données</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6 text-center">{{ t('products.about_database') }}</h2>
                     <div class="grid md:grid-cols-3 gap-4 md:gap-6 text-center">
                         <div>
                             <div class="flex justify-center mb-3">
@@ -88,8 +88,8 @@
                                     </svg>
                                 </div>
                             </div>
-                            <h3 class="font-semibold text-gray-900 mb-2">Données vérifiées</h3>
-                            <p class="text-sm text-gray-600">Base de données collaborative OpenFoodFacts</p>
+                            <h3 class="font-semibold text-gray-900 mb-2">{{ t('products.verified_data') }}</h3>
+                            <p class="text-sm text-gray-600">{{ t('products.verified_data_desc') }}</p>
                         </div>
                         <div>
                             <div class="flex justify-center mb-3">
@@ -99,8 +99,8 @@
                                     </svg>
                                 </div>
                             </div>
-                            <h3 class="font-semibold text-gray-900 mb-2">Informations complètes</h3>
-                            <p class="text-sm text-gray-600">Nutrition, allergènes, labels et origine</p>
+                            <h3 class="font-semibold text-gray-900 mb-2">{{ t('products.complete_info') }}</h3>
+                            <p class="text-sm text-gray-600">{{ t('products.complete_info_desc') }}</p>
                         </div>
                         <div>
                             <div class="flex justify-center mb-3">
@@ -110,8 +110,8 @@
                                     </svg>
                                 </div>
                             </div>
-                            <h3 class="font-semibold text-gray-900 mb-2">Mise à jour régulière</h3>
-                            <p class="text-sm text-gray-600">Données synchronisées automatiquement</p>
+                            <h3 class="font-semibold text-gray-900 mb-2">{{ t('products.regular_updates') }}</h3>
+                            <p class="text-sm text-gray-600">{{ t('products.regular_updates_desc') }}</p>
                         </div>
                     </div>
                 </div>
@@ -126,6 +126,9 @@ import ProductCard from '@/Components/Ingredients/ProductCard.vue';
 import PrimaryButton from '@/Components/Common/PrimaryButton.vue';
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     products: {

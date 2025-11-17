@@ -69,7 +69,7 @@ const removeItem = (itemId) => {
                 />
                 <div class="bg-white rounded-lg shadow p-6 mb-6">
                     <h3 class="font-semibold text-lg mb-4">{{ t('shopping_list.add_item') }}</h3>
-                    <div class="flex gap-3">
+                    <div class="flex flex-col sm:flex-row gap-3">
                         <input
                             v-model="newItemName"
                             type="text"
@@ -81,12 +81,12 @@ const removeItem = (itemId) => {
                             v-model="newItemQuantity"
                             type="text"
                             :placeholder="t('shopping_list.quantity_optional')"
-                            class="w-40 px-3 py-2 border rounded-md"
+                            class="w-full sm:w-40 px-3 py-2 border rounded-md"
                             @keyup.enter="addItem"
                         />
                         <button
                             @click="addItem"
-                            class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700"
+                            class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 w-full sm:w-auto"
                         >
                             {{ t('shopping_list.add') }}
                         </button>
