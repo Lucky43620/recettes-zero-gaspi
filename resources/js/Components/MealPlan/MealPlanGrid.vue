@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import { useMediaConversions } from '@/composables/useMediaConversions';
@@ -23,6 +23,14 @@ const dragOverCell = ref(null);
 
 const getRecipeImage = (recipe) => {
     return recipe.media?.[0] ? getConversionUrl(recipe.media[0], 'thumb') : '/images/placeholder-recipe.svg';
+};
+
+const getGridClasses = (recipeCount) => {
+    if (recipeCount === 0) return '';
+    if (recipeCount === 1) return 'grid-cols-1';
+    if (recipeCount === 2) return 'grid-cols-2';
+    if (recipeCount === 3) return 'grid-cols-3';
+    return 'grid-cols-2';
 };
 
 const handleDragOver = (event, day, mealType) => {
@@ -96,40 +104,53 @@ const isDragOver = (day, mealType) => {
                                 isDragOver(day, mealType) ? 'bg-green-50 ring-2 ring-green-400 ring-inset' : ''
                             ]"
                         >
-                            <div class="space-y-2 h-full overflow-y-auto">
+                            <div
+                                :class="[
+                                    'grid gap-1.5 h-full',
+                                    getGridClasses(getMealPlanRecipes(day, mealType).length)
+                                ]"
+                            >
                                 <div
                                     v-for="mpr in getMealPlanRecipes(day, mealType)"
                                     :key="mpr.id"
                                     draggable="true"
                                     @dragstart="(event) => startDragFromCalendar(event, mpr)"
                                     @dragend="draggedMealPlanRecipe = null"
-                                    class="p-2 bg-green-50 rounded border border-green-200 relative group cursor-move hover:bg-green-100 hover:shadow-md transition-all duration-200 hover:scale-105"
-                                    @click="router.visit(route('recipes.show', mpr.recipe.slug))"
+                                    @click.prevent="router.visit(route('recipes.show', mpr.recipe.slug))"
+                                    class="group relative cursor-move aspect-square bg-gray-100 rounded-lg border-2 border-green-200 hover:border-green-400 hover:shadow-lg transition-all duration-200 hover:scale-105 overflow-hidden"
+                                    :title="`${mpr.recipe.title} (${mpr.servings} pers.)`"
                                 >
                                     <button
                                         @click.stop="removeRecipe(mpr.id)"
-                                        class="absolute top-1 right-1 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10"
+                                        class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20 flex items-center justify-center hover:bg-red-600 shadow-md"
                                         title="Supprimer"
                                     >
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     </button>
-                                    <div class="flex items-start gap-2">
-                                        <img
-                                            :src="getRecipeImage(mpr.recipe)"
-                                            :alt="mpr.recipe.title"
-                                            class="w-10 h-10 object-cover rounded flex-shrink-0"
-                                        />
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-xs font-medium truncate">{{ mpr.recipe.title }}</p>
-                                            <p class="text-xs text-gray-500">{{ mpr.servings }} {{ t('recipe.servings').toLowerCase() }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="absolute top-1 left-1 opacity-0 group-hover:opacity-60 transition-opacity duration-150">
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+
+                                    <div class="absolute top-1 left-1 w-6 h-6 opacity-0 group-hover:opacity-80 transition-opacity duration-150 z-10">
+                                        <svg class="w-6 h-6 text-white drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                                         </svg>
+                                    </div>
+
+                                    <img
+                                        :src="getRecipeImage(mpr.recipe)"
+                                        :alt="mpr.recipe.title"
+                                        class="w-full h-full object-cover"
+                                    />
+
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+
+                                    <div class="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <p class="text-[10px] font-semibold text-white line-clamp-2 leading-tight text-center drop-shadow">
+                                            {{ mpr.recipe.title }}
+                                        </p>
+                                        <p class="text-[9px] text-white/90 text-center mt-0.5">
+                                            {{ mpr.servings }} pers.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
