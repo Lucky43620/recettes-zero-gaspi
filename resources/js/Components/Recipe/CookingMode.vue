@@ -92,7 +92,7 @@ const formatTime = (seconds) => {
     <div class="fixed inset-0 bg-white z-50 flex flex-col">
         <div class="bg-green-600 text-white p-3 md:p-4 flex items-center justify-between">
             <h2 class="text-base md:text-xl font-bold truncate mr-2">{{ recipe.title }}</h2>
-            <button @click="emit('close')" class="p-3 hover:bg-green-700 rounded-lg transition flex-shrink-0 active:bg-green-800" aria-label="Fermer">
+            <button @click="emit('close')" class="p-3 hover:bg-green-700 rounded-lg transition flex-shrink-0 active:bg-green-800" :aria-label="t('cook.close')">
                 <XMarkIcon class="w-6 h-6" />
             </button>
         </div>
@@ -146,7 +146,7 @@ const formatTime = (seconds) => {
                                         ? 'bg-green-600 text-white active:bg-green-700'
                                         : 'bg-gray-200 text-gray-600 hover:bg-gray-300 active:bg-gray-400'
                                 ]"
-                                aria-label="Marquer comme complété"
+                                :aria-label="t('cook.mark_completed')"
                             >
                                 <CheckIcon class="w-6 h-6 md:w-8 md:h-8" />
                             </button>
