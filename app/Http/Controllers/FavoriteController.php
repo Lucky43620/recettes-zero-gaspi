@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Recipe;
-use Illuminate\Http\Request;
+use App\Services\FavoriteService;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class FavoriteController extends Controller
 {
+    public function __construct(
+        private FavoriteService $favoriteService
+    ) {}
+
     public function index()
     {
-        $favorites = Auth::user()->favorites()
-            ->with(['author', 'media'])
-            ->paginate(12);
+        $favorites = $this->favoriteService->getUserFavorites(Auth::user());
 
         return Inertia::render('Favorite/Index', [
             'favorites' => $favorites,
@@ -22,14 +24,12 @@ class FavoriteController extends Controller
 
     public function toggle(Recipe $recipe)
     {
-        $user = Auth::user();
+        $isFavorited = $this->favoriteService->toggle(Auth::user(), $recipe);
 
-        if ($user->hasFavorited($recipe)) {
-            $user->favorites()->detach($recipe->id);
-            return back()->with('success', 'Recette retirée des favoris');
-        }
+        $message = $isFavorited
+            ? 'Recette ajoutée aux favoris'
+            : 'Recette retirée des favoris';
 
-        $user->favorites()->attach($recipe->id);
-        return back()->with('success', 'Recette ajoutée aux favoris');
+        return back()->with('success', $message);
     }
 }

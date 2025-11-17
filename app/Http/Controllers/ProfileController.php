@@ -96,7 +96,8 @@ class ProfileController extends Controller
 
         if (Auth::check()) {
             $authUser = Auth::user();
-            $isFollowing = $authUser->following()->where('following_id', $user->id)->exists();
+            $authUser->loadExists(['following' => fn($query) => $query->where('following_id', $user->id)]);
+            $isFollowing = $authUser->following_exists ?? false;
             $isOwnProfile = $authUser->id === $user->id;
         }
 
