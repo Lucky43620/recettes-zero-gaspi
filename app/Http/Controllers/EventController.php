@@ -7,11 +7,14 @@ use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use App\Services\EventService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class EventController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(
         private EventService $eventService
     ) {}
@@ -47,6 +50,8 @@ class EventController extends Controller
 
     public function store(StoreEventRequest $request)
     {
+        $this->authorize('create', Event::class);
+
         $event = Event::create($request->validated());
 
         return redirect()->route('events.show', $event->slug)
@@ -55,6 +60,8 @@ class EventController extends Controller
 
     public function update(UpdateEventRequest $request, Event $event)
     {
+        $this->authorize('update', $event);
+
         $event->update($request->validated());
 
         return back()->with('success', 'Événement mis à jour');
@@ -62,6 +69,8 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
+        $this->authorize('delete', $event);
+
         $event->delete();
 
         return redirect()->route('events.index')
@@ -70,6 +79,8 @@ class EventController extends Controller
 
     public function join(JoinEventRequest $request, Event $event)
     {
+        $this->authorize('join', $event);
+
         $event->participants()->syncWithoutDetaching([
             Auth::id() => [
                 'recipe_id' => $request->validated('recipe_id'),
@@ -83,6 +94,8 @@ class EventController extends Controller
 
     public function leave(Event $event)
     {
+        $this->authorize('leave', $event);
+
         $event->participants()->detach(Auth::id());
 
         return back()->with('success', 'Désinscription confirmée');
