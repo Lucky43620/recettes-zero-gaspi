@@ -382,40 +382,40 @@ const tabs = [
 
 const forms = reactive({
     general: {
-        site_name: props.settings.general?.site_name?.value || '',
-        site_description: props.settings.general?.site_description?.value || '',
-        contact_email: props.settings.general?.contact_email?.value || '',
-        maintenance_mode: props.settings.general?.maintenance_mode?.value || false
+        site_name: props.settings.general?.site_name?.value ?? '',
+        site_description: props.settings.general?.site_description?.value ?? '',
+        contact_email: props.settings.general?.contact_email?.value ?? '',
+        maintenance_mode: props.settings.general?.maintenance_mode?.value ?? false
     },
     stripe: {
-        stripe_enabled: props.settings.stripe?.stripe_enabled?.value || true,
-        stripe_test_mode: props.settings.stripe?.stripe_test_mode?.value || true,
-        stripe_key: props.settings.stripe?.stripe_key?.value || '',
-        stripe_secret: props.settings.stripe?.stripe_secret?.value || '',
-        stripe_webhook_secret: props.settings.stripe?.stripe_webhook_secret?.value || '',
-        stripe_price_monthly: props.settings.stripe?.stripe_price_monthly?.value || '',
-        stripe_price_yearly: props.settings.stripe?.stripe_price_yearly?.value || '',
-        trial_days: props.settings.stripe?.trial_days?.value || 0
+        stripe_enabled: props.settings.stripe?.stripe_enabled?.value ?? true,
+        stripe_test_mode: props.settings.stripe?.stripe_test_mode?.value ?? true,
+        stripe_key: props.settings.stripe?.stripe_key?.value ?? '',
+        stripe_secret: props.settings.stripe?.stripe_secret?.value ?? '',
+        stripe_webhook_secret: props.settings.stripe?.stripe_webhook_secret?.value ?? '',
+        stripe_price_monthly: props.settings.stripe?.stripe_price_monthly?.value ?? '',
+        stripe_price_yearly: props.settings.stripe?.stripe_price_yearly?.value ?? '',
+        trial_days: props.settings.stripe?.trial_days?.value ?? 0
     },
     features: {
-        enable_ai_suggestions: props.settings.features?.enable_ai_suggestions?.value || false,
-        enable_barcode_scan: props.settings.features?.enable_barcode_scan?.value || true,
-        enable_events: props.settings.features?.enable_events?.value || true,
-        enable_badges: props.settings.features?.enable_badges?.value || true,
-        enable_cooksnaps: props.settings.features?.enable_cooksnaps?.value || true,
-        enable_comments: props.settings.features?.enable_comments?.value || true
+        enable_ai_suggestions: props.settings.features?.enable_ai_suggestions?.value ?? false,
+        enable_barcode_scan: props.settings.features?.enable_barcode_scan?.value ?? true,
+        enable_events: props.settings.features?.enable_events?.value ?? true,
+        enable_badges: props.settings.features?.enable_badges?.value ?? true,
+        enable_cooksnaps: props.settings.features?.enable_cooksnaps?.value ?? true,
+        enable_comments: props.settings.features?.enable_comments?.value ?? true
     },
     limits: {
-        free_pantry_limit: props.settings.limits?.free_pantry_limit?.value || 10,
-        free_meal_plan_limit: props.settings.limits?.free_meal_plan_limit?.value || 3,
-        free_collections_limit: props.settings.limits?.free_collections_limit?.value || 3,
-        free_shopping_lists_limit: props.settings.limits?.free_shopping_lists_limit?.value || 2
+        free_pantry_limit: props.settings.limits?.free_pantry_limit?.value ?? 10,
+        free_meal_plan_limit: props.settings.limits?.free_meal_plan_limit?.value ?? 3,
+        free_collections_limit: props.settings.limits?.free_collections_limit?.value ?? 3,
+        free_shopping_lists_limit: props.settings.limits?.free_shopping_lists_limit?.value ?? 2
     },
     gdpr: {
-        data_retention_days: props.settings.gdpr?.data_retention_days?.value || 3650,
-        dpo_email: props.settings.gdpr?.dpo_email?.value || '',
-        terms_version: props.settings.gdpr?.terms_version?.value || '1.0',
-        privacy_version: props.settings.gdpr?.privacy_version?.value || '1.0'
+        data_retention_days: props.settings.gdpr?.data_retention_days?.value ?? 3650,
+        dpo_email: props.settings.gdpr?.dpo_email?.value ?? '',
+        terms_version: props.settings.gdpr?.terms_version?.value ?? '1.0',
+        privacy_version: props.settings.gdpr?.privacy_version?.value ?? '1.0'
     }
 })
 
