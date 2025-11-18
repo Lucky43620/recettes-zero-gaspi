@@ -46,8 +46,11 @@ class AdminSettingsController extends Controller
             'site_name' => 'required|string|max:255',
             'site_description' => 'nullable|string|max:500',
             'contact_email' => 'required|email',
-            'maintenance_mode' => 'boolean',
+            'maintenance_mode' => 'nullable|boolean',
         ]);
+
+        // S'assurer que maintenance_mode est toujours défini
+        $validated['maintenance_mode'] = $request->has('maintenance_mode') ? (bool)($validated['maintenance_mode'] ?? false) : false;
 
         $this->settingsService->updateMultiple($validated, auth()->id());
 
@@ -57,15 +60,19 @@ class AdminSettingsController extends Controller
     public function updateStripe(Request $request)
     {
         $validated = $request->validate([
-            'stripe_enabled' => 'boolean',
-            'stripe_test_mode' => 'boolean',
+            'stripe_enabled' => 'nullable|boolean',
+            'stripe_test_mode' => 'nullable|boolean',
             'stripe_key' => 'nullable|string',
             'stripe_secret' => 'nullable|string',
             'stripe_webhook_secret' => 'nullable|string',
             'stripe_price_monthly' => 'nullable|string',
             'stripe_price_yearly' => 'nullable|string',
-            'trial_days' => 'integer|min:0',
+            'trial_days' => 'nullable|integer|min:0',
         ]);
+
+        // S'assurer que les booléens sont toujours définis
+        $validated['stripe_enabled'] = $request->has('stripe_enabled') ? (bool)($validated['stripe_enabled'] ?? false) : false;
+        $validated['stripe_test_mode'] = $request->has('stripe_test_mode') ? (bool)($validated['stripe_test_mode'] ?? false) : false;
 
         $this->settingsService->updateMultiple($validated, auth()->id());
 
@@ -75,15 +82,25 @@ class AdminSettingsController extends Controller
     public function updateFeatures(Request $request)
     {
         $validated = $request->validate([
-            'enable_ai_suggestions' => 'boolean',
-            'enable_barcode_scan' => 'boolean',
-            'enable_events' => 'boolean',
-            'enable_badges' => 'boolean',
-            'enable_cooksnaps' => 'boolean',
-            'enable_comments' => 'boolean',
+            'enable_ai_suggestions' => 'nullable|boolean',
+            'enable_barcode_scan' => 'nullable|boolean',
+            'enable_events' => 'nullable|boolean',
+            'enable_badges' => 'nullable|boolean',
+            'enable_cooksnaps' => 'nullable|boolean',
+            'enable_comments' => 'nullable|boolean',
         ]);
 
-        $this->settingsService->updateMultiple($validated, auth()->id());
+        // Convertir les valeurs absentes en false (checkboxes non cochées)
+        $features = [
+            'enable_ai_suggestions' => $request->has('enable_ai_suggestions') ? (bool)$validated['enable_ai_suggestions'] : false,
+            'enable_barcode_scan' => $request->has('enable_barcode_scan') ? (bool)$validated['enable_barcode_scan'] : false,
+            'enable_events' => $request->has('enable_events') ? (bool)$validated['enable_events'] : false,
+            'enable_badges' => $request->has('enable_badges') ? (bool)$validated['enable_badges'] : false,
+            'enable_cooksnaps' => $request->has('enable_cooksnaps') ? (bool)$validated['enable_cooksnaps'] : false,
+            'enable_comments' => $request->has('enable_comments') ? (bool)$validated['enable_comments'] : false,
+        ];
+
+        $this->settingsService->updateMultiple($features, auth()->id());
 
         return redirect()->back()->with('success', 'Fonctionnalités mises à jour');
     }

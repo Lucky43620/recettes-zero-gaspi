@@ -69,7 +69,7 @@ class AdminSubscriptionController extends Controller
 
     public function show(User $user)
     {
-        $user->load(['subscriptions', 'payments']);
+        $user->load(['subscriptions']);
 
         $subscriptionData = [
             'current_plan' => $user->planName(),
