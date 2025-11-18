@@ -17,6 +17,7 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    plans: Object,
 });
 
 const showSuccessAlert = ref(!!page.props.flash?.success);
@@ -24,9 +25,15 @@ const showErrorAlert = ref(!!page.props.flash?.error);
 
 const showCancelModal = ref(false);
 const showResumeModal = ref(false);
+const showSwapModal = ref(false);
+const showCancelNowModal = ref(false);
 
 const cancelForm = useForm({});
 const resumeForm = useForm({});
+const swapForm = useForm({
+    plan: null,
+});
+const cancelNowForm = useForm({});
 
 const cancelSubscription = () => {
     if (cancelForm.processing) return;
@@ -58,6 +65,47 @@ const resumeSubscription = () => {
             showResumeModal.value = false;
         },
     });
+};
+
+const swapPlan = (newPlan) => {
+    swapForm.plan = newPlan;
+    showSwapModal.value = true;
+};
+
+const confirmSwap = () => {
+    if (swapForm.processing) return;
+
+    swapForm.post(route('subscription.swap'), {
+        preserveState: false,
+        preserveScroll: false,
+        onSuccess: () => {
+            showSwapModal.value = false;
+            window.location.reload();
+        },
+        onError: () => {
+            showSwapModal.value = false;
+        },
+    });
+};
+
+const cancelNow = () => {
+    if (cancelNowForm.processing) return;
+
+    cancelNowForm.post(route('subscription.cancel-now'), {
+        preserveState: false,
+        preserveScroll: false,
+        onSuccess: () => {
+            showCancelNowModal.value = false;
+            window.location.href = route('subscription.index');
+        },
+        onError: () => {
+            showCancelNowModal.value = false;
+        },
+    });
+};
+
+const openBillingPortal = () => {
+    window.location.href = route('subscription.billing-portal');
 };
 
 const formatDate = (date) => {
@@ -96,6 +144,15 @@ const getStatusClass = (status) => {
         uncollectible: 'bg-red-100 text-red-800',
     };
     return classes[status] || 'bg-gray-100 text-gray-800';
+};
+
+const getOtherPlan = () => {
+    return props.subscription.plan === 'monthly' ? 'yearly' : 'monthly';
+};
+
+const getSwapPlanName = () => {
+    const otherPlan = getOtherPlan();
+    return t(`subscription.plans.${otherPlan}`);
 };
 </script>
 
@@ -247,8 +304,23 @@ const getStatusClass = (status) => {
                                 </PrimaryButton>
                             </div>
 
+                            <!-- Swap Plan -->
+                            <div v-if="!subscription.on_grace_period && subscription.status === 'active'" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-blue-900 text-sm md:text-base">
+                                        Changer de formule
+                                    </p>
+                                    <p class="text-xs md:text-sm text-blue-700 mt-1">
+                                        Passez à la formule {{ getSwapPlanName() }}
+                                    </p>
+                                </div>
+                                <PrimaryButton @click="swapPlan(getOtherPlan())" class="w-full sm:w-auto whitespace-nowrap">
+                                    Changer de plan
+                                </PrimaryButton>
+                            </div>
+
                             <!-- Cancel Subscription -->
-                            <div v-else class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div v-if="!subscription.on_grace_period" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
                                 <div class="flex-1">
                                     <p class="font-semibold text-gray-900 text-sm md:text-base">
                                         {{ t('subscription.cancel_title') }}
@@ -262,18 +334,33 @@ const getStatusClass = (status) => {
                                 </DangerButton>
                             </div>
 
-                            <!-- Update Payment Method -->
+                            <!-- Cancel Now -->
+                            <div v-if="subscription.on_grace_period" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-red-900 text-sm md:text-base">
+                                        Annuler immédiatement
+                                    </p>
+                                    <p class="text-xs md:text-sm text-red-700 mt-1">
+                                        Mettre fin à votre abonnement dès maintenant sans attendre la fin de la période
+                                    </p>
+                                </div>
+                                <DangerButton @click="showCancelNowModal = true" class="w-full sm:w-auto whitespace-nowrap">
+                                    Annuler maintenant
+                                </DangerButton>
+                            </div>
+
+                            <!-- Billing Portal -->
                             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
                                 <div class="flex-1">
                                     <p class="font-semibold text-gray-900 text-sm md:text-base">
                                         {{ t('subscription.payment_method') }}
                                     </p>
                                     <p class="text-xs md:text-sm text-gray-600 mt-1">
-                                        {{ t('subscription.update_payment_info') }}
+                                        Gérez votre moyen de paiement et vos factures sur Stripe
                                     </p>
                                 </div>
-                                <PrimaryButton @click="$inertia.visit(route('subscription.payment-method'))" class="w-full sm:w-auto whitespace-nowrap">
-                                    {{ t('subscription.update_payment') }}
+                                <PrimaryButton @click="openBillingPortal" class="w-full sm:w-auto whitespace-nowrap">
+                                    Portail de facturation
                                 </PrimaryButton>
                             </div>
                         </div>
@@ -398,6 +485,72 @@ const getStatusClass = (status) => {
                 >
                     {{ t('subscription.confirm_resume_button') }}
                 </PrimaryButton>
+            </template>
+        </ConfirmationModal>
+
+        <!-- Swap Plan Confirmation Modal -->
+        <ConfirmationModal :show="showSwapModal" @close="showSwapModal = false">
+            <template #title>
+                Changer de formule
+            </template>
+
+            <template #content>
+                <div v-if="swapForm.plan">
+                    <p class="mb-4">Êtes-vous sûr de vouloir passer à la formule {{ getSwapPlanName() }} ?</p>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-sm text-blue-900">
+                            <strong>Note:</strong> Le changement sera effectué immédiatement. Votre facturation sera ajustée au prorata.
+                        </p>
+                    </div>
+                </div>
+            </template>
+
+            <template #footer>
+                <SecondaryButton @click="showSwapModal = false">
+                    Annuler
+                </SecondaryButton>
+
+                <PrimaryButton
+                    class="ms-3"
+                    :class="{ 'opacity-25': swapForm.processing }"
+                    :disabled="swapForm.processing"
+                    @click="confirmSwap"
+                >
+                    Confirmer le changement
+                </PrimaryButton>
+            </template>
+        </ConfirmationModal>
+
+        <!-- Cancel Now Confirmation Modal -->
+        <ConfirmationModal :show="showCancelNowModal" @close="showCancelNowModal = false">
+            <template #title>
+                Annuler immédiatement
+            </template>
+
+            <template #content>
+                <div>
+                    <p class="mb-4">Êtes-vous sûr de vouloir annuler votre abonnement immédiatement ?</p>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <p class="text-sm text-red-900">
+                            <strong>Attention:</strong> Votre accès aux fonctionnalités Premium sera révoqué immédiatement et vous ne serez pas remboursé pour la période restante.
+                        </p>
+                    </div>
+                </div>
+            </template>
+
+            <template #footer>
+                <SecondaryButton @click="showCancelNowModal = false">
+                    Annuler
+                </SecondaryButton>
+
+                <DangerButton
+                    class="ms-3"
+                    :class="{ 'opacity-25': cancelNowForm.processing }"
+                    :disabled="cancelNowForm.processing"
+                    @click="cancelNow"
+                >
+                    Confirmer l'annulation immédiate
+                </DangerButton>
             </template>
         </ConfirmationModal>
     </AppLayout>

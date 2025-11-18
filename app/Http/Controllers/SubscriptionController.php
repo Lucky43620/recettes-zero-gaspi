@@ -150,13 +150,14 @@ class SubscriptionController extends Controller
             return Inertia::render('Subscription/Manage', [
                 'subscription' => [
                     'id' => $subscription->id,
-                    'plan' => $user->planDisplayName(),
-                    'plan_name' => $user->planName(),
+                    'plan' => $user->planName(),
+                    'plan_display' => $user->planDisplayName(),
                     'price' => $user->planPrice(),
                     'status' => $user->subscriptionStatus(),
                     'current_period_end' => $stripeSubscription->current_period_end,
                     'current_period_end_formatted' => date('d/m/Y', $stripeSubscription->current_period_end),
                     'cancel_at_period_end' => $subscription->onGracePeriod(),
+                    'on_grace_period' => $subscription->onGracePeriod(),
                     'ends_at' => $subscription->ends_at?->format('d/m/Y'),
                     'trial_ends_at' => $subscription->trial_ends_at?->format('d/m/Y'),
                     'on_trial' => $subscription->onTrial(),
@@ -166,6 +167,17 @@ class SubscriptionController extends Controller
                 ],
                 'invoices' => $this->getInvoices($user),
                 'payment_method' => $this->getPaymentMethod($user),
+                'plans' => [
+                    'monthly' => [
+                        'price' => 4.99,
+                        'display' => 'Premium Mensuel',
+                    ],
+                    'yearly' => [
+                        'price' => 49.90,
+                        'display' => 'Premium Annuel',
+                        'savings' => 'Économisez 2 mois',
+                    ],
+                ],
                 'canChangePlan' => ! $subscription->onGracePeriod() && $subscription->recurring(),
                 'canCancel' => ! $subscription->onGracePeriod() && $subscription->active(),
                 'canResume' => $subscription->onGracePeriod(),
