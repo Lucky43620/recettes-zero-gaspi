@@ -116,7 +116,9 @@ class SubscriptionController extends Controller
         }
 
         try {
-            $session = Cashier::stripe()->checkout->sessions->retrieve($sessionId);
+            $session = Cashier::stripe()->checkout->sessions->retrieve($sessionId, [
+                'expand' => ['subscription'],
+            ]);
 
             if ($session->payment_status !== 'paid') {
                 return redirect()->route('subscription.index')
@@ -124,6 +126,26 @@ class SubscriptionController extends Controller
             }
 
             $user = $request->user();
+
+            if ($session->subscription && !$user->subscribed('default')) {
+                $stripeSubscription = $session->subscription;
+
+                $user->subscriptions()->create([
+                    'type' => 'default',
+                    'stripe_id' => $stripeSubscription->id,
+                    'stripe_status' => $stripeSubscription->status,
+                    'stripe_price' => $stripeSubscription->items->data[0]->price->id,
+                    'quantity' => 1,
+                    'trial_ends_at' => null,
+                    'ends_at' => null,
+                ]);
+
+                Log::info('Subscription created from checkout session', [
+                    'user_id' => $user->id,
+                    'subscription_id' => $stripeSubscription->id,
+                    'session_id' => $sessionId,
+                ]);
+            }
 
             Log::info('Subscription payment successful', [
                 'user_id' => $user->id,
