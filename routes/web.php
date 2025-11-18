@@ -223,4 +223,18 @@ Route::middleware([
     Route::post('/badges', [\App\Http\Controllers\Admin\AdminBadgeController::class, 'store'])->name('badges.store');
     Route::put('/badges/{badge}', [\App\Http\Controllers\Admin\AdminBadgeController::class, 'update'])->name('badges.update');
     Route::delete('/badges/{badge}', [\App\Http\Controllers\Admin\AdminBadgeController::class, 'destroy'])->name('badges.destroy');
+
+    Route::get('/settings', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings/general', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateGeneral'])->name('settings.general');
+    Route::post('/settings/stripe', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateStripe'])->name('settings.stripe');
+    Route::post('/settings/features', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateFeatures'])->name('settings.features');
+    Route::post('/settings/limits', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateLimits'])->name('settings.limits');
+    Route::post('/settings/gdpr', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateGdpr'])->name('settings.gdpr');
+    Route::post('/settings/clear-cache', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'clearCache'])->name('settings.clear-cache');
+    Route::post('/settings/test-stripe', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'testStripe'])->name('settings.test-stripe');
+
+    Route::get('/subscriptions', [\App\Http\Controllers\Admin\AdminSubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::get('/subscriptions/{user}', [\App\Http\Controllers\Admin\AdminSubscriptionController::class, 'show'])->name('subscriptions.show');
+    Route::post('/subscriptions/{user}/cancel', [\App\Http\Controllers\Admin\AdminSubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+    Route::post('/subscriptions/{user}/resume', [\App\Http\Controllers\Admin\AdminSubscriptionController::class, 'resume'])->name('subscriptions.resume');
 });

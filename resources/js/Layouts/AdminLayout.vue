@@ -14,6 +14,8 @@ const navigation = computed(() => [
     { name: t('admin.users'), href: '/admin/users', icon: '👥' },
     { name: t('admin.reports'), href: '/admin/reports', icon: '🚨' },
     { name: t('admin.badges'), href: '/admin/badges', icon: '🏆' },
+    { name: t('admin.subscriptions'), href: '/admin/subscriptions', icon: '💳' },
+    { name: t('admin.settings'), href: '/admin/settings', icon: '⚙️' },
 ]);
 
 const isActive = (href) => {

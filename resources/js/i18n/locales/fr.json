@@ -365,6 +365,8 @@
     "dashboard_title": "Administration - Dashboard",
     "platform_overview": "Vue d'ensemble de la plateforme",
     "users": "Utilisateurs",
+    "subscriptions": "Abonnements",
+    "settings": "Paramètres",
     "total_users": "Total utilisateurs",
     "new_this_month": "Nouveaux ce mois",
     "active_this_week": "Actifs cette semaine",
