@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :title="t('cook.title')">
+  <PublicLayout :title="t('cook.title')">
     <div v-if="recipe && recipe.title && recipe.steps && recipe.steps.length > 0" class="min-h-screen bg-gray-50 pb-20">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -172,7 +172,7 @@
         </div>
       </div>
     </div>
-  </AppLayout>
+  </PublicLayout>
 </template>
 
 <script setup>
@@ -181,7 +181,7 @@ import { useI18n } from 'vue-i18n'
 import { router } from '@inertiajs/vue3'
 import { useCookingModeStore } from '@/stores/cookingMode'
 import { storeToRefs } from 'pinia'
-import AppLayout from '@/Layouts/AppLayout.vue'
+import PublicLayout from '@/Layouts/PublicLayout.vue'
 import RecipeTimer from '@/Components/Recipe/RecipeTimer.vue'
 import CongratulationsModal from '@/Components/Common/CongratulationsModal.vue'
 import {

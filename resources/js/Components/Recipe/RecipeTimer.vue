@@ -21,39 +21,39 @@
       </div>
     </div>
 
-    <div class="flex gap-2 justify-center">
+    <div class="flex gap-2 justify-center flex-wrap">
       <button
         v-if="!isRunning && !isPaused"
         @click="start"
-        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+        class="px-4 sm:px-6 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base"
       >
-        <PlayIcon class="w-5 h-5" />
+        <PlayIcon class="w-4 h-4 sm:w-5 sm:h-5" />
         {{ t('cook.timer_start') }}
       </button>
 
       <button
         v-if="isRunning"
         @click="pause"
-        class="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition flex items-center gap-2"
+        class="px-4 sm:px-6 py-1.5 sm:py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base"
       >
-        <PauseIcon class="w-5 h-5" />
+        <PauseIcon class="w-4 h-4 sm:w-5 sm:h-5" />
         {{ t('cook.timer_pause') }}
       </button>
 
       <button
         v-if="isPaused"
         @click="resume"
-        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+        class="px-4 sm:px-6 py-1.5 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base"
       >
-        <PlayIcon class="w-5 h-5" />
+        <PlayIcon class="w-4 h-4 sm:w-5 sm:h-5" />
         {{ t('cook.timer_resume') }}
       </button>
 
       <button
         @click="reset"
-        class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2"
+        class="px-4 sm:px-6 py-1.5 sm:py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base"
       >
-        <ArrowPathIcon class="w-5 h-5" />
+        <ArrowPathIcon class="w-4 h-4 sm:w-5 sm:h-5" />
         {{ t('cook.timer_reset') }}
       </button>
     </div>

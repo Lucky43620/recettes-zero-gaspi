@@ -21,7 +21,7 @@ const props = defineProps({
 
 <template>
     <PublicLayout :title="profileUser.name">
-        <div class="py-8">
+        <div class="pt-12 pb-8">
             <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <BackButton class="mb-6" />
                 <div class="bg-white overflow-hidden shadow-xl rounded-xl">

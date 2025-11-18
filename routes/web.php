@@ -62,6 +62,10 @@ Route::get('/profile/{user}/following', [ProfileController::class, 'following'])
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{event:slug}', [EventController::class, 'show'])->name('events.show');
 
+Route::get('/rgpd', function () {
+    return Inertia::render('RGPD');
+})->name('rgpd');
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
