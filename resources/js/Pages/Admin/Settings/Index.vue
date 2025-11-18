@@ -2,8 +2,8 @@
     <AdminLayout>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900">Paramètres Système</h1>
-                <p class="mt-2 text-gray-600">Gérez tous les paramètres de l'application</p>
+                <h1 class="text-3xl font-bold text-gray-900">{{ t('admin.settings_title') }}</h1>
+                <p class="mt-2 text-gray-600">{{ t('admin.settings_description') }}</p>
             </div>
 
             <!-- Success/Error Alerts -->
@@ -57,30 +57,30 @@
                 <div class="p-6">
                     <div v-show="activeTab === 'general'" class="space-y-6">
                         <SettingsSection
-                            title="Paramètres Généraux"
-                            description="Configuration générale de l'application"
+                            :title="t('admin.settings_general_title')"
+                            :description="t('admin.settings_general_desc')"
                         >
                             <form @submit.prevent="updateGeneral" class="space-y-4">
                                 <SettingsInput
                                     v-model="forms.general.site_name"
-                                    label="Nom du site"
+                                    :label="t('admin.settings_site_name')"
                                     :required="true"
                                 />
                                 <SettingsInput
                                     v-model="forms.general.site_description"
-                                    label="Description"
+                                    :label="t('admin.settings_site_description')"
                                     type="textarea"
                                 />
                                 <SettingsInput
                                     v-model="forms.general.contact_email"
-                                    label="Email de contact"
+                                    :label="t('admin.settings_contact_email')"
                                     type="email"
                                     :required="true"
                                 />
                                 <SettingsToggle
                                     v-model="forms.general.maintenance_mode"
-                                    label="Mode maintenance"
-                                    description="Activer le mode maintenance (site inaccessible)"
+                                    :label="t('admin.settings_maintenance_mode')"
+                                    :description="t('admin.settings_maintenance_mode_desc')"
                                 />
 
                                 <div class="pt-4 flex justify-end">
@@ -88,7 +88,7 @@
                                         type="submit"
                                         class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
                                     >
-                                        Enregistrer
+                                        {{ t('common.save') }}
                                     </button>
                                 </div>
                             </form>
@@ -97,49 +97,49 @@
 
                     <div v-show="activeTab === 'stripe'" class="space-y-6">
                         <SettingsSection
-                            title="Configuration Stripe"
-                            description="Paramètres de paiement et abonnement"
+                            :title="t('admin.settings_stripe_title')"
+                            :description="t('admin.settings_stripe_desc')"
                         >
                             <form @submit.prevent="updateStripe" class="space-y-4">
                                 <SettingsToggle
                                     v-model="forms.stripe.stripe_enabled"
-                                    label="Activer Stripe"
-                                    description="Activer les paiements Stripe"
+                                    :label="t('admin.settings_stripe_enabled')"
+                                    :description="t('admin.settings_stripe_enabled_desc')"
                                 />
                                 <SettingsToggle
                                     v-model="forms.stripe.stripe_test_mode"
-                                    label="Mode test"
-                                    description="Utiliser les clés de test Stripe"
+                                    :label="t('admin.settings_stripe_test_mode')"
+                                    :description="t('admin.settings_stripe_test_mode_desc')"
                                 />
                                 <SettingsInput
                                     v-model="forms.stripe.stripe_key"
-                                    label="Clé publique Stripe"
+                                    :label="t('admin.settings_stripe_key')"
                                     placeholder="pk_test_..."
                                 />
                                 <SettingsInput
                                     v-model="forms.stripe.stripe_secret"
-                                    label="Clé secrète Stripe"
+                                    :label="t('admin.settings_stripe_secret')"
                                     placeholder="sk_test_..."
                                     type="password"
                                 />
                                 <SettingsInput
                                     v-model="forms.stripe.stripe_webhook_secret"
-                                    label="Secret Webhook"
+                                    :label="t('admin.settings_stripe_webhook_secret')"
                                     placeholder="whsec_..."
                                 />
                                 <SettingsInput
                                     v-model="forms.stripe.stripe_price_monthly"
-                                    label="ID Prix mensuel"
+                                    :label="t('admin.settings_stripe_price_monthly')"
                                     placeholder="price_..."
                                 />
                                 <SettingsInput
                                     v-model="forms.stripe.stripe_price_yearly"
-                                    label="ID Prix annuel"
+                                    :label="t('admin.settings_stripe_price_yearly')"
                                     placeholder="price_..."
                                 />
                                 <SettingsInput
                                     v-model.number="forms.stripe.trial_days"
-                                    label="Jours d'essai gratuit"
+                                    :label="t('admin.settings_trial_days')"
                                     type="number"
                                     min="0"
                                 />
@@ -150,13 +150,13 @@
                                         @click="testStripe"
                                         class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
                                     >
-                                        Tester connexion
+                                        {{ t('admin.settings_test_connection') }}
                                     </button>
                                     <button
                                         type="submit"
                                         class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
                                     >
-                                        Enregistrer
+                                        {{ t('common.save') }}
                                     </button>
                                 </div>
                             </form>
@@ -165,39 +165,39 @@
 
                     <div v-show="activeTab === 'features'" class="space-y-6">
                         <SettingsSection
-                            title="Fonctionnalités"
-                            description="Activer ou désactiver des fonctionnalités"
+                            :title="t('admin.settings_features_title')"
+                            :description="t('admin.settings_features_desc')"
                         >
                             <form @submit.prevent="updateFeatures" class="space-y-4">
                                 <SettingsToggle
                                     v-model="forms.features.enable_ai_suggestions"
-                                    label="Suggestions IA"
-                                    description="Suggestions de recettes par IA"
+                                    :label="t('admin.settings_ai_suggestions')"
+                                    :description="t('admin.settings_ai_suggestions_desc')"
                                 />
                                 <SettingsToggle
                                     v-model="forms.features.enable_barcode_scan"
-                                    label="Scan code-barres"
-                                    description="Scanner les codes-barres des produits"
+                                    :label="t('admin.settings_barcode_scan')"
+                                    :description="t('admin.settings_barcode_scan_desc')"
                                 />
                                 <SettingsToggle
                                     v-model="forms.features.enable_events"
-                                    label="Événements"
-                                    description="Système d'événements communautaires"
+                                    :label="t('admin.settings_events')"
+                                    :description="t('admin.settings_events_desc')"
                                 />
                                 <SettingsToggle
                                     v-model="forms.features.enable_badges"
-                                    label="Badges"
-                                    description="Système de badges et gamification"
+                                    :label="t('admin.settings_badges')"
+                                    :description="t('admin.settings_badges_desc')"
                                 />
                                 <SettingsToggle
                                     v-model="forms.features.enable_cooksnaps"
-                                    label="Cooksnaps"
-                                    description="Photos de réalisations"
+                                    :label="t('admin.settings_cooksnaps')"
+                                    :description="t('admin.settings_cooksnaps_desc')"
                                 />
                                 <SettingsToggle
                                     v-model="forms.features.enable_comments"
-                                    label="Commentaires"
-                                    description="Système de commentaires"
+                                    :label="t('admin.settings_comments')"
+                                    :description="t('admin.settings_comments_desc')"
                                 />
 
                                 <div class="pt-4 flex justify-end">
@@ -205,7 +205,7 @@
                                         type="submit"
                                         class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
                                     >
-                                        Enregistrer
+                                        {{ t('common.save') }}
                                     </button>
                                 </div>
                             </form>
@@ -214,33 +214,33 @@
 
                     <div v-show="activeTab === 'limits'" class="space-y-6">
                         <SettingsSection
-                            title="Limites Utilisateurs"
-                            description="Limites pour les comptes gratuits"
+                            :title="t('admin.settings_limits_title')"
+                            :description="t('admin.settings_limits_desc')"
                         >
                             <form @submit.prevent="updateLimits" class="space-y-4">
                                 <SettingsInput
                                     v-model.number="forms.limits.free_pantry_limit"
-                                    label="Garde-manger (gratuit)"
+                                    :label="t('admin.settings_free_pantry')"
                                     type="number"
                                     min="0"
-                                    help="Nombre de produits maximum"
+                                    :help="t('admin.settings_max_products')"
                                 />
                                 <SettingsInput
                                     v-model.number="forms.limits.free_meal_plan_limit"
-                                    label="Planification repas (gratuit)"
+                                    :label="t('admin.settings_free_meal_plan')"
                                     type="number"
                                     min="0"
-                                    help="Recettes par semaine"
+                                    :help="t('admin.settings_recipes_per_week')"
                                 />
                                 <SettingsInput
                                     v-model.number="forms.limits.free_collections_limit"
-                                    label="Collections (gratuit)"
+                                    :label="t('admin.settings_free_collections')"
                                     type="number"
                                     min="0"
                                 />
                                 <SettingsInput
                                     v-model.number="forms.limits.free_shopping_lists_limit"
-                                    label="Listes courses (gratuit)"
+                                    :label="t('admin.settings_free_shopping_lists')"
                                     type="number"
                                     min="0"
                                 />
@@ -250,7 +250,7 @@
                                         type="submit"
                                         class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
                                     >
-                                        Enregistrer
+                                        {{ t('common.save') }}
                                     </button>
                                 </div>
                             </form>
@@ -259,31 +259,31 @@
 
                     <div v-show="activeTab === 'gdpr'" class="space-y-6">
                         <SettingsSection
-                            title="RGPD & Confidentialité"
-                            description="Paramètres de conformité RGPD"
+                            :title="t('admin.settings_gdpr_title')"
+                            :description="t('admin.settings_gdpr_desc')"
                         >
                             <form @submit.prevent="updateGdpr" class="space-y-4">
                                 <SettingsInput
                                     v-model.number="forms.gdpr.data_retention_days"
-                                    label="Durée rétention données"
+                                    :label="t('admin.settings_data_retention')"
                                     type="number"
                                     min="1"
-                                    help="Nombre de jours de conservation des données supprimées"
+                                    :help="t('admin.settings_data_retention_help')"
                                 />
                                 <SettingsInput
                                     v-model="forms.gdpr.dpo_email"
-                                    label="Email DPO"
+                                    :label="t('admin.settings_dpo_email')"
                                     type="email"
                                     :required="true"
                                 />
                                 <SettingsInput
                                     v-model="forms.gdpr.terms_version"
-                                    label="Version CGU"
+                                    :label="t('admin.settings_terms_version')"
                                     :required="true"
                                 />
                                 <SettingsInput
                                     v-model="forms.gdpr.privacy_version"
-                                    label="Version Politique Confidentialité"
+                                    :label="t('admin.settings_privacy_version')"
                                     :required="true"
                                 />
 
@@ -292,7 +292,7 @@
                                         type="submit"
                                         class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
                                     >
-                                        Enregistrer
+                                        {{ t('common.save') }}
                                     </button>
                                 </div>
                             </form>
@@ -301,12 +301,12 @@
 
                     <div v-show="activeTab === 'performance'" class="space-y-6">
                         <SettingsSection
-                            title="Performance & Cache"
-                            description="Outils de gestion du cache"
+                            :title="t('admin.settings_performance_title')"
+                            :description="t('admin.settings_performance_desc')"
                         >
                             <div class="space-y-4">
                                 <p class="text-sm text-gray-600">
-                                    Vider le cache peut améliorer les performances après des modifications importantes.
+                                    {{ t('admin.settings_cache_info') }}
                                 </p>
 
                                 <div class="grid grid-cols-2 gap-4">
@@ -315,28 +315,28 @@
                                         @click="clearCache('config')"
                                         class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                                     >
-                                        Vider cache config
+                                        {{ t('admin.settings_clear_config_cache') }}
                                     </button>
                                     <button
                                         type="button"
                                         @click="clearCache('route')"
                                         class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                                     >
-                                        Vider cache routes
+                                        {{ t('admin.settings_clear_route_cache') }}
                                     </button>
                                     <button
                                         type="button"
                                         @click="clearCache('view')"
                                         class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                                     >
-                                        Vider cache vues
+                                        {{ t('admin.settings_clear_view_cache') }}
                                     </button>
                                     <button
                                         type="button"
                                         @click="clearCache('cache')"
                                         class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                                     >
-                                        Vider cache application
+                                        {{ t('admin.settings_clear_app_cache') }}
                                     </button>
                                 </div>
 
@@ -345,7 +345,7 @@
                                     @click="clearCache('all')"
                                     class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
                                 >
-                                    Vider tout le cache
+                                    {{ t('admin.settings_clear_all_cache') }}
                                 </button>
                             </div>
                         </SettingsSection>
@@ -359,10 +359,13 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { router } from '@inertiajs/vue3'
+import { useI18n } from 'vue-i18n'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import SettingsSection from '@/Components/Admin/SettingsSection.vue'
 import SettingsInput from '@/Components/Admin/SettingsInput.vue'
 import SettingsToggle from '@/Components/Admin/SettingsToggle.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
     settings: Object,
@@ -372,12 +375,12 @@ const props = defineProps({
 const activeTab = ref('general')
 
 const tabs = [
-    { id: 'general', name: 'Général' },
-    { id: 'stripe', name: 'Stripe' },
-    { id: 'features', name: 'Fonctionnalités' },
-    { id: 'limits', name: 'Limites' },
-    { id: 'gdpr', name: 'RGPD' },
-    { id: 'performance', name: 'Performance' }
+    { id: 'general', name: t('admin.settings_tabs.general') },
+    { id: 'stripe', name: t('admin.settings_tabs.stripe') },
+    { id: 'features', name: t('admin.settings_tabs.features') },
+    { id: 'limits', name: t('admin.settings_tabs.limits') },
+    { id: 'gdpr', name: t('admin.settings_tabs.gdpr') },
+    { id: 'performance', name: t('admin.settings_tabs.performance') }
 ]
 
 const forms = reactive({
@@ -455,12 +458,12 @@ const testStripe = async () => {
         const data = await response.json()
 
         if (data.success) {
-            alert('Connexion Stripe réussie !\n\nCompte: ' + data.account.id)
+            alert(t('admin.settings_stripe_success') + '\n\n' + t('admin.settings_stripe_account') + ': ' + data.account.id)
         } else {
-            alert('Erreur: ' + data.message)
+            alert(t('admin.settings_stripe_error') + ': ' + data.message)
         }
     } catch (error) {
-        alert('Erreur de connexion à Stripe')
+        alert(t('admin.settings_stripe_connection_error'))
     }
 }
 </script>
