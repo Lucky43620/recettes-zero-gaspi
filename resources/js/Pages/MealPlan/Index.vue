@@ -25,7 +25,7 @@ const props = defineProps({
 });
 
 const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-const dayLabels = {
+const dayLabels = computed(() => ({
     monday: t('time.days.monday'),
     tuesday: t('time.days.tuesday'),
     wednesday: t('time.days.wednesday'),
@@ -33,15 +33,15 @@ const dayLabels = {
     friday: t('time.days.friday'),
     saturday: t('time.days.saturday'),
     sunday: t('time.days.sunday'),
-};
+}));
 
 const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
-const mealTypeLabels = {
+const mealTypeLabels = computed(() => ({
     breakfast: t('meal_plan.breakfast'),
     lunch: t('meal_plan.lunch'),
     dinner: t('meal_plan.dinner'),
     snack: t('meal_plan.snack'),
-};
+}));
 
 const draggedRecipe = ref(null);
 const showDuplicateModal = ref(false);
