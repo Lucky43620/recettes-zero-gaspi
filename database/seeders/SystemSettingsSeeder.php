@@ -95,6 +95,13 @@ class SystemSettingsSeeder extends Seeder
                 'description' => 'Jours essai gratuit',
             ],
             [
+                'key' => 'stripe_calculate_taxes',
+                'value' => 'false',
+                'group' => 'stripe',
+                'type' => 'boolean',
+                'description' => 'Calcul automatique taxes Stripe Tax',
+            ],
+            [
                 'key' => 'monthly_price',
                 'value' => '4.99',
                 'group' => 'stripe',

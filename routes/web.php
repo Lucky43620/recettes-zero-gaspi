@@ -42,8 +42,8 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-// Stripe webhook (handled automatically by Laravel Cashier)
-Route::post('/stripe/webhook', '\Laravel\Cashier\Http\Controllers\WebhookController@handleWebhook')
+// Stripe webhook (handled by custom controller with logging)
+Route::post('/stripe/webhook', [\App\Http\Controllers\StripeWebhookController::class, 'handleWebhook'])
     ->name('cashier.webhook');
 
 // Public recipe routes - order matters! Specific routes before parameterized routes
@@ -198,10 +198,12 @@ Route::middleware([
         Route::post('/checkout', [\App\Http\Controllers\SubscriptionController::class, 'checkout'])->name('checkout');
         Route::get('/success', [\App\Http\Controllers\SubscriptionController::class, 'success'])->name('success');
         Route::get('/manage', [\App\Http\Controllers\SubscriptionController::class, 'manage'])->name('manage');
+        Route::post('/swap', [\App\Http\Controllers\SubscriptionController::class, 'swap'])->name('swap');
         Route::post('/resume', [\App\Http\Controllers\SubscriptionController::class, 'resume'])->name('resume');
         Route::post('/cancel', [\App\Http\Controllers\SubscriptionController::class, 'cancel'])->name('cancel');
-        Route::get('/payment-method', [\App\Http\Controllers\SubscriptionController::class, 'paymentMethod'])->name('payment-method');
-        Route::post('/payment-method', [\App\Http\Controllers\SubscriptionController::class, 'updatePaymentMethod'])->name('payment-method.update');
+        Route::post('/cancel-now', [\App\Http\Controllers\SubscriptionController::class, 'cancelNow'])->name('cancel-now');
+        Route::get('/billing-portal', [\App\Http\Controllers\SubscriptionController::class, 'billingPortal'])->name('billing-portal');
+        Route::get('/invoice/{invoiceId}', [\App\Http\Controllers\SubscriptionController::class, 'downloadInvoice'])->name('invoice');
     });
 });
 
