@@ -6,7 +6,6 @@ import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 import FormInput from '@/Components/Common/FormInput.vue';
 import { useI18n } from 'vue-i18n';
 
