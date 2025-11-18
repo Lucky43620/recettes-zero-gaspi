@@ -256,12 +256,6 @@ const logout = () => {
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <p class="text-gray-600 text-sm">© 2025 {{ t('app.name') }}. {{ t('common.all_rights_reserved') }}</p>
                         <div class="flex gap-6 text-sm">
-                            <Link :href="route('terms.show')" class="text-gray-600 hover:text-gray-900 transition">
-                                {{ t('auth.terms_of_service') }}
-                            </Link>
-                            <Link :href="route('policy.show')" class="text-gray-600 hover:text-gray-900 transition">
-                                {{ t('auth.privacy_policy') }}
-                            </Link>
                             <Link :href="route('rgpd')" class="text-gray-600 hover:text-gray-900 transition">
                                 RGPD
                             </Link>
