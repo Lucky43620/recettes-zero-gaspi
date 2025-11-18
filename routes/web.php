@@ -67,21 +67,11 @@ Route::get('/rgpd', function () {
 })->name('rgpd');
 
 Route::get('/terms', function () {
-    $termsFile = resource_path('markdown/terms.md');
-    $terms = file_exists($termsFile) ? file_get_contents($termsFile) : 'Les conditions d\'utilisation seront bientôt disponibles.';
-
-    return Inertia::render('TermsOfService', [
-        'terms' => \Illuminate\Support\Str::markdown($terms),
-    ]);
+    return Inertia::render('TermsOfService');
 })->name('terms.show');
 
 Route::get('/privacy', function () {
-    $policyFile = resource_path('markdown/policy.md');
-    $policy = file_exists($policyFile) ? file_get_contents($policyFile) : 'La politique de confidentialité sera bientôt disponible.';
-
-    return Inertia::render('PrivacyPolicy', [
-        'policy' => \Illuminate\Support\Str::markdown($policy),
-    ]);
+    return Inertia::render('PrivacyPolicy');
 })->name('policy.show');
 
 Route::middleware([
