@@ -68,11 +68,12 @@ class AdminSettingsController extends Controller
             'stripe_price_monthly' => 'nullable|string',
             'stripe_price_yearly' => 'nullable|string',
             'trial_days' => 'nullable|integer|min:0',
+            'stripe_calculate_taxes' => 'nullable|boolean',
         ]);
 
-        // S'assurer que les booléens sont toujours définis
         $validated['stripe_enabled'] = $request->has('stripe_enabled') ? (bool)($validated['stripe_enabled'] ?? false) : false;
         $validated['stripe_test_mode'] = $request->has('stripe_test_mode') ? (bool)($validated['stripe_test_mode'] ?? false) : false;
+        $validated['stripe_calculate_taxes'] = $request->has('stripe_calculate_taxes') ? (bool)($validated['stripe_calculate_taxes'] ?? false) : false;
 
         $this->settingsService->updateMultiple($validated, auth()->id());
 
