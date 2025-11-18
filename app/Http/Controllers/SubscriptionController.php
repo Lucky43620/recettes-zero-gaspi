@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\SettingsService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class SubscriptionController extends Controller
 {
+    protected $settings;
+
+    public function __construct(SettingsService $settings)
+    {
+        $this->settings = $settings;
+    }
+
     /**
      * Show the subscription plans page.
      */
@@ -16,6 +24,9 @@ class SubscriptionController extends Controller
         $user = auth()->user();
         $isPremium = $user ? $user->isPremium() : false;
         $subscription = $isPremium ? $user->subscription('default') : null;
+
+        $monthlyPrice = (float) $this->settings->get('monthly_price', 4.99);
+        $yearlyPrice = (float) $this->settings->get('yearly_price', 49.90);
 
         return Inertia::render('Subscription/Index', [
             'plans' => [
@@ -33,8 +44,8 @@ class SubscriptionController extends Controller
                 ],
                 'monthly' => [
                     'name' => 'monthly',
-                    'price' => 4.99,
-                    'price_id' => config('stripe.price_monthly'),
+                    'price' => $monthlyPrice,
+                    'price_id' => $this->settings->get('stripe_price_monthly'),
                     'interval' => 'month',
                     'features' => [
                         'all_free_features',
@@ -49,8 +60,8 @@ class SubscriptionController extends Controller
                 ],
                 'yearly' => [
                     'name' => 'yearly',
-                    'price' => 49.90,
-                    'price_id' => config('stripe.price_yearly'),
+                    'price' => $yearlyPrice,
+                    'price_id' => $this->settings->get('stripe_price_yearly'),
                     'interval' => 'year',
                     'savings' => '2 mois offerts',
                     'features' => [
@@ -62,7 +73,7 @@ class SubscriptionController extends Controller
             'currentPlan' => $user ? $user->planName() : 'free',
             'isSubscribed' => $isPremium,
             'subscription' => $subscription,
-            'stripeKey' => config('stripe.key'),
+            'stripeKey' => $this->settings->get('stripe_key'),
         ]);
     }
 
@@ -78,8 +89,8 @@ class SubscriptionController extends Controller
         $user = auth()->user();
 
         $priceId = $request->plan === 'monthly'
-            ? config('stripe.price_monthly')
-            : config('stripe.price_yearly');
+            ? $this->settings->get('stripe_price_monthly')
+            : $this->settings->get('stripe_price_yearly');
 
         \Log::info('Subscription checkout attempt', [
             'plan' => $request->plan,
@@ -99,7 +110,7 @@ class SubscriptionController extends Controller
                 $user->createAsStripeCustomer();
             }
 
-            $stripe = new \Stripe\StripeClient(config('stripe.secret'));
+            $stripe = new \Stripe\StripeClient($this->settings->get('stripe_secret'));
 
             $session = $stripe->checkout->sessions->create([
                 'customer' => $user->stripe_id,
@@ -131,39 +142,6 @@ class SubscriptionController extends Controller
      */
     public function success(Request $request)
     {
-        $sessionId = $request->query('session_id');
-
-        if ($sessionId) {
-            $user = auth()->user();
-            $stripe = new \Stripe\StripeClient(config('stripe.secret'));
-
-            try {
-                $session = $stripe->checkout->sessions->retrieve($sessionId);
-
-                if ($session->payment_status === 'paid' && $session->subscription) {
-                    $stripeSubscription = $stripe->subscriptions->retrieve($session->subscription);
-
-                    $subscription = $user->subscriptions()
-                        ->where('stripe_id', $session->subscription)
-                        ->first();
-
-                    if (!$subscription) {
-                        $user->subscriptions()->create([
-                            'type' => 'default',
-                            'stripe_id' => $stripeSubscription->id,
-                            'stripe_status' => $stripeSubscription->status,
-                            'stripe_price' => $stripeSubscription->items->data[0]->price->id,
-                            'quantity' => 1,
-                            'trial_ends_at' => null,
-                            'ends_at' => null,
-                        ]);
-                    }
-                }
-            } catch (\Exception $e) {
-                \Log::error('Error processing subscription success: ' . $e->getMessage());
-            }
-        }
-
         return Inertia::render('Subscription/Success');
     }
 
@@ -180,6 +158,27 @@ class SubscriptionController extends Controller
 
         $subscription = $user->subscription('default');
 
+        $invoices = [];
+        try {
+            if ($user->hasStripeId()) {
+                $stripeInvoices = $user->invoices();
+                if ($stripeInvoices) {
+                    foreach ($stripeInvoices as $invoice) {
+                        $invoices[] = [
+                            'id' => $invoice->id,
+                            'date' => $invoice->date()->toDateTimeString(),
+                            'total' => $invoice->total() / 100,
+                            'status' => $invoice->status,
+                            'download_url' => $invoice->hosted_invoice_url,
+                            'invoice_pdf' => $invoice->invoice_pdf,
+                        ];
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error fetching invoices: ' . $e->getMessage());
+        }
+
         return Inertia::render('Subscription/Manage', [
             'subscription' => [
                 'plan' => $user->planName(),
@@ -190,6 +189,7 @@ class SubscriptionController extends Controller
                 'on_grace_period' => $subscription->onGracePeriod(),
                 'canceled' => $subscription->canceled(),
             ],
+            'invoices' => $invoices,
         ]);
     }
 
@@ -251,7 +251,7 @@ class SubscriptionController extends Controller
         }
 
         try {
-            $stripe = new \Stripe\StripeClient(config('stripe.secret'));
+            $stripe = new \Stripe\StripeClient($this->settings->get('stripe_secret'));
 
             $session = $stripe->billingPortal->sessions->create([
                 'customer' => $user->stripe_id,

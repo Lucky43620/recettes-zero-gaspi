@@ -13,6 +13,10 @@ const page = usePage();
 
 const props = defineProps({
     subscription: Object,
+    invoices: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const showSuccessAlert = ref(!!page.props.flash?.success);
@@ -63,6 +67,35 @@ const formatDate = (date) => {
         month: 'long',
         day: 'numeric',
     });
+};
+
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: 'EUR',
+    }).format(value);
+};
+
+const getStatusLabel = (status) => {
+    const labels = {
+        paid: 'Payée',
+        open: 'En attente',
+        draft: 'Brouillon',
+        void: 'Annulée',
+        uncollectible: 'Non recouvrable',
+    };
+    return labels[status] || status;
+};
+
+const getStatusClass = (status) => {
+    const classes = {
+        paid: 'bg-green-100 text-green-800',
+        open: 'bg-yellow-100 text-yellow-800',
+        draft: 'bg-gray-100 text-gray-800',
+        void: 'bg-red-100 text-red-800',
+        uncollectible: 'bg-red-100 text-red-800',
+    };
+    return classes[status] || 'bg-gray-100 text-gray-800';
 };
 </script>
 
@@ -251,9 +284,66 @@ const formatDate = (date) => {
                         <h3 class="text-base md:text-lg font-semibold text-gray-900 mb-4">
                             {{ t('subscription.billing_history') }}
                         </h3>
-                        <p class="text-sm md:text-base text-gray-600">
-                            {{ t('subscription.view_invoices_stripe') }}
-                        </p>
+
+                        <div v-if="invoices.length > 0" class="space-y-3">
+                            <div
+                                v-for="invoice in invoices"
+                                :key="invoice.id"
+                                class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition"
+                            >
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <p class="font-semibold text-gray-900">
+                                            {{ formatCurrency(invoice.total) }}
+                                        </p>
+                                        <span :class="[
+                                            'px-2 py-1 text-xs font-medium rounded-full',
+                                            getStatusClass(invoice.status)
+                                        ]">
+                                            {{ getStatusLabel(invoice.status) }}
+                                        </span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">
+                                        {{ formatDate(invoice.date) }}
+                                    </p>
+                                </div>
+
+                                <div class="flex gap-2 w-full sm:w-auto">
+                                    <a
+                                        v-if="invoice.download_url"
+                                        :href="invoice.download_url"
+                                        target="_blank"
+                                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        Voir
+                                    </a>
+                                    <a
+                                        v-if="invoice.invoice_pdf"
+                                        :href="invoice.invoice_pdf"
+                                        target="_blank"
+                                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 transition"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        Télécharger PDF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-else class="text-center py-8 bg-gray-50 rounded-lg">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <p class="text-gray-600 text-sm">
+                                Aucune facture disponible
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
