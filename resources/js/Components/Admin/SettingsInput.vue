@@ -32,20 +32,21 @@
 </template>
 
 <script setup>
-defineProps({
-    label: String,
-    help: String,
-    type: {
-        type: String,
-        default: 'text'
-    },
-    modelValue: [String, Number],
-    placeholder: String,
-    required: Boolean,
-    min: [String, Number],
-    max: [String, Number],
-    step: [String, Number],
-    rows: Number
+const props = withDefaults(defineProps<{
+    label?: string
+    help?: string
+    type?: string
+    modelValue?: string | number
+    placeholder?: string
+    required?: boolean
+    min?: string | number
+    max?: string | number
+    step?: string | number
+    rows?: number
+}>(), {
+    type: 'text',
+    required: false,
+    rows: 3
 })
 
 defineEmits(['update:modelValue'])
