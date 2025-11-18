@@ -47,6 +47,9 @@ const handleDrop = (event, day, mealType) => {
             meal_type: mealType,
         }, {
             preserveScroll: true,
+            onFinish: () => {
+                draggedMealPlanRecipe.value = null;
+            }
         });
     } else {
         props.onDrop(event, day, mealType);
@@ -126,7 +129,7 @@ const isDragOver = (day, mealType) => {
                                     :key="mpr.id"
                                     draggable="true"
                                     @dragstart="(event) => startDragFromCalendar(event, mpr)"
-                                    @dragend="() => { setTimeout(() => { draggedMealPlanRecipe.value = null; }, 100); endDrag(); }"
+                                    @dragend="endDrag"
                                     @click="() => handleCardClick(mpr.recipe.slug)"
                                     class="group relative cursor-move bg-gray-100 rounded-lg border-2 border-green-200 hover:border-green-400 hover:shadow-lg transition-all duration-200 hover:scale-105 overflow-hidden min-h-0"
                                     style="aspect-ratio: 1/1;"
