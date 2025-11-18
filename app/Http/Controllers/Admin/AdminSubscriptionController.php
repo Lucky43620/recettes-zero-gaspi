@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\SubscriptionStatsService;
-use App\Services\SettingsService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Laravel\Cashier\Subscription;
@@ -13,12 +12,10 @@ use Laravel\Cashier\Subscription;
 class AdminSubscriptionController extends Controller
 {
     protected $statsService;
-    protected $settings;
 
-    public function __construct(SubscriptionStatsService $statsService, SettingsService $settings)
+    public function __construct(SubscriptionStatsService $statsService)
     {
         $this->statsService = $statsService;
-        $this->settings = $settings;
     }
 
     public function index(Request $request)
@@ -117,48 +114,80 @@ class AdminSubscriptionController extends Controller
 
     public function cancel(User $user)
     {
-        // Récupérer l'abonnement via le modèle Subscription directement
-        $subscription = Subscription::where('type', 'default')
-            ->where('user_id', $user->id)
-            ->whereNull('ends_at')
-            ->first();
-
-        if ($subscription) {
-            try {
-                // Annuler via l'API Stripe directement
-                $stripe = new \Stripe\StripeClient($this->settings->get('stripe_secret'));
-                $stripe->subscriptions->update($subscription->stripe_id, [
-                    'cancel_at_period_end' => true
-                ]);
-
-                // Mettre à jour l'abonnement local
-                $subscription->cancel();
-
-                \Log::info('Subscription cancelled by admin', [
-                    'admin_id' => auth()->id(),
-                    'user_id' => $user->id,
-                    'subscription_id' => $subscription->id,
-                    'stripe_id' => $subscription->stripe_id,
-                ]);
-
-                return redirect()->back()->with('success', 'Abonnement annulé avec succès');
-            } catch (\Exception $e) {
-                \Log::error('Admin cancel subscription error: ' . $e->getMessage());
-                return redirect()->back()->with('error', 'Erreur lors de l\'annulation : ' . $e->getMessage());
-            }
+        // Vérifier que l'utilisateur a un abonnement
+        if (!$user->subscribed('default')) {
+            return redirect()->back()
+                ->with('error', 'Aucun abonnement actif trouvé');
         }
 
-        return redirect()->back()->with('error', 'Aucun abonnement actif trouvé');
+        $subscription = $user->subscription('default');
+
+        // Vérifier que l'abonnement n'est pas déjà annulé
+        if ($subscription->canceled()) {
+            return redirect()->back()
+                ->with('error', 'Cet abonnement est déjà annulé');
+        }
+
+        try {
+            // Laravel Cashier gère automatiquement l'appel à l'API Stripe
+            $subscription->cancel();
+
+            \Log::info('Subscription cancelled by admin', [
+                'admin_id' => auth()->id(),
+                'user_id' => $user->id,
+                'subscription_id' => $subscription->id,
+                'stripe_id' => $subscription->stripe_id,
+                'ends_at' => $subscription->ends_at,
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Abonnement annulé avec succès');
+        } catch (\Exception $e) {
+            \Log::error('Admin cancel subscription error: ' . $e->getMessage(), [
+                'admin_id' => auth()->id(),
+                'user_id' => $user->id,
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Erreur lors de l\'annulation de l\'abonnement');
+        }
     }
 
     public function resume(User $user)
     {
-        if ($user->subscription('default')) {
-            $user->subscription('default')->resume();
-
-            return redirect()->back()->with('success', 'Abonnement réactivé avec succès');
+        // Vérifier que l'utilisateur a un abonnement
+        if (!$user->subscription('default')) {
+            return redirect()->back()
+                ->with('error', 'Aucun abonnement trouvé');
         }
 
-        return redirect()->back()->with('error', 'Aucun abonnement trouvé');
+        $subscription = $user->subscription('default');
+
+        // Vérifier que l'abonnement est en période de grâce
+        if (!$subscription->onGracePeriod()) {
+            return redirect()->back()
+                ->with('error', 'Cet abonnement ne peut pas être réactivé');
+        }
+
+        try {
+            $subscription->resume();
+
+            \Log::info('Subscription resumed by admin', [
+                'admin_id' => auth()->id(),
+                'user_id' => $user->id,
+                'subscription_id' => $subscription->id,
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Abonnement réactivé avec succès');
+        } catch (\Exception $e) {
+            \Log::error('Admin resume subscription error: ' . $e->getMessage(), [
+                'admin_id' => auth()->id(),
+                'user_id' => $user->id,
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Erreur lors de la réactivation de l\'abonnement');
+        }
     }
 }

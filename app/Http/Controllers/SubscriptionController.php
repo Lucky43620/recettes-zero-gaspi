@@ -238,58 +238,86 @@ class SubscriptionController extends Controller
     public function resume(Request $request)
     {
         $user = auth()->user();
-        $subscription = $user->subscription('default');
 
-        if ($subscription && $subscription->onGracePeriod()) {
-            $subscription->resume();
-            return redirect()->route('subscription.manage')->with('success', 'Votre abonnement a été réactivé.');
+        // Vérifier que l'utilisateur a un abonnement
+        if (!$user->subscription('default')) {
+            return redirect()->route('subscription.manage')
+                ->with('error', 'Aucun abonnement trouvé.');
         }
 
-        return redirect()->route('subscription.manage')->with('error', 'Impossible de réactiver l\'abonnement.');
+        $subscription = $user->subscription('default');
+
+        // Vérifier que l'abonnement est bien en période de grâce
+        if (!$subscription->onGracePeriod()) {
+            return redirect()->route('subscription.manage')
+                ->with('error', 'Cet abonnement ne peut pas être réactivé.');
+        }
+
+        try {
+            $subscription->resume();
+
+            \Log::info('Subscription resumed successfully', [
+                'user_id' => $user->id,
+                'subscription_id' => $subscription->id,
+            ]);
+
+            return redirect()->route('subscription.manage')
+                ->with('success', 'Votre abonnement a été réactivé.');
+        } catch (\Exception $e) {
+            \Log::error('Error resuming subscription: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+            ]);
+
+            return redirect()->route('subscription.manage')
+                ->with('error', 'Erreur lors de la réactivation de l\'abonnement.');
+        }
     }
 
     /**
      * Cancel the subscription.
+     * Uses Laravel Cashier's cancel() method which handles Stripe API automatically.
      */
     public function cancel(Request $request)
     {
         $user = auth()->user();
 
-        // Récupérer l'abonnement via le modèle Subscription directement
-        $subscription = \Laravel\Cashier\Subscription::where('type', 'default')
-            ->where('user_id', $user->id)
-            ->whereNull('ends_at')
-            ->first();
-
-        if ($subscription) {
-            try {
-                // Annuler via l'API Stripe directement
-                $stripe = new \Stripe\StripeClient($this->settings->get('stripe_secret'));
-                $stripe->subscriptions->update($subscription->stripe_id, [
-                    'cancel_at_period_end' => true
-                ]);
-
-                // Mettre à jour l'abonnement local
-                $subscription->cancel();
-
-                \Log::info('Subscription cancelled successfully', [
-                    'user_id' => $user->id,
-                    'subscription_id' => $subscription->id,
-                    'stripe_id' => $subscription->stripe_id,
-                    'ends_at' => $subscription->fresh()->ends_at,
-                    'on_grace_period' => $subscription->fresh()->onGracePeriod(),
-                ]);
-
-                return redirect()->route('subscription.manage')->with('success', 'Votre abonnement sera annulé à la fin de la période en cours.');
-            } catch (\Exception $e) {
-                \Log::error('Error cancelling subscription: ' . $e->getMessage(), [
-                    'trace' => $e->getTraceAsString(),
-                ]);
-                return redirect()->route('subscription.manage')->with('error', 'Erreur lors de l\'annulation de l\'abonnement : ' . $e->getMessage());
-            }
+        // Vérifier que l'utilisateur a un abonnement
+        if (!$user->subscribed('default')) {
+            return redirect()->route('subscription.manage')
+                ->with('error', 'Aucun abonnement actif trouvé.');
         }
 
-        return redirect()->route('subscription.manage')->with('error', 'Aucun abonnement actif trouvé.');
+        $subscription = $user->subscription('default');
+
+        // Vérifier que l'abonnement n'est pas déjà annulé
+        if ($subscription->canceled()) {
+            return redirect()->route('subscription.manage')
+                ->with('error', 'Cet abonnement est déjà annulé.');
+        }
+
+        try {
+            // Laravel Cashier gère automatiquement l'appel à l'API Stripe
+            $subscription->cancel();
+
+            \Log::info('Subscription cancelled successfully', [
+                'user_id' => $user->id,
+                'subscription_id' => $subscription->id,
+                'stripe_id' => $subscription->stripe_id,
+                'ends_at' => $subscription->ends_at,
+                'on_grace_period' => $subscription->onGracePeriod(),
+            ]);
+
+            return redirect()->route('subscription.manage')
+                ->with('success', 'Votre abonnement sera annulé à la fin de la période en cours.');
+        } catch (\Exception $e) {
+            \Log::error('Error cancelling subscription: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->route('subscription.manage')
+                ->with('error', 'Erreur lors de l\'annulation de l\'abonnement.');
+        }
     }
 
     /**
