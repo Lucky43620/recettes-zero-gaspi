@@ -47,6 +47,11 @@ const handleDrop = (event, day, mealType) => {
             meal_type: mealType,
         }, {
             preserveScroll: true,
+            onError: (errors) => {
+                // Si 404, la recette n'existe plus, on recharge la page
+                console.error('Erreur lors du déplacement:', errors);
+                router.reload({ preserveScroll: true });
+            }
         });
         draggedMealPlanRecipe.value = null;
     } else {
