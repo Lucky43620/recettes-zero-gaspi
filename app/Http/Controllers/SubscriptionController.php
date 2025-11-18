@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -19,13 +20,13 @@ class SubscriptionController extends Controller
         $allPlans = $this->getPlans();
         $plansFormatted = [
             'monthly' => [
-                'price' => 4.99,
-                'display' => 'Premium Mensuel',
+                'price' => SystemSetting::getValue('monthly_price', 4.99),
+                'display' => SystemSetting::getValue('monthly_plan_name', 'Premium Mensuel'),
             ],
             'yearly' => [
-                'price' => 49.90,
-                'display' => 'Premium Annuel',
-                'savings' => 'Économisez 2 mois',
+                'price' => SystemSetting::getValue('yearly_price', 49.90),
+                'display' => SystemSetting::getValue('yearly_plan_name', 'Premium Annuel'),
+                'savings' => SystemSetting::getValue('yearly_savings_message', 'Économisez 2 mois'),
             ],
         ];
 
@@ -204,13 +205,13 @@ class SubscriptionController extends Controller
                 'payment_method' => $this->getPaymentMethod($user),
                 'plans' => [
                     'monthly' => [
-                        'price' => 4.99,
-                        'display' => 'Premium Mensuel',
+                        'price' => SystemSetting::getValue('monthly_price', 4.99),
+                        'display' => SystemSetting::getValue('monthly_plan_name', 'Premium Mensuel'),
                     ],
                     'yearly' => [
-                        'price' => 49.90,
-                        'display' => 'Premium Annuel',
-                        'savings' => 'Économisez 2 mois',
+                        'price' => SystemSetting::getValue('yearly_price', 49.90),
+                        'display' => SystemSetting::getValue('yearly_plan_name', 'Premium Annuel'),
+                        'savings' => SystemSetting::getValue('yearly_savings_message', 'Économisez 2 mois'),
                     ],
                 ],
                 'canChangePlan' => ! $subscription->onGracePeriod() && $subscription->recurring(),
@@ -410,6 +411,12 @@ class SubscriptionController extends Controller
 
     protected function getPlans(): array
     {
+        $monthlyPrice = SystemSetting::getValue('monthly_price', 4.99);
+        $yearlyPrice = SystemSetting::getValue('yearly_price', 49.90);
+        $monthlyPlanName = SystemSetting::getValue('monthly_plan_name', 'Premium Mensuel');
+        $yearlyPlanName = SystemSetting::getValue('yearly_plan_name', 'Premium Annuel');
+        $yearlySavingsMessage = SystemSetting::getValue('yearly_savings_message', 'Économisez 2 mois');
+
         return [
             [
                 'id' => 'free',
@@ -428,9 +435,9 @@ class SubscriptionController extends Controller
             ],
             [
                 'id' => 'monthly',
-                'name' => 'Premium Mensuel',
-                'price' => '4,99€',
-                'price_value' => 4.99,
+                'name' => $monthlyPlanName,
+                'price' => number_format($monthlyPrice, 2, ',', ' ') . '€',
+                'price_value' => $monthlyPrice,
                 'price_id' => config('cashier.price_monthly'),
                 'interval' => 'month',
                 'billing' => 'par mois',
@@ -448,13 +455,13 @@ class SubscriptionController extends Controller
             ],
             [
                 'id' => 'yearly',
-                'name' => 'Premium Annuel',
-                'price' => '49,90€',
-                'price_value' => 49.90,
+                'name' => $yearlyPlanName,
+                'price' => number_format($yearlyPrice, 2, ',', ' ') . '€',
+                'price_value' => $yearlyPrice,
                 'price_id' => config('cashier.price_yearly'),
                 'interval' => 'year',
                 'billing' => 'par an',
-                'description' => 'Économisez 2 mois avec l\'abonnement annuel',
+                'description' => $yearlySavingsMessage . ' avec l\'abonnement annuel',
                 'features' => [
                     'Recettes privées illimitées',
                     'Plannings de repas illimités',
