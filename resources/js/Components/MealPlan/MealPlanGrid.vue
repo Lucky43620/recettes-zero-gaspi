@@ -48,7 +48,6 @@ const handleDrop = (event, day, mealType) => {
         }, {
             preserveScroll: true,
         });
-        draggedMealPlanRecipe.value = null;
     } else {
         props.onDrop(event, day, mealType);
     }
