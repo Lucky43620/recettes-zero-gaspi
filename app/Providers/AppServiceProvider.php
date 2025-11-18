@@ -15,7 +15,15 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->configureHttps();
         $this->configureStripe();
+    }
+
+    protected function configureHttps(): void
+    {
+        if (config('app.env') === 'production' || request()->header('X-Forwarded-Proto') === 'https') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 
     protected function configureStripe(): void
