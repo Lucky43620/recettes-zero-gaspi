@@ -293,6 +293,7 @@ class SubscriptionController extends Controller
 
         try {
             $subscription->cancel();
+            $subscription->refresh();
 
             Log::info('Subscription canceled', [
                 'user_id' => $user->id,
@@ -300,7 +301,9 @@ class SubscriptionController extends Controller
                 'ends_at' => $subscription->ends_at,
             ]);
 
-            return back()->with('success', 'Votre abonnement a été annulé. Vous pourrez continuer à utiliser les fonctionnalités premium jusqu\'au ' . $subscription->ends_at->format('d/m/Y') . '.');
+            $endsAt = $subscription->ends_at ? $subscription->ends_at->format('d/m/Y') : 'la fin de la période en cours';
+
+            return back()->with('success', 'Votre abonnement a été annulé. Vous pourrez continuer à utiliser les fonctionnalités premium jusqu\'au ' . $endsAt . '.');
         } catch (\Exception $e) {
             Log::error('Subscription cancel error', [
                 'user_id' => $user->id,
@@ -474,10 +477,11 @@ class SubscriptionController extends Controller
             return $user->invoices()->map(function ($invoice) {
                 return [
                     'id' => $invoice->id,
-                    'date' => $invoice->date()->format('d/m/Y'),
-                    'total' => $invoice->total(),
+                    'date' => $invoice->date()->toDateTimeString(),
+                    'total' => $invoice->total() / 100,
                     'status' => $invoice->status,
                     'download_url' => route('subscription.invoice', $invoice->id),
+                    'invoice_pdf' => $invoice->invoice_pdf,
                 ];
             })->toArray();
         } catch (\Exception $e) {
