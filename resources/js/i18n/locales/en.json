@@ -936,7 +936,7 @@
     "third_party_stripe": "Stripe (secure payments)",
     "third_party_openfoodfacts": "OpenFoodFacts (nutritional data)",
     "contact_title": "Contact",
-    "contact_desc": "For any questions regarding your personal data, you can contact us at: contact@recettes-zero-gaspi.fr",
+    "contact_desc": "For any questions regarding your personal data, you can contact us at: contact{'@'}recettes-zero-gaspi.fr",
     "last_updated": "Last updated: {date}"
   },
   "jetstream": {

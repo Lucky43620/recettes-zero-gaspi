@@ -66,6 +66,24 @@ Route::get('/rgpd', function () {
     return Inertia::render('RGPD');
 })->name('rgpd');
 
+Route::get('/terms', function () {
+    $termsFile = resource_path('markdown/terms.md');
+    $terms = file_exists($termsFile) ? file_get_contents($termsFile) : 'Les conditions d\'utilisation seront bientôt disponibles.';
+
+    return Inertia::render('TermsOfService', [
+        'terms' => \Illuminate\Support\Str::markdown($terms),
+    ]);
+})->name('terms.show');
+
+Route::get('/privacy', function () {
+    $policyFile = resource_path('markdown/policy.md');
+    $policy = file_exists($policyFile) ? file_get_contents($policyFile) : 'La politique de confidentialité sera bientôt disponible.';
+
+    return Inertia::render('PrivacyPolicy', [
+        'policy' => \Illuminate\Support\Str::markdown($policy),
+    ]);
+})->name('policy.show');
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
