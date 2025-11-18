@@ -232,4 +232,9 @@ Route::middleware([
     Route::post('/settings/gdpr', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'updateGdpr'])->name('settings.gdpr');
     Route::post('/settings/clear-cache', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'clearCache'])->name('settings.clear-cache');
     Route::post('/settings/test-stripe', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'testStripe'])->name('settings.test-stripe');
+
+    Route::get('/subscriptions', [\App\Http\Controllers\Admin\AdminSubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::get('/subscriptions/{user}', [\App\Http\Controllers\Admin\AdminSubscriptionController::class, 'show'])->name('subscriptions.show');
+    Route::post('/subscriptions/{user}/cancel', [\App\Http\Controllers\Admin\AdminSubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+    Route::post('/subscriptions/{user}/resume', [\App\Http\Controllers\Admin\AdminSubscriptionController::class, 'resume'])->name('subscriptions.resume');
 });
