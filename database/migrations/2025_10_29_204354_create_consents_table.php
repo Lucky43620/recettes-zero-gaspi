@@ -13,7 +13,17 @@ return new class extends Migration
     {
         Schema::create('consents', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->enum('consent_type', ['terms', 'privacy', 'marketing', 'analytics']);
+            $table->string('version');
+            $table->timestamp('consented_at');
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->timestamp('revoked_at')->nullable();
             $table->timestamps();
+
+            $table->index(['user_id', 'consent_type']);
+            $table->index('consented_at');
         });
     }
 
