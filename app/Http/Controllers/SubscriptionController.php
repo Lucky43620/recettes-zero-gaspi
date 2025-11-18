@@ -16,8 +16,21 @@ class SubscriptionController extends Controller
     {
         $user = auth()->user();
 
+        $allPlans = $this->getPlans();
+        $plansFormatted = [
+            'monthly' => [
+                'price' => 4.99,
+                'display' => 'Premium Mensuel',
+            ],
+            'yearly' => [
+                'price' => 49.90,
+                'display' => 'Premium Annuel',
+                'savings' => 'Économisez 2 mois',
+            ],
+        ];
+
         return Inertia::render('Subscription/Index', [
-            'plans' => $this->getPlans(),
+            'plans' => $plansFormatted,
             'currentPlan' => $user ? $user->planName() : 'free',
             'subscriptionStatus' => $user ? $user->subscriptionStatus() : 'inactive',
             'isSubscribed' => $user ? $user->isPremium() : false,
