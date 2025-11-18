@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -130,7 +130,7 @@ const closeDeleteModal = () => {
             </div>
         </div>
 
-        <ConfirmationModal :show="confirmingListDeletion" @close="closeDeleteModal">
+        <DialogModal variant="danger" :show="confirmingListDeletion" @close="closeDeleteModal">
             <template #title>
                 {{ t('shopping_list.delete_list') }}
             </template>
@@ -152,6 +152,6 @@ const closeDeleteModal = () => {
                     {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
     </AppLayout>
 </template>

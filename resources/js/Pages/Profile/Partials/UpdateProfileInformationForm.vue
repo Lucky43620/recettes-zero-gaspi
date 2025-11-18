@@ -7,7 +7,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import FormInput from '@/Components/Common/FormInput.vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -116,18 +116,19 @@ const clearPhotoFileInput = () => {
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3 mt-3">
-                    <SecondaryButton type="button" class="w-full sm:w-auto text-center" @click.prevent="selectNewPhoto">
+                    <PrimaryButton variant="secondary" type="button" class="w-full sm:w-auto text-center" @click.prevent="selectNewPhoto">
                         {{ t('profile.select_new_photo') }}
-                    </SecondaryButton>
+                    </PrimaryButton>
 
-                    <SecondaryButton
+                    <PrimaryButton
+                        variant="secondary"
                         v-if="user.profile_photo_path"
                         type="button"
                         class="w-full sm:w-auto text-center"
                         @click.prevent="deletePhoto"
                     >
                         {{ t('common.delete') }}
-                    </SecondaryButton>
+                    </PrimaryButton>
                 </div>
 
                 <InputError :message="form.errors.photo" class="mt-2" />
@@ -136,7 +137,7 @@ const clearPhotoFileInput = () => {
             <!-- Name -->
             <div class="col-span-6 sm:col-span-4">
                 <InputLabel for="name" :value="t('auth.name')" />
-                <TextInput
+                <FormInput
                     id="name"
                     v-model="form.name"
                     type="text"
@@ -150,7 +151,7 @@ const clearPhotoFileInput = () => {
             <!-- Email -->
             <div class="col-span-6 sm:col-span-4">
                 <InputLabel for="email" :value="t('auth.email')" />
-                <TextInput
+                <FormInput
                     id="email"
                     v-model="form.email"
                     type="email"

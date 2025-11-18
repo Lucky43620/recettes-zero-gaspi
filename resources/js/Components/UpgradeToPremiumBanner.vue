@@ -1,7 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
-import PremiumBadge from './PremiumBadge.vue';
+import Badge from '@/Components/UI/Badge.vue';
 
 defineProps({
     feature: {
@@ -28,7 +28,7 @@ const { t } = useI18n();
         </div>
 
         <div class="mb-2">
-            <PremiumBadge size="lg" />
+            <Badge variant="premium" size="lg">{{ t('common.premium') }}</Badge>
         </div>
 
         <h3 class="text-2xl font-bold text-gray-900 mb-3">

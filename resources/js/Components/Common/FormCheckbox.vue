@@ -3,8 +3,8 @@
         <input
             :id="id"
             type="checkbox"
-            :checked="modelValue"
-            @change="$emit('update:modelValue', $event.target.checked)"
+            v-model="proxyChecked"
+            :value="value"
             :disabled="disabled"
             :class="[
                 'rounded border-gray-300 text-green-600 focus:ring-green-500',
@@ -22,17 +22,32 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue';
+
+const emit = defineEmits(['update:modelValue']);
+
+const props = defineProps({
     id: String,
     label: String,
     modelValue: {
-        type: Boolean,
+        type: [Array, Boolean],
         default: false
+    },
+    value: {
+        type: String,
+        default: null
     },
     disabled: Boolean,
     error: String,
     hint: String,
 });
 
-defineEmits(['update:modelValue']);
+const proxyChecked = computed({
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        emit('update:modelValue', val);
+    }
+});
 </script>

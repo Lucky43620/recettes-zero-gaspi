@@ -3,11 +3,11 @@ import { nextTick, ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import FormInput from '@/Components/Common/FormInput.vue';
 
 const { t } = useI18n();
 
@@ -45,7 +45,7 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <AuthenticationCardLogo />
+            <ApplicationLogo linkToHome size="lg" />
         </template>
 
         <div class="mb-4 text-sm text-gray-600">
@@ -61,7 +61,7 @@ const submit = () => {
         <form @submit.prevent="submit">
             <div v-if="! recovery">
                 <InputLabel for="code" :value="t('auth.code')" />
-                <TextInput
+                <FormInput
                     id="code"
                     ref="codeInput"
                     v-model="form.code"
@@ -76,7 +76,7 @@ const submit = () => {
 
             <div v-else>
                 <InputLabel for="recovery_code" :value="t('auth.recovery_code')" />
-                <TextInput
+                <FormInput
                     id="recovery_code"
                     ref="recoveryCodeInput"
                     v-model="form.recovery_code"

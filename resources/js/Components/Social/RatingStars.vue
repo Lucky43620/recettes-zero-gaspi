@@ -2,9 +2,8 @@
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
+import DialogModal from '@/Components/DialogModal.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const { t } = useI18n();
 
@@ -196,7 +195,7 @@ const sizeClasses = {
                 </div>
             </form>
 
-            <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
+            <DialogModal variant="danger" :show="confirmingDeletion" @close="confirmingDeletion = false">
                 <template #title>
                     {{ t('profile.delete_rating') }}
                 </template>
@@ -206,18 +205,19 @@ const sizeClasses = {
                 </template>
 
                 <template #footer>
-                    <SecondaryButton @click="confirmingDeletion = false">
+                    <PrimaryButton variant="secondary" @click="confirmingDeletion = false">
                         {{ t('common.cancel') }}
-                    </SecondaryButton>
+                    </PrimaryButton>
 
-                    <DangerButton
+                    <PrimaryButton
+                        variant="danger"
                         class="ms-3"
                         @click="deleteRating"
                     >
                         {{ t('common.delete') }}
-                    </DangerButton>
+                    </PrimaryButton>
                 </template>
-            </ConfirmationModal>
+            </DialogModal>
         </div>
     </div>
 </template>

@@ -6,7 +6,7 @@ import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import FormInput from '@/Components/Common/FormInput.vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -53,7 +53,7 @@ const updatePassword = () => {
         <template #form>
             <div class="col-span-6 sm:col-span-4">
                 <InputLabel for="current_password" :value="t('profile.current_password')" />
-                <TextInput
+                <FormInput
                     id="current_password"
                     ref="currentPasswordInput"
                     v-model="form.current_password"
@@ -66,7 +66,7 @@ const updatePassword = () => {
 
             <div class="col-span-6 sm:col-span-4">
                 <InputLabel for="password" :value="t('profile.new_password')" />
-                <TextInput
+                <FormInput
                     id="password"
                     ref="passwordInput"
                     v-model="form.password"
@@ -79,7 +79,7 @@ const updatePassword = () => {
 
             <div class="col-span-6 sm:col-span-4">
                 <InputLabel for="password_confirmation" :value="t('profile.confirm_password')" />
-                <TextInput
+                <FormInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"

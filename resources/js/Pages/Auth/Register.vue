@@ -2,12 +2,12 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
-import Checkbox from '@/Components/Checkbox.vue';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import FormCheckbox from '@/Components/Common/FormCheckbox.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import FormInput from '@/Components/Common/FormInput.vue';
 
 const { t } = useI18n();
 
@@ -31,7 +31,7 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <AuthenticationCardLogo />
+            <ApplicationLogo linkToHome size="lg" />
         </template>
 
         <div class="text-center mb-6">
@@ -42,7 +42,7 @@ const submit = () => {
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="name" :value="t('auth.name')" />
-                <TextInput
+                <FormInput
                     id="name"
                     v-model="form.name"
                     type="text"
@@ -56,7 +56,7 @@ const submit = () => {
 
             <div class="mt-4">
                 <InputLabel for="email" :value="t('auth.email')" />
-                <TextInput
+                <FormInput
                     id="email"
                     v-model="form.email"
                     type="email"
@@ -69,7 +69,7 @@ const submit = () => {
 
             <div class="mt-4">
                 <InputLabel for="password" :value="t('auth.password')" />
-                <TextInput
+                <FormInput
                     id="password"
                     v-model="form.password"
                     type="password"
@@ -82,7 +82,7 @@ const submit = () => {
 
             <div class="mt-4">
                 <InputLabel for="password_confirmation" :value="t('auth.password_confirmation')" />
-                <TextInput
+                <FormInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
@@ -94,16 +94,14 @@ const submit = () => {
             </div>
 
             <div v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature" class="mt-4">
-                <InputLabel for="terms">
-                    <div class="flex items-center">
-                        <Checkbox id="terms" v-model:checked="form.terms" name="terms" required />
-
-                        <div class="ms-2 text-sm">
+                <FormCheckbox id="terms" v-model="form.terms" name="terms">
+                    <template #label>
+                        <span class="text-sm">
                             {{ t('auth.accept_terms_start') }} <a target="_blank" :href="route('terms.show')" class="underline text-green-600 hover:text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">{{ t('auth.terms_of_service') }}</a> {{ t('auth.and') }} {{ t('auth.accept_terms_mid') }} <a target="_blank" :href="route('policy.show')" class="underline text-green-600 hover:text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">{{ t('auth.privacy_policy') }}</a>
-                        </div>
-                    </div>
-                    <InputError class="mt-2" :message="form.errors.terms" />
-                </InputLabel>
+                        </span>
+                    </template>
+                </FormCheckbox>
+                <InputError class="mt-2" :message="form.errors.terms" />
             </div>
 
             <div class="flex flex-col gap-4 mt-6">

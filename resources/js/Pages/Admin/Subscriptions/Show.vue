@@ -147,7 +147,7 @@
         </div>
 
         <!-- Cancel Confirmation Modal -->
-        <ConfirmationModal :show="showCancelModal" @close="showCancelModal = false">
+        <DialogModal variant="danger" :show="showCancelModal" @close="showCancelModal = false">
             <template #title>
                 Confirmer l'annulation
             </template>
@@ -171,7 +171,7 @@
                     Confirmer l'annulation
                 </button>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
     </AdminLayout>
 </template>
 
@@ -179,7 +179,7 @@
 import { ref, computed } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
-import ConfirmationModal from '@/Components/ConfirmationModal.vue'
+import DialogModal from '@/Components/DialogModal.vue'
 
 const props = defineProps({
     user: Object,

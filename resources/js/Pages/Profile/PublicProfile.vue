@@ -3,7 +3,7 @@ import PublicLayout from '@/Layouts/PublicLayout.vue';
 import RecipeCard from '@/Components/Recipe/RecipeCard.vue';
 import FollowButton from '@/Components/Social/FollowButton.vue';
 import BackButton from '@/Components/Common/BackButton.vue';
-import PremiumBadge from '@/Components/PremiumBadge.vue';
+import Badge from '@/Components/UI/Badge.vue';
 import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
@@ -42,7 +42,7 @@ const props = defineProps({
                                         <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
                                             {{ profileUser.name }}
                                         </h1>
-                                        <PremiumBadge v-if="profileUser.is_premium" size="md" />
+                                        <Badge v-if="profileUser.is_premium" variant="premium" size="md">{{ t('common.premium') }}</Badge>
                                     </div>
                                     <p v-if="profileUser.bio" class="text-sm md:text-base text-gray-600 mt-1">
                                         {{ profileUser.bio }}

@@ -4,8 +4,7 @@ import { useI18n } from 'vue-i18n';
 import DialogModal from './DialogModal.vue';
 import InputError from './InputError.vue';
 import PrimaryButton from './PrimaryButton.vue';
-import SecondaryButton from './SecondaryButton.vue';
-import TextInput from './TextInput.vue';
+import FormInput from '@/Components/Common/FormInput.vue';
 
 const { t } = useI18n();
 const emit = defineEmits(['confirmed']);
@@ -87,7 +86,7 @@ const closeModal = () => {
                 {{ content || t('auth.confirm_password_description') }}
 
                 <div class="mt-4">
-                    <TextInput
+                    <FormInput
                         ref="passwordInput"
                         v-model="form.password"
                         type="password"
@@ -102,9 +101,9 @@ const closeModal = () => {
             </template>
 
             <template #footer>
-                <SecondaryButton @click="closeModal">
+                <PrimaryButton variant="secondary" @click="closeModal">
                     {{ t('common.cancel') }}
-                </SecondaryButton>
+                </PrimaryButton>
 
                 <PrimaryButton
                     class="ms-3"

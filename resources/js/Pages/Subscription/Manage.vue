@@ -4,9 +4,7 @@ import { useForm, usePage } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 
 const { t } = useI18n();
 const page = usePage();
@@ -329,9 +327,9 @@ const getSwapPlanName = () => {
                                         {{ t('subscription.cancel_info') }}
                                     </p>
                                 </div>
-                                <DangerButton @click="showCancelModal = true" class="w-full sm:w-auto whitespace-nowrap">
+                                <PrimaryButton variant="danger" @click="showCancelModal = true" class="w-full sm:w-auto whitespace-nowrap">
                                     {{ t('subscription.cancel') }}
-                                </DangerButton>
+                                </PrimaryButton>
                             </div>
 
                             <!-- Cancel Now -->
@@ -344,9 +342,9 @@ const getSwapPlanName = () => {
                                         Mettre fin à votre abonnement dès maintenant sans attendre la fin de la période
                                     </p>
                                 </div>
-                                <DangerButton @click="showCancelNowModal = true" class="w-full sm:w-auto whitespace-nowrap">
+                                <PrimaryButton variant="danger" @click="showCancelNowModal = true" class="w-full sm:w-auto whitespace-nowrap">
                                     Annuler maintenant
-                                </DangerButton>
+                                </PrimaryButton>
                             </div>
 
                             <!-- Billing Portal -->
@@ -437,7 +435,7 @@ const getSwapPlanName = () => {
         </div>
 
         <!-- Cancel Confirmation Modal -->
-        <ConfirmationModal :show="showCancelModal" @close="showCancelModal = false">
+        <DialogModal variant="danger" :show="showCancelModal" @close="showCancelModal = false">
             <template #title>
                 {{ t('subscription.confirm_cancel') }}
             </template>
@@ -447,23 +445,24 @@ const getSwapPlanName = () => {
             </template>
 
             <template #footer>
-                <SecondaryButton @click="showCancelModal = false">
+                <PrimaryButton variant="secondary" @click="showCancelModal = false">
                     {{ t('common.cancel') }}
-                </SecondaryButton>
+                </PrimaryButton>
 
-                <DangerButton
+                <PrimaryButton
+                    variant="danger"
                     class="ms-3"
                     :class="{ 'opacity-25': cancelForm.processing }"
                     :disabled="cancelForm.processing"
                     @click="cancelSubscription"
                 >
                     {{ t('subscription.confirm_cancel_button') }}
-                </DangerButton>
+                </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
 
         <!-- Resume Confirmation Modal -->
-        <ConfirmationModal :show="showResumeModal" @close="showResumeModal = false">
+        <DialogModal variant="danger" :show="showResumeModal" @close="showResumeModal = false">
             <template #title>
                 {{ t('subscription.confirm_resume') }}
             </template>
@@ -473,9 +472,9 @@ const getSwapPlanName = () => {
             </template>
 
             <template #footer>
-                <SecondaryButton @click="showResumeModal = false">
+                <PrimaryButton variant="secondary" @click="showResumeModal = false">
                     {{ t('common.cancel') }}
-                </SecondaryButton>
+                </PrimaryButton>
 
                 <PrimaryButton
                     class="ms-3"
@@ -486,10 +485,10 @@ const getSwapPlanName = () => {
                     {{ t('subscription.confirm_resume_button') }}
                 </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
 
         <!-- Swap Plan Confirmation Modal -->
-        <ConfirmationModal :show="showSwapModal" @close="showSwapModal = false">
+        <DialogModal variant="danger" :show="showSwapModal" @close="showSwapModal = false">
             <template #title>
                 Changer de formule
             </template>
@@ -506,9 +505,9 @@ const getSwapPlanName = () => {
             </template>
 
             <template #footer>
-                <SecondaryButton @click="showSwapModal = false">
+                <PrimaryButton variant="secondary" @click="showSwapModal = false">
                     Annuler
-                </SecondaryButton>
+                </PrimaryButton>
 
                 <PrimaryButton
                     class="ms-3"
@@ -519,10 +518,10 @@ const getSwapPlanName = () => {
                     Confirmer le changement
                 </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
 
         <!-- Cancel Now Confirmation Modal -->
-        <ConfirmationModal :show="showCancelNowModal" @close="showCancelNowModal = false">
+        <DialogModal variant="danger" :show="showCancelNowModal" @close="showCancelNowModal = false">
             <template #title>
                 Annuler immédiatement
             </template>
@@ -539,19 +538,20 @@ const getSwapPlanName = () => {
             </template>
 
             <template #footer>
-                <SecondaryButton @click="showCancelNowModal = false">
+                <PrimaryButton variant="secondary" @click="showCancelNowModal = false">
                     Annuler
-                </SecondaryButton>
+                </PrimaryButton>
 
-                <DangerButton
+                <PrimaryButton
+                    variant="danger"
                     class="ms-3"
                     :class="{ 'opacity-25': cancelNowForm.processing }"
                     :disabled="cancelNowForm.processing"
                     @click="cancelNow"
                 >
                     Confirmer l'annulation immédiate
-                </DangerButton>
+                </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
     </AppLayout>
 </template>
