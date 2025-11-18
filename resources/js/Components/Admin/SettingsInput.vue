@@ -31,7 +31,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = withDefaults(defineProps<{
     label?: string
     help?: string
