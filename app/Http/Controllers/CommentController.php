@@ -9,6 +9,7 @@ use App\Notifications\CommentNotification;
 use App\Notifications\CommentReplyNotification;
 use App\Notifications\ReplyNotification;
 use App\Services\CommentVoteService;
+use App\Services\SettingsService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,11 +17,17 @@ class CommentController extends Controller
 {
     use AuthorizesRequests;
     public function __construct(
-        private CommentVoteService $commentVoteService
+        private CommentVoteService $commentVoteService,
+        private SettingsService $settings
     ) {}
 
     public function store(StoreCommentRequest $request, Recipe $recipe)
     {
+        // Vérifier si les commentaires sont activés
+        if (!$this->settings->get('enable_comments', true)) {
+            abort(403, 'Les commentaires sont actuellement désactivés.');
+        }
+
         $comment = $recipe->comments()->create([
             'user_id' => Auth::id(),
             'content' => $request->validated('content'),
