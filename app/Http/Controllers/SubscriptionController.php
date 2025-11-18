@@ -475,13 +475,15 @@ class SubscriptionController extends Controller
     {
         try {
             return $user->invoices()->map(function ($invoice) {
+                $stripeInvoice = $invoice->asStripeInvoice();
+
                 return [
                     'id' => $invoice->id,
                     'date' => $invoice->date()->toDateTimeString(),
                     'total' => $invoice->total() / 100,
                     'status' => $invoice->status,
                     'download_url' => route('subscription.invoice', $invoice->id),
-                    'invoice_pdf' => $invoice->invoice_pdf,
+                    'invoice_pdf' => $stripeInvoice->invoice_pdf ?? null,
                 ];
             })->toArray();
         } catch (\Exception $e) {
