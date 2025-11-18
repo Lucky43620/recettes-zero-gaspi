@@ -82,7 +82,7 @@ class SubscriptionController extends Controller
                 'price_id' => $priceId,
             ]);
 
-            return Inertia::location($checkout->url());
+            return Inertia::location($checkout->url);
         } catch (IncompletePayment $e) {
             Log::error('Incomplete payment on checkout', [
                 'user_id' => $user->id,
