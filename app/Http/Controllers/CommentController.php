@@ -25,7 +25,7 @@ class CommentController extends Controller
     {
         // Vérifier si les commentaires sont activés
         if (!$this->settings->get('enable_comments', true)) {
-            abort(403, 'Les commentaires sont actuellement désactivés.');
+            return back()->with('error', 'Les commentaires sont actuellement désactivés par l\'administrateur.');
         }
 
         $comment = $recipe->comments()->create([
