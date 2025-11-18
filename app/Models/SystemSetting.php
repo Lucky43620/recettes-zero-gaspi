@@ -50,7 +50,13 @@ class SystemSetting extends Model
 
     public static function setValue(string $key, $value, ?int $userId = null): bool
     {
-        $setting = static::firstOrCreate(['key' => $key]);
+        // Déduit le groupe depuis le nom de la clé
+        $group = static::inferGroupFromKey($key);
+
+        $setting = static::firstOrCreate(
+            ['key' => $key],
+            ['group' => $group]
+        );
 
         if (is_array($value) || is_object($value)) {
             $setting->value = json_encode($value);
@@ -61,5 +67,35 @@ class SystemSetting extends Model
 
         $setting->updated_by = $userId;
         return $setting->save();
+    }
+
+    protected static function inferGroupFromKey(string $key): string
+    {
+        // Map des préfixes vers les groupes
+        $groupMappings = [
+            'stripe_' => 'stripe',
+            'free_' => 'limits',
+            'monthly_' => 'stripe',
+            'yearly_' => 'stripe',
+            'trial_' => 'stripe',
+            'site_' => 'general',
+            'contact_' => 'general',
+            'maintenance_' => 'general',
+            'enable_' => 'features',
+            'data_retention_' => 'gdpr',
+            'dpo_' => 'gdpr',
+            'terms_' => 'gdpr',
+            'privacy_' => 'gdpr',
+        ];
+
+        // Cherche un préfixe correspondant
+        foreach ($groupMappings as $prefix => $group) {
+            if (str_starts_with($key, $prefix)) {
+                return $group;
+            }
+        }
+
+        // Si aucun préfixe ne correspond, retourne 'general' par défaut
+        return 'general';
     }
 }
