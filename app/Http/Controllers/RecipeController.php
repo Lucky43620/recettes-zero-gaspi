@@ -132,7 +132,7 @@ class RecipeController extends Controller
 
     public function cook(Recipe $recipe)
     {
-        if (!$recipe->is_public && $recipe->author_id !== Auth::id()) {
+        if (!$recipe->is_public && (!Auth::check() || $recipe->author_id !== Auth::id())) {
             abort(403);
         }
 

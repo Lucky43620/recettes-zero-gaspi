@@ -63,10 +63,13 @@ class CollectionService
 
     public function getCollectionWithRecipes(Collection $collection)
     {
-        return $collection->load(['recipes' => function ($query) {
-            $query->with(['author', 'media'])
-                ->orderBy('collection_recipe.position');
-        }]);
+        return $collection->load([
+            'user',
+            'recipes' => function ($query) {
+                $query->with(['author', 'media'])
+                    ->orderBy('collection_recipe.position');
+            }
+        ]);
     }
 
     public function deleteCollection(Collection $collection): void
