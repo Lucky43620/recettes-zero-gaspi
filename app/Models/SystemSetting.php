@@ -58,11 +58,22 @@ class SystemSetting extends Model
             ['group' => $group]
         );
 
+        // Déterminer et sauvegarder le type de données
         if (is_array($value) || is_object($value)) {
             $setting->value = json_encode($value);
             $setting->type = 'json';
+        } elseif (is_bool($value)) {
+            $setting->value = $value ? '1' : '0';
+            $setting->type = 'boolean';
+        } elseif (is_int($value)) {
+            $setting->value = (string)$value;
+            $setting->type = 'integer';
+        } elseif (is_float($value)) {
+            $setting->value = (string)$value;
+            $setting->type = 'float';
         } else {
             $setting->value = $value;
+            $setting->type = 'string';
         }
 
         $setting->updated_by = $userId;

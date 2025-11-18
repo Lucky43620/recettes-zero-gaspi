@@ -257,8 +257,21 @@ class SubscriptionController extends Controller
         $subscription = $user->subscription('default');
 
         if ($subscription && ! $subscription->canceled()) {
-            $subscription->cancel();
-            return redirect()->route('subscription.manage')->with('success', 'Votre abonnement sera annulé à la fin de la période en cours.');
+            try {
+                $subscription->cancel();
+
+                \Log::info('Subscription cancelled successfully', [
+                    'user_id' => $user->id,
+                    'subscription_id' => $subscription->id,
+                    'ends_at' => $subscription->fresh()->ends_at,
+                    'on_grace_period' => $subscription->fresh()->onGracePeriod(),
+                ]);
+
+                return redirect()->route('subscription.manage')->with('success', 'Votre abonnement sera annulé à la fin de la période en cours.');
+            } catch (\Exception $e) {
+                \Log::error('Error cancelling subscription: ' . $e->getMessage());
+                return redirect()->route('subscription.manage')->with('error', 'Erreur lors de l\'annulation de l\'abonnement : ' . $e->getMessage());
+            }
         }
 
         return redirect()->route('subscription.manage')->with('error', 'Impossible d\'annuler l\'abonnement.');
