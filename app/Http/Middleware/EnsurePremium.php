@@ -15,7 +15,7 @@ class EnsurePremium
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user() || ! $request->user()->isPremium()) {
+        if (! $request->user() || ! $request->user()->canAccessPremiumFeatures()) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Cette fonctionnalité nécessite un abonnement Premium.',
@@ -24,7 +24,7 @@ class EnsurePremium
             }
 
             return redirect()->route('subscription.index')
-                ->with('error', 'Cette fonctionnalité nécessite un abonnement Premium.');
+                ->with('info', 'Cette fonctionnalité nécessite un abonnement Premium.');
         }
 
         return $next($request);

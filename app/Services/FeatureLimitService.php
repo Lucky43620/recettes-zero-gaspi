@@ -23,7 +23,7 @@ class FeatureLimitService
 
     public function canAdd(User $user, string $feature, int $currentCount): bool
     {
-        if ($user->isPremium()) {
+        if ($user->canAccessPremiumFeatures()) {
             return true;
         }
 
@@ -34,7 +34,7 @@ class FeatureLimitService
 
     public function getLimit(User $user, string $feature): int
     {
-        if ($user->isPremium()) {
+        if ($user->canAccessPremiumFeatures()) {
             return -1; // Unlimited for premium
         }
 
@@ -43,7 +43,7 @@ class FeatureLimitService
 
     public function getRemainingCount(User $user, string $feature, int $currentCount): int
     {
-        if ($user->isPremium()) {
+        if ($user->canAccessPremiumFeatures()) {
             return -1;
         }
 

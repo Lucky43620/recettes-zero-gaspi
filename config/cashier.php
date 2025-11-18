@@ -148,4 +148,16 @@ return [
 
     'trial_days' => env('CASHIER_TRIAL_DAYS', 0),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Automatic Tax Calculation
+    |--------------------------------------------------------------------------
+    |
+    | Enable automatic tax calculation using Stripe Tax.
+    | Requires Stripe Tax to be enabled in your Stripe dashboard.
+    |
+    */
+
+    'calculate_taxes' => env('CASHIER_CALCULATE_TAXES', false),
+
 ];
