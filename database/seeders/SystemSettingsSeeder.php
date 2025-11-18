@@ -95,6 +95,20 @@ class SystemSettingsSeeder extends Seeder
                 'description' => 'Jours essai gratuit',
             ],
             [
+                'key' => 'monthly_price',
+                'value' => '4.99',
+                'group' => 'stripe',
+                'type' => 'decimal',
+                'description' => 'Prix mensuel affiché',
+            ],
+            [
+                'key' => 'yearly_price',
+                'value' => '49.90',
+                'group' => 'stripe',
+                'type' => 'decimal',
+                'description' => 'Prix annuel affiché',
+            ],
+            [
                 'key' => 'enable_ai_suggestions',
                 'value' => 'false',
                 'group' => 'features',
