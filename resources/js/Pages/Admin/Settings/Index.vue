@@ -31,11 +31,11 @@
                             title="Paramètres Généraux"
                             description="Configuration générale de l'application"
                         >
-                            <form @submit.prevent="updateGeneral">
+                            <form @submit.prevent="updateGeneral" class="space-y-4">
                                 <SettingsInput
                                     v-model="forms.general.site_name"
                                     label="Nom du site"
-                                    required
+                                    :required="true"
                                 />
                                 <SettingsInput
                                     v-model="forms.general.site_description"
@@ -46,7 +46,7 @@
                                     v-model="forms.general.contact_email"
                                     label="Email de contact"
                                     type="email"
-                                    required
+                                    :required="true"
                                 />
                                 <SettingsToggle
                                     v-model="forms.general.maintenance_mode"
@@ -54,14 +54,14 @@
                                     description="Activer le mode maintenance (site inaccessible)"
                                 />
 
-                                <template #actions>
+                                <div class="pt-4 flex justify-end">
                                     <button
                                         type="submit"
                                         class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
                                     >
                                         Enregistrer
                                     </button>
-                                </template>
+                                </div>
                             </form>
                         </SettingsSection>
                     </div>
@@ -71,7 +71,7 @@
                             title="Configuration Stripe"
                             description="Paramètres de paiement et abonnement"
                         >
-                            <form @submit.prevent="updateStripe">
+                            <form @submit.prevent="updateStripe" class="space-y-4">
                                 <SettingsToggle
                                     v-model="forms.stripe.stripe_enabled"
                                     label="Activer Stripe"
@@ -115,7 +115,7 @@
                                     min="0"
                                 />
 
-                                <template #actions>
+                                <div class="pt-4 flex justify-end gap-3">
                                     <button
                                         type="button"
                                         @click="testStripe"
@@ -129,7 +129,7 @@
                                     >
                                         Enregistrer
                                     </button>
-                                </template>
+                                </div>
                             </form>
                         </SettingsSection>
                     </div>
@@ -139,7 +139,7 @@
                             title="Fonctionnalités"
                             description="Activer ou désactiver des fonctionnalités"
                         >
-                            <form @submit.prevent="updateFeatures">
+                            <form @submit.prevent="updateFeatures" class="space-y-4">
                                 <SettingsToggle
                                     v-model="forms.features.enable_ai_suggestions"
                                     label="Suggestions IA"
@@ -171,14 +171,14 @@
                                     description="Système de commentaires"
                                 />
 
-                                <template #actions>
+                                <div class="pt-4 flex justify-end">
                                     <button
                                         type="submit"
                                         class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
                                     >
                                         Enregistrer
                                     </button>
-                                </template>
+                                </div>
                             </form>
                         </SettingsSection>
                     </div>
@@ -188,7 +188,7 @@
                             title="Limites Utilisateurs"
                             description="Limites pour les comptes gratuits"
                         >
-                            <form @submit.prevent="updateLimits">
+                            <form @submit.prevent="updateLimits" class="space-y-4">
                                 <SettingsInput
                                     v-model.number="forms.limits.free_pantry_limit"
                                     label="Garde-manger (gratuit)"
@@ -216,14 +216,14 @@
                                     min="0"
                                 />
 
-                                <template #actions>
+                                <div class="pt-4 flex justify-end">
                                     <button
                                         type="submit"
                                         class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
                                     >
                                         Enregistrer
                                     </button>
-                                </template>
+                                </div>
                             </form>
                         </SettingsSection>
                     </div>
@@ -233,7 +233,7 @@
                             title="RGPD & Confidentialité"
                             description="Paramètres de conformité RGPD"
                         >
-                            <form @submit.prevent="updateGdpr">
+                            <form @submit.prevent="updateGdpr" class="space-y-4">
                                 <SettingsInput
                                     v-model.number="forms.gdpr.data_retention_days"
                                     label="Durée rétention données"
@@ -245,27 +245,27 @@
                                     v-model="forms.gdpr.dpo_email"
                                     label="Email DPO"
                                     type="email"
-                                    required
+                                    :required="true"
                                 />
                                 <SettingsInput
                                     v-model="forms.gdpr.terms_version"
                                     label="Version CGU"
-                                    required
+                                    :required="true"
                                 />
                                 <SettingsInput
                                     v-model="forms.gdpr.privacy_version"
                                     label="Version Politique Confidentialité"
-                                    required
+                                    :required="true"
                                 />
 
-                                <template #actions>
+                                <div class="pt-4 flex justify-end">
                                     <button
                                         type="submit"
                                         class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
                                     >
                                         Enregistrer
                                     </button>
-                                </template>
+                                </div>
                             </form>
                         </SettingsSection>
                     </div>
@@ -282,24 +282,28 @@
 
                                 <div class="grid grid-cols-2 gap-4">
                                     <button
+                                        type="button"
                                         @click="clearCache('config')"
                                         class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                                     >
                                         Vider cache config
                                     </button>
                                     <button
+                                        type="button"
                                         @click="clearCache('route')"
                                         class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                                     >
                                         Vider cache routes
                                     </button>
                                     <button
+                                        type="button"
                                         @click="clearCache('view')"
                                         class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                                     >
                                         Vider cache vues
                                     </button>
                                     <button
+                                        type="button"
                                         @click="clearCache('cache')"
                                         class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                                     >
@@ -308,6 +312,7 @@
                                 </div>
 
                                 <button
+                                    type="button"
                                     @click="clearCache('all')"
                                     class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
                                 >
