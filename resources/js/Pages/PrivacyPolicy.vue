@@ -2,12 +2,7 @@
   <PublicLayout :title="t('auth.privacy_policy')">
     <div class="py-12 bg-gray-50 min-h-screen">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link :href="route('home')" class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Retour
-        </Link>
+        <BackButton :href="route('home')" class="mb-6" />
 
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 sm:p-8">
           <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
@@ -176,7 +171,7 @@
 
 <script setup>
 import PublicLayout from '@/Layouts/PublicLayout.vue'
-import { Link } from '@inertiajs/vue3'
+import BackButton from '@/Components/Common/BackButton.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
