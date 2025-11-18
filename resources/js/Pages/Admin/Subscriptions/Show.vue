@@ -104,7 +104,7 @@
                         <div class="space-y-3">
                             <button
                                 v-if="subscription.is_premium && !hasEndDate"
-                                @click="cancelSubscription"
+                                @click="showCancelModal = true"
                                 class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
                             >
                                 Annuler l'abonnement
@@ -145,19 +145,49 @@
                 </div>
             </div>
         </div>
+
+        <!-- Cancel Confirmation Modal -->
+        <ConfirmationModal :show="showCancelModal" @close="showCancelModal = false">
+            <template #title>
+                Confirmer l'annulation
+            </template>
+
+            <template #content>
+                Êtes-vous sûr de vouloir annuler l'abonnement de {{ user.name }} ? L'abonnement restera actif jusqu'à la fin de la période de facturation en cours.
+            </template>
+
+            <template #footer>
+                <button
+                    @click="showCancelModal = false"
+                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                >
+                    Annuler
+                </button>
+
+                <button
+                    @click="cancelSubscription"
+                    class="ms-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                >
+                    Confirmer l'annulation
+                </button>
+            </template>
+        </ConfirmationModal>
     </AdminLayout>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import ConfirmationModal from '@/Components/ConfirmationModal.vue'
 
 const props = defineProps({
     user: Object,
     subscription: Object,
     invoices: Array
 })
+
+const showCancelModal = ref(false)
 
 const hasEndDate = computed(() => {
     return props.subscription.subscriptions.some(sub => sub.ends_at)
@@ -176,17 +206,18 @@ const formatDate = (date) => {
 }
 
 const cancelSubscription = () => {
-    if (confirm('Êtes-vous sûr de vouloir annuler cet abonnement ?')) {
-        router.post(`/admin/subscriptions/${props.user.id}/cancel`, {}, {
-            onSuccess: () => {
-                router.reload()
-            }
-        })
-    }
+    router.post(`/admin/subscriptions/${props.user.id}/cancel`, {}, {
+        preserveState: false,
+        onSuccess: () => {
+            showCancelModal.value = false
+            router.reload()
+        }
+    })
 }
 
 const resumeSubscription = () => {
     router.post(`/admin/subscriptions/${props.user.id}/resume`, {}, {
+        preserveState: false,
         onSuccess: () => {
             router.reload()
         }

@@ -254,27 +254,42 @@ class SubscriptionController extends Controller
     public function cancel(Request $request)
     {
         $user = auth()->user();
-        $subscription = $user->subscription('default');
 
-        if ($subscription && ! $subscription->canceled()) {
+        // Récupérer l'abonnement via le modèle Subscription directement
+        $subscription = \Laravel\Cashier\Subscription::where('type', 'default')
+            ->where('user_id', $user->id)
+            ->whereNull('ends_at')
+            ->first();
+
+        if ($subscription) {
             try {
+                // Annuler via l'API Stripe directement
+                $stripe = new \Stripe\StripeClient($this->settings->get('stripe_secret'));
+                $stripe->subscriptions->update($subscription->stripe_id, [
+                    'cancel_at_period_end' => true
+                ]);
+
+                // Mettre à jour l'abonnement local
                 $subscription->cancel();
 
                 \Log::info('Subscription cancelled successfully', [
                     'user_id' => $user->id,
                     'subscription_id' => $subscription->id,
+                    'stripe_id' => $subscription->stripe_id,
                     'ends_at' => $subscription->fresh()->ends_at,
                     'on_grace_period' => $subscription->fresh()->onGracePeriod(),
                 ]);
 
                 return redirect()->route('subscription.manage')->with('success', 'Votre abonnement sera annulé à la fin de la période en cours.');
             } catch (\Exception $e) {
-                \Log::error('Error cancelling subscription: ' . $e->getMessage());
+                \Log::error('Error cancelling subscription: ' . $e->getMessage(), [
+                    'trace' => $e->getTraceAsString(),
+                ]);
                 return redirect()->route('subscription.manage')->with('error', 'Erreur lors de l\'annulation de l\'abonnement : ' . $e->getMessage());
             }
         }
 
-        return redirect()->route('subscription.manage')->with('error', 'Impossible d\'annuler l\'abonnement.');
+        return redirect()->route('subscription.manage')->with('error', 'Aucun abonnement actif trouvé.');
     }
 
     /**

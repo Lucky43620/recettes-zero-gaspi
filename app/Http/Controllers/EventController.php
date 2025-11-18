@@ -7,6 +7,7 @@ use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use App\Services\EventService;
+use App\Services\SettingsService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -16,11 +17,16 @@ class EventController extends Controller
     use AuthorizesRequests;
 
     public function __construct(
-        private EventService $eventService
+        private EventService $eventService,
+        private SettingsService $settings
     ) {}
 
     public function index()
     {
+        if (!$this->settings->get('enable_events', true)) {
+            return redirect()->route('dashboard')->with('error', 'Les événements sont actuellement désactivés par l\'administrateur.');
+        }
+
         $activeEvents = Event::active()->latest()->get();
         $upcomingEvents = Event::upcoming()->latest()->get();
         $endedEvents = Event::ended()->latest()->limit(5)->get();
@@ -50,6 +56,10 @@ class EventController extends Controller
 
     public function store(StoreEventRequest $request)
     {
+        if (!$this->settings->get('enable_events', true)) {
+            return back()->with('error', 'Les événements sont actuellement désactivés par l\'administrateur.');
+        }
+
         $this->authorize('create', Event::class);
 
         $event = Event::create($request->validated());
@@ -79,6 +89,10 @@ class EventController extends Controller
 
     public function join(JoinEventRequest $request, Event $event)
     {
+        if (!$this->settings->get('enable_events', true)) {
+            return back()->with('error', 'Les événements sont actuellement désactivés par l\'administrateur.');
+        }
+
         $this->authorize('join', $event);
 
         $event->participants()->syncWithoutDetaching([

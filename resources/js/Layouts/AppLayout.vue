@@ -9,6 +9,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import LanguageSwitcher from '@/Components/Common/LanguageSwitcher.vue';
+import FlashMessage from '@/Components/FlashMessage.vue';
 
 defineProps({
     title: String,
@@ -248,6 +249,9 @@ const logout = () => {
             <!-- Page Content -->
             <main>
                 <slot />
+
+                <!-- Flash Messages -->
+                <FlashMessage />
             </main>
 
             <!-- Footer -->
