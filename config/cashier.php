@@ -124,4 +124,28 @@ return [
 
     'logger' => env('CASHIER_LOGGER'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Subscription Plans
+    |--------------------------------------------------------------------------
+    |
+    | Here you can define your subscription plans pricing IDs from Stripe.
+    | These should match the price IDs you created in your Stripe dashboard.
+    |
+    */
+
+    'price_monthly' => env('STRIPE_PRICE_MONTHLY'),
+    'price_yearly' => env('STRIPE_PRICE_YEARLY'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Trial Period
+    |--------------------------------------------------------------------------
+    |
+    | Define the default trial period in days for new subscriptions.
+    |
+    */
+
+    'trial_days' => env('CASHIER_TRIAL_DAYS', 0),
+
 ];

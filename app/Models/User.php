@@ -91,6 +91,11 @@ class User extends Authenticatable
         return ! $this->isPremium();
     }
 
+    public function isOnTrial(): bool
+    {
+        return $this->onTrial('default');
+    }
+
     public function planName(): string
     {
         if ($this->isFree()) {
@@ -103,15 +108,112 @@ class User extends Authenticatable
             return 'free';
         }
 
-        if ($subscription->stripe_price === env('STRIPE_PRICE_MONTHLY')) {
+        if ($subscription->stripe_price === config('cashier.price_monthly')) {
             return 'monthly';
         }
 
-        if ($subscription->stripe_price === env('STRIPE_PRICE_YEARLY')) {
+        if ($subscription->stripe_price === config('cashier.price_yearly')) {
             return 'yearly';
         }
 
         return 'premium';
+    }
+
+    public function planDisplayName(): string
+    {
+        return match ($this->planName()) {
+            'monthly' => 'Premium Mensuel',
+            'yearly' => 'Premium Annuel',
+            'free' => 'Gratuit',
+            default => 'Premium',
+        };
+    }
+
+    public function planPrice(): ?string
+    {
+        return match ($this->planName()) {
+            'monthly' => '4,99€/mois',
+            'yearly' => '49,90€/an',
+            'free' => 'Gratuit',
+            default => null,
+        };
+    }
+
+    public function subscriptionStatus(): string
+    {
+        if ($this->isFree()) {
+            return 'inactive';
+        }
+
+        $subscription = $this->subscription('default');
+
+        if (! $subscription) {
+            return 'inactive';
+        }
+
+        if ($subscription->onGracePeriod()) {
+            return 'canceled';
+        }
+
+        if ($subscription->onTrial()) {
+            return 'trialing';
+        }
+
+        if ($subscription->pastDue()) {
+            return 'past_due';
+        }
+
+        if ($subscription->incomplete()) {
+            return 'incomplete';
+        }
+
+        return 'active';
+    }
+
+    public function subscriptionEndsAt(): ?string
+    {
+        $subscription = $this->subscription('default');
+
+        if (! $subscription || ! $subscription->ends_at) {
+            return null;
+        }
+
+        return $subscription->ends_at->format('d/m/Y');
+    }
+
+    public function canAccessPremiumFeatures(): bool
+    {
+        return $this->subscribed('default') || $this->onTrial('default');
+    }
+
+    public function stripeName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function stripeEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function exportPersonalData(): array
+    {
+        return [
+            'user' => [
+                'name' => $this->name,
+                'email' => $this->email,
+                'created_at' => $this->created_at->toIso8601String(),
+            ],
+            'subscription' => [
+                'is_premium' => $this->isPremium(),
+                'plan' => $this->planName(),
+                'status' => $this->subscriptionStatus(),
+                'ends_at' => $this->subscriptionEndsAt(),
+            ],
+            'recipes' => $this->recipes()->count(),
+            'favorites' => $this->favorites()->count(),
+            'comments' => $this->comments()->count(),
+        ];
     }
 
     protected $fillable = [

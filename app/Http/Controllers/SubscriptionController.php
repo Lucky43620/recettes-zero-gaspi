@@ -2,361 +2,470 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SettingsService;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
+use Laravel\Cashier\Cashier;
+use Laravel\Cashier\Exceptions\IncompletePayment;
 
 class SubscriptionController extends Controller
 {
-    protected $settings;
-
-    public function __construct(SettingsService $settings)
-    {
-        $this->settings = $settings;
-    }
-
-    /**
-     * Show the subscription plans page.
-     */
     public function index(): Response
     {
         $user = auth()->user();
-        $isPremium = $user ? $user->isPremium() : false;
-        $subscription = $isPremium ? $user->subscription('default') : null;
-
-        $monthlyPrice = (float) $this->settings->get('monthly_price', 4.99);
-        $yearlyPrice = (float) $this->settings->get('yearly_price', 49.90);
 
         return Inertia::render('Subscription/Index', [
-            'plans' => [
-                'free' => [
-                    'name' => 'free',
-                    'price' => 0,
-                    'interval' => null,
-                    'features' => [
-                        'access_recipes',
-                        'create_recipes',
-                        'basic_pantry',
-                        'basic_meal_plans',
-                        'with_ads',
-                    ],
-                ],
-                'monthly' => [
-                    'name' => 'monthly',
-                    'price' => $monthlyPrice,
-                    'price_id' => $this->settings->get('stripe_price_monthly'),
-                    'interval' => 'month',
-                    'features' => [
-                        'all_free_features',
-                        'ai_menu_generator',
-                        'advanced_pantry',
-                        'expiry_alerts',
-                        'recipe_suggestions',
-                        'advanced_statistics',
-                        'exclusive_content',
-                        'no_ads',
-                    ],
-                ],
-                'yearly' => [
-                    'name' => 'yearly',
-                    'price' => $yearlyPrice,
-                    'price_id' => $this->settings->get('stripe_price_yearly'),
-                    'interval' => 'year',
-                    'savings' => '2 mois offerts',
-                    'features' => [
-                        'all_monthly_features',
-                        'best_value',
-                    ],
-                ],
-            ],
+            'plans' => $this->getPlans(),
             'currentPlan' => $user ? $user->planName() : 'free',
-            'isSubscribed' => $isPremium,
-            'subscription' => $subscription,
-            'stripeKey' => $this->settings->get('stripe_key'),
+            'subscriptionStatus' => $user ? $user->subscriptionStatus() : 'inactive',
+            'isSubscribed' => $user ? $user->isPremium() : false,
+            'onTrial' => $user ? $user->isOnTrial() : false,
         ]);
     }
 
-    /**
-     * Create a checkout session for a new subscription.
-     */
     public function checkout(Request $request)
+    {
+        $request->validate([
+            'plan' => 'required|in:monthly,yearly',
+            'promotion_code' => 'nullable|string',
+        ]);
+
+        $user = $request->user();
+
+        if ($user->subscribed('default')) {
+            return redirect()->route('subscription.manage')
+                ->with('error', 'Vous avez déjà un abonnement actif.');
+        }
+
+        $priceId = $request->plan === 'monthly'
+            ? config('cashier.price_monthly')
+            : config('cashier.price_yearly');
+
+        if (empty($priceId)) {
+            Log::warning('Stripe price ID not configured', ['plan' => $request->plan]);
+
+            return redirect()->route('subscription.index')
+                ->with('error', 'Configuration d\'abonnement non disponible.');
+        }
+
+        try {
+            $checkoutBuilder = $user->newSubscription('default', $priceId)
+                ->allowPromotionCodes();
+
+            if ($request->filled('promotion_code')) {
+                $checkoutBuilder->withPromotionCode($request->promotion_code);
+            }
+
+            $checkout = $checkoutBuilder->checkout([
+                'success_url' => route('subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('subscription.index'),
+            ]);
+
+            Log::info('Subscription checkout created', [
+                'user_id' => $user->id,
+                'plan' => $request->plan,
+                'price_id' => $priceId,
+            ]);
+
+            return Inertia::location($checkout->url());
+        } catch (IncompletePayment $e) {
+            Log::error('Incomplete payment on checkout', [
+                'user_id' => $user->id,
+                'plan' => $request->plan,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('cashier.payment', [
+                $e->payment->id,
+                'redirect' => route('subscription.index'),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Subscription checkout error', [
+                'user_id' => $user->id,
+                'plan' => $request->plan,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->route('subscription.index')
+                ->with('error', 'Une erreur est survenue lors de la création de l\'abonnement.');
+        }
+    }
+
+    public function success(Request $request)
+    {
+        $sessionId = $request->get('session_id');
+
+        if (! $sessionId) {
+            return redirect()->route('subscription.index');
+        }
+
+        try {
+            $session = Cashier::stripe()->checkout->sessions->retrieve($sessionId);
+
+            if ($session->payment_status !== 'paid') {
+                return redirect()->route('subscription.index')
+                    ->with('error', 'Le paiement n\'a pas été finalisé.');
+            }
+
+            $user = $request->user();
+
+            Log::info('Subscription payment successful', [
+                'user_id' => $user->id,
+                'session_id' => $sessionId,
+                'plan' => $user->planName(),
+            ]);
+
+            return Inertia::render('Subscription/Success', [
+                'plan' => $user->planDisplayName(),
+                'price' => $user->planPrice(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Subscription success error', [
+                'session_id' => $sessionId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('subscription.index')
+                ->with('error', 'Une erreur est survenue.');
+        }
+    }
+
+    public function manage()
+    {
+        $user = auth()->user();
+
+        if (! $user->subscribed('default')) {
+            return redirect()->route('subscription.index')
+                ->with('info', 'Vous n\'avez pas d\'abonnement actif.');
+        }
+
+        $subscription = $user->subscription('default');
+
+        try {
+            $stripeSubscription = $subscription->asStripeSubscription();
+
+            return Inertia::render('Subscription/Manage', [
+                'subscription' => [
+                    'id' => $subscription->id,
+                    'plan' => $user->planDisplayName(),
+                    'plan_name' => $user->planName(),
+                    'price' => $user->planPrice(),
+                    'status' => $user->subscriptionStatus(),
+                    'current_period_end' => $stripeSubscription->current_period_end,
+                    'current_period_end_formatted' => date('d/m/Y', $stripeSubscription->current_period_end),
+                    'cancel_at_period_end' => $subscription->onGracePeriod(),
+                    'ends_at' => $subscription->ends_at?->format('d/m/Y'),
+                    'trial_ends_at' => $subscription->trial_ends_at?->format('d/m/Y'),
+                    'on_trial' => $subscription->onTrial(),
+                    'recurring' => $subscription->recurring(),
+                    'past_due' => $subscription->pastDue(),
+                    'incomplete' => $subscription->incomplete(),
+                ],
+                'invoices' => $this->getInvoices($user),
+                'payment_method' => $this->getPaymentMethod($user),
+                'canChangePlan' => ! $subscription->onGracePeriod() && $subscription->recurring(),
+                'canCancel' => ! $subscription->onGracePeriod() && $subscription->active(),
+                'canResume' => $subscription->onGracePeriod(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error loading subscription management', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('subscription.index')
+                ->with('error', 'Impossible de charger les informations de l\'abonnement.');
+        }
+    }
+
+    public function swap(Request $request)
     {
         $request->validate([
             'plan' => 'required|in:monthly,yearly',
         ]);
 
-        $user = auth()->user();
+        $user = $request->user();
+        $subscription = $user->subscription('default');
+
+        if (! $subscription || $subscription->onGracePeriod()) {
+            return back()->with('error', 'Impossible de changer de plan.');
+        }
 
         $priceId = $request->plan === 'monthly'
-            ? $this->settings->get('stripe_price_monthly')
-            : $this->settings->get('stripe_price_yearly');
+            ? config('cashier.price_monthly')
+            : config('cashier.price_yearly');
 
-        \Log::info('Subscription checkout attempt', [
-            'plan' => $request->plan,
-            'price_id' => $priceId,
-            'user_id' => $user->id,
-        ]);
-
-        if (empty($priceId)) {
-            \Log::warning('Stripe price ID not configured', ['plan' => $request->plan]);
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'plan' => 'Les abonnements ne sont pas encore configurés. Veuillez contacter le support.'
-            ]);
+        if ($subscription->stripe_price === $priceId) {
+            return back()->with('info', 'Vous êtes déjà sur ce plan.');
         }
 
         try {
-            if (!$user->stripe_id) {
-                $user->createAsStripeCustomer();
-            }
+            $subscription->swap($priceId);
 
-            $stripe = new \Stripe\StripeClient($this->settings->get('stripe_secret'));
-
-            $session = $stripe->checkout->sessions->create([
-                'customer' => $user->stripe_id,
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price' => $priceId,
-                    'quantity' => 1,
-                ]],
-                'mode' => 'subscription',
-                'success_url' => route('subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('subscription.index'),
+            Log::info('Subscription plan changed', [
+                'user_id' => $user->id,
+                'old_plan' => $user->planName(),
+                'new_plan' => $request->plan,
+                'price_id' => $priceId,
             ]);
 
-            return Inertia::location($session->url);
+            return back()->with('success', 'Votre abonnement a été modifié avec succès.');
+        } catch (IncompletePayment $e) {
+            Log::error('Incomplete payment on swap', [
+                'user_id' => $user->id,
+                'plan' => $request->plan,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('cashier.payment', [
+                $e->payment->id,
+                'redirect' => route('subscription.manage'),
+            ]);
         } catch (\Exception $e) {
-            \Log::error('Subscription checkout error: ' . $e->getMessage(), [
-                'exception' => get_class($e),
-                'trace' => $e->getTraceAsString(),
+            Log::error('Subscription swap error', [
+                'user_id' => $user->id,
+                'plan' => $request->plan,
+                'error' => $e->getMessage(),
             ]);
 
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'plan' => 'Erreur lors de la création de la session de paiement : ' . $e->getMessage()
-            ]);
+            return back()->with('error', 'Une erreur est survenue lors du changement d\'abonnement.');
         }
     }
 
-    /**
-     * Handle successful subscription.
-     */
-    public function success(Request $request)
+    public function cancel(Request $request)
     {
-        $user = auth()->user();
-        $sessionId = $request->query('session_id');
-
-        // Si un session_id est fourni, synchroniser l'abonnement depuis Stripe
-        if ($sessionId && !$user->subscribed('default')) {
-            try {
-                $stripe = new \Stripe\StripeClient($this->settings->get('stripe_secret'));
-                $session = $stripe->checkout->sessions->retrieve($sessionId);
-
-                if ($session->subscription) {
-                    // Récupérer l'abonnement Stripe
-                    $stripeSubscription = $stripe->subscriptions->retrieve($session->subscription);
-
-                    // Créer l'abonnement dans la base de données si pas déjà existant
-                    if (!$user->subscribed('default')) {
-                        \DB::table('subscriptions')->insert([
-                            'user_id' => $user->id,
-                            'type' => 'default',
-                            'stripe_id' => $stripeSubscription->id,
-                            'stripe_status' => $stripeSubscription->status,
-                            'stripe_price' => $stripeSubscription->items->data[0]->price->id,
-                            'quantity' => 1,
-                            'trial_ends_at' => $stripeSubscription->trial_end ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->trial_end) : null,
-                            'ends_at' => null,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-
-                        \Log::info('Subscription created from checkout success', [
-                            'user_id' => $user->id,
-                            'stripe_subscription_id' => $stripeSubscription->id,
-                        ]);
-                    }
-                }
-            } catch (\Exception $e) {
-                \Log::error('Error syncing subscription in success callback: ' . $e->getMessage());
-            }
-        }
-
-        return Inertia::render('Subscription/Success');
-    }
-
-    /**
-     * Show the subscription management page.
-     */
-    public function manage()
-    {
-        $user = auth()->user();
-
-        if (! $user->isPremium()) {
-            return redirect()->route('subscription.index');
-        }
-
+        $user = $request->user();
         $subscription = $user->subscription('default');
 
-        $invoices = [];
-        try {
-            if ($user->hasStripeId()) {
-                $stripeInvoices = $user->invoices();
-                if ($stripeInvoices) {
-                    foreach ($stripeInvoices as $invoice) {
-                        $invoices[] = [
-                            'id' => $invoice->id,
-                            'date' => $invoice->date()->toDateTimeString(),
-                            'total' => $invoice->total() / 100,
-                            'status' => $invoice->status,
-                            'download_url' => $invoice->hosted_invoice_url,
-                            'invoice_pdf' => $invoice->invoice_pdf,
-                        ];
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error fetching invoices: ' . $e->getMessage());
+        if (! $subscription || $subscription->onGracePeriod()) {
+            return back()->with('error', 'Impossible d\'annuler l\'abonnement.');
         }
 
-        return Inertia::render('Subscription/Manage', [
-            'subscription' => [
-                'plan' => $user->planName(),
-                'price_id' => $subscription->stripe_price,
-                'status' => $subscription->stripe_status,
+        try {
+            $subscription->cancel();
+
+            Log::info('Subscription canceled', [
+                'user_id' => $user->id,
+                'subscription_id' => $subscription->id,
                 'ends_at' => $subscription->ends_at,
-                'trial_ends_at' => $subscription->trial_ends_at,
-                'on_grace_period' => $subscription->onGracePeriod(),
-                'canceled' => $subscription->canceled(),
-            ],
-            'invoices' => $invoices,
-        ]);
+            ]);
+
+            return back()->with('success', 'Votre abonnement a été annulé. Vous pourrez continuer à utiliser les fonctionnalités premium jusqu\'au ' . $subscription->ends_at->format('d/m/Y') . '.');
+        } catch (\Exception $e) {
+            Log::error('Subscription cancel error', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Une erreur est survenue lors de l\'annulation.');
+        }
     }
 
-    /**
-     * Resume a cancelled subscription.
-     */
+    public function cancelNow(Request $request)
+    {
+        $user = $request->user();
+        $subscription = $user->subscription('default');
+
+        if (! $subscription) {
+            return back()->with('error', 'Aucun abonnement actif trouvé.');
+        }
+
+        try {
+            $subscription->cancelNow();
+
+            Log::info('Subscription canceled immediately', [
+                'user_id' => $user->id,
+                'subscription_id' => $subscription->id,
+            ]);
+
+            return redirect()->route('subscription.index')
+                ->with('success', 'Votre abonnement a été annulé immédiatement.');
+        } catch (\Exception $e) {
+            Log::error('Subscription cancel now error', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Une erreur est survenue lors de l\'annulation immédiate.');
+        }
+    }
+
     public function resume(Request $request)
     {
-        $user = auth()->user();
-
-        // Vérifier que l'utilisateur a un abonnement
-        if (!$user->subscription('default')) {
-            return redirect()->route('subscription.manage')
-                ->with('error', 'Aucun abonnement trouvé.');
-        }
-
+        $user = $request->user();
         $subscription = $user->subscription('default');
 
-        // Vérifier que l'abonnement est bien en période de grâce
-        if (!$subscription->onGracePeriod()) {
-            return redirect()->route('subscription.manage')
-                ->with('error', 'Cet abonnement ne peut pas être réactivé.');
+        if (! $subscription || ! $subscription->onGracePeriod()) {
+            return back()->with('error', 'Impossible de réactiver l\'abonnement.');
         }
 
         try {
             $subscription->resume();
 
-            \Log::info('Subscription resumed successfully', [
+            Log::info('Subscription resumed', [
                 'user_id' => $user->id,
                 'subscription_id' => $subscription->id,
             ]);
 
-            return redirect()->route('subscription.manage')
-                ->with('success', 'Votre abonnement a été réactivé.');
+            return back()->with('success', 'Votre abonnement a été réactivé avec succès.');
         } catch (\Exception $e) {
-            \Log::error('Error resuming subscription: ' . $e->getMessage(), [
+            Log::error('Subscription resume error', [
                 'user_id' => $user->id,
+                'error' => $e->getMessage(),
             ]);
 
-            return redirect()->route('subscription.manage')
-                ->with('error', 'Erreur lors de la réactivation de l\'abonnement.');
+            return back()->with('error', 'Une erreur est survenue lors de la réactivation.');
         }
     }
 
-    /**
-     * Cancel the subscription.
-     * Uses Laravel Cashier's cancel() method which handles Stripe API automatically.
-     */
-    public function cancel(Request $request)
+    public function billingPortal(Request $request)
     {
-        $user = auth()->user();
-
-        // Vérifier que l'utilisateur a un abonnement
-        if (!$user->subscribed('default')) {
-            return redirect()->route('subscription.manage')
-                ->with('error', 'Aucun abonnement actif trouvé.');
-        }
-
-        $subscription = $user->subscription('default');
-
-        // Vérifier que l'abonnement n'est pas déjà annulé
-        if ($subscription->canceled()) {
-            return redirect()->route('subscription.manage')
-                ->with('error', 'Cet abonnement est déjà annulé.');
-        }
-
         try {
-            // Laravel Cashier gère automatiquement l'appel à l'API Stripe
-            $subscription->cancel();
-
-            \Log::info('Subscription cancelled successfully', [
-                'user_id' => $user->id,
-                'subscription_id' => $subscription->id,
-                'stripe_id' => $subscription->stripe_id,
-                'ends_at' => $subscription->ends_at,
-                'on_grace_period' => $subscription->onGracePeriod(),
-            ]);
-
-            return redirect()->route('subscription.manage')
-                ->with('success', 'Votre abonnement sera annulé à la fin de la période en cours.');
+            return $request->user()->redirectToBillingPortal(route('subscription.manage'));
         } catch (\Exception $e) {
-            \Log::error('Error cancelling subscription: ' . $e->getMessage(), [
-                'user_id' => $user->id,
-                'trace' => $e->getTraceAsString(),
+            Log::error('Billing portal error', [
+                'user_id' => $request->user()->id,
+                'error' => $e->getMessage(),
             ]);
 
-            return redirect()->route('subscription.manage')
-                ->with('error', 'Erreur lors de l\'annulation de l\'abonnement.');
+            return back()->with('error', 'Une erreur est survenue.');
         }
     }
 
-    /**
-     * Update the payment method.
-     */
-    public function updatePaymentMethod(Request $request)
+    public function downloadInvoice(Request $request, string $invoiceId)
     {
-        $user = auth()->user();
-
         try {
-            return $user->updateDefaultPaymentMethod($request->payment_method);
+            return $request->user()->downloadInvoice($invoiceId, [
+                'vendor' => config('app.name'),
+                'product' => 'Abonnement Premium',
+                'street' => '',
+                'location' => '',
+                'phone' => '',
+                'email' => config('mail.from.address'),
+                'url' => config('app.url'),
+            ]);
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la mise à jour du moyen de paiement.');
+            Log::error('Invoice download error', [
+                'user_id' => $request->user()->id,
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Impossible de télécharger la facture.');
         }
     }
 
-    /**
-     * Show the payment method update page.
-     */
-    public function paymentMethod()
+    protected function getPlans(): array
     {
-        $user = auth()->user();
+        return [
+            [
+                'id' => 'free',
+                'name' => 'Gratuit',
+                'price' => 'Gratuit',
+                'price_value' => 0,
+                'interval' => null,
+                'description' => 'Accès limité aux fonctionnalités de base',
+                'features' => [
+                    '10 recettes privées maximum',
+                    '5 plannings de repas',
+                    '3 listes de courses',
+                    'Garde-manger basique',
+                    'Publicités',
+                ],
+            ],
+            [
+                'id' => 'monthly',
+                'name' => 'Premium Mensuel',
+                'price' => '4,99€',
+                'price_value' => 4.99,
+                'price_id' => config('cashier.price_monthly'),
+                'interval' => 'month',
+                'billing' => 'par mois',
+                'description' => 'Accès complet à toutes les fonctionnalités',
+                'features' => [
+                    'Recettes privées illimitées',
+                    'Plannings de repas illimités',
+                    'Listes de courses illimitées',
+                    'Garde-manger avancé avec alertes',
+                    'Sans publicité',
+                    'Génération automatique de menus',
+                    'Statistiques nutritionnelles',
+                ],
+                'popular' => false,
+            ],
+            [
+                'id' => 'yearly',
+                'name' => 'Premium Annuel',
+                'price' => '49,90€',
+                'price_value' => 49.90,
+                'price_id' => config('cashier.price_yearly'),
+                'interval' => 'year',
+                'billing' => 'par an',
+                'description' => 'Économisez 2 mois avec l\'abonnement annuel',
+                'features' => [
+                    'Recettes privées illimitées',
+                    'Plannings de repas illimités',
+                    'Listes de courses illimitées',
+                    'Garde-manger avancé avec alertes',
+                    'Sans publicité',
+                    'Génération automatique de menus',
+                    'Statistiques nutritionnelles',
+                    '🎁 2 mois offerts',
+                ],
+                'popular' => true,
+                'savings' => '16%',
+            ],
+        ];
+    }
 
-        if (!$user->isPremium()) {
-            return redirect()->route('subscription.index');
-        }
-
+    protected function getInvoices(User $user): array
+    {
         try {
-            $stripe = new \Stripe\StripeClient($this->settings->get('stripe_secret'));
-
-            $session = $stripe->billingPortal->sessions->create([
-                'customer' => $user->stripe_id,
-                'return_url' => route('subscription.manage'),
+            return $user->invoices()->map(function ($invoice) {
+                return [
+                    'id' => $invoice->id,
+                    'date' => $invoice->date()->format('d/m/Y'),
+                    'total' => $invoice->total(),
+                    'status' => $invoice->status,
+                    'download_url' => route('subscription.invoice', $invoice->id),
+                ];
+            })->toArray();
+        } catch (\Exception $e) {
+            Log::error('Error fetching invoices', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
             ]);
 
-            return Inertia::location($session->url);
+            return [];
+        }
+    }
+
+    protected function getPaymentMethod(User $user): ?array
+    {
+        try {
+            if ($user->hasDefaultPaymentMethod()) {
+                $paymentMethod = $user->defaultPaymentMethod();
+
+                return [
+                    'type' => $paymentMethod->type,
+                    'brand' => $paymentMethod->card->brand ?? null,
+                    'last_four' => $paymentMethod->card->last4 ?? null,
+                    'exp_month' => $paymentMethod->card->exp_month ?? null,
+                    'exp_year' => $paymentMethod->card->exp_year ?? null,
+                ];
+            }
+
+            return null;
         } catch (\Exception $e) {
-            \Log::error('Stripe billing portal error: ' . $e->getMessage());
-            return redirect()->route('subscription.manage')->with('error', 'Erreur lors de la création de la session de paiement.');
+            Log::error('Error fetching payment method', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
         }
     }
 }
