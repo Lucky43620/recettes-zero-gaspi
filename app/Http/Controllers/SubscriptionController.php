@@ -142,6 +142,45 @@ class SubscriptionController extends Controller
      */
     public function success(Request $request)
     {
+        $user = auth()->user();
+        $sessionId = $request->query('session_id');
+
+        // Si un session_id est fourni, synchroniser l'abonnement depuis Stripe
+        if ($sessionId && !$user->subscribed('default')) {
+            try {
+                $stripe = new \Stripe\StripeClient($this->settings->get('stripe_secret'));
+                $session = $stripe->checkout->sessions->retrieve($sessionId);
+
+                if ($session->subscription) {
+                    // Récupérer l'abonnement Stripe
+                    $stripeSubscription = $stripe->subscriptions->retrieve($session->subscription);
+
+                    // Créer l'abonnement dans la base de données si pas déjà existant
+                    if (!$user->subscribed('default')) {
+                        \DB::table('subscriptions')->insert([
+                            'user_id' => $user->id,
+                            'type' => 'default',
+                            'stripe_id' => $stripeSubscription->id,
+                            'stripe_status' => $stripeSubscription->status,
+                            'stripe_price' => $stripeSubscription->items->data[0]->price->id,
+                            'quantity' => 1,
+                            'trial_ends_at' => $stripeSubscription->trial_end ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->trial_end) : null,
+                            'ends_at' => null,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        \Log::info('Subscription created from checkout success', [
+                            'user_id' => $user->id,
+                            'stripe_subscription_id' => $stripeSubscription->id,
+                        ]);
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error syncing subscription in success callback: ' . $e->getMessage());
+            }
+        }
+
         return Inertia::render('Subscription/Success');
     }
 

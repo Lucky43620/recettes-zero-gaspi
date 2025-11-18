@@ -19,7 +19,8 @@ class PantryController extends Controller
     use AuthorizesRequests;
 
     public function __construct(
-        private UnitService $unitService
+        private UnitService $unitService,
+        private FeatureLimitService $limitService
     ) {}
 
     public function index(Request $request)
@@ -67,7 +68,7 @@ class PantryController extends Controller
             'storageLocations' => StorageLocation::values(),
             'units' => $this->unitService->getAllUnits()->values()->all(),
             'isPremium' => $request->user()->isPremium(),
-            'itemLimit' => $request->user()->isPremium() ? null : 10,
+            'itemLimit' => $request->user()->isPremium() ? null : $this->limitService->getLimit($request->user(), 'pantry_items'),
         ]);
     }
 

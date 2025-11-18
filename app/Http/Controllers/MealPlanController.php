@@ -18,6 +18,11 @@ use Inertia\Inertia;
 class MealPlanController extends Controller
 {
     use AuthorizesRequests;
+
+    public function __construct(
+        private FeatureLimitService $limitService
+    ) {}
+
     public function index(Request $request)
     {
         $weekStart = $request->has('week')
@@ -54,7 +59,7 @@ class MealPlanController extends Controller
             'userRecipes' => $userRecipes,
             'favoriteRecipes' => $favoriteRecipes,
             'isPremium' => $isPremium,
-            'recipeLimit' => $isPremium ? null : 3,
+            'recipeLimit' => $isPremium ? null : $this->limitService->getLimit($request->user(), 'meal_plan_recipes'),
         ]);
     }
 
