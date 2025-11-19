@@ -37,7 +37,6 @@ class CollectionController extends Controller
 
         $userRecipes = Auth::user()
             ? Auth::user()->recipes()
-                ->where('is_public', true)
                 ->with('media')
                 ->get()
             : collect();
