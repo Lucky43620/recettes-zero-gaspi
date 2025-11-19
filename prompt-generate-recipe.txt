@@ -1,69 +1,65 @@
-Génère une commande complète pour créer une recette anti-gaspillage.
+Génère une commande complète pour créer une recette culinaire.
 
-CONTRAINTES STRICTES :
-- La recette DOIT être une vraie recette anti-gaspillage (utiliser restes, épluchures, produits abîmés, etc.)
-- Réponds UNIQUEMENT avec la commande complète, sans texte avant ou après
+CONTRAINTES :
+- Réponds UNIQUEMENT avec la commande, sans texte avant ou après
 - Pas d'explications, pas de markdown, pas de commentaires
+- Commande sur UNE SEULE LIGNE, sans retour à la ligne
 
 FORMAT OBLIGATOIRE :
-echo 'JSON' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
+echo 'JSON_COMPACT' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
 
-STRUCTURE JSON REQUISE (compact, sans retours à la ligne) :
-{"title":"Titre","summary":"Description","servings":4,"prep_minutes":10,"cook_minutes":20,"difficulty":"easy","cuisine":"Française","calories":200,"is_public":true,"ingredients":[{"name":"Nom","quantity":100,"unit":"g","position":1}],"steps":[{"text":"Description","position":1}],"image_url":"https://url.jpg"}
+STRUCTURE JSON (tout sur une ligne, sans espaces inutiles) :
+{"title":"...","summary":"...","servings":4,"prep_minutes":10,"cook_minutes":20,"difficulty":"easy","cuisine":"...","calories":200,"ingredients":[...],"steps":[...]}
 
 CHAMPS OBLIGATOIRES :
-- title : Titre court et accrocheur
+- title : Titre de la recette (court et accrocheur)
 - summary : Description détaillée (2-3 phrases)
-- servings : Nombre de portions (entier)
-- difficulty : "easy", "medium" ou "hard"
+- servings : Nombre de portions (entier, ex: 4)
+- difficulty : UNIQUEMENT "easy", "medium" ou "hard"
 - ingredients : Array avec minimum 3 ingrédients
 - steps : Array avec minimum 3 étapes
 
 CHAMPS OPTIONNELS :
-- prep_minutes : Temps de préparation en minutes
-- cook_minutes : Temps de cuisson en minutes
-- cuisine : Type de cuisine (Française, Italienne, etc.)
-- calories : Calories par portion
-- is_public : true/false (défaut: true)
-- image_url : URL image (si absent, image par défaut utilisée)
+- prep_minutes : Temps de préparation en minutes (entier)
+- cook_minutes : Temps de cuisson en minutes (entier)
+- cuisine : Type de cuisine (Française, Italienne, Asiatique, etc.)
+- calories : Calories par portion (entier)
+- image_url : URL image (si omis, image par défaut utilisée automatiquement)
 
-INGRÉDIENTS :
+STRUCTURE INGRÉDIENT (obligatoire) :
 {
   "name": "Nom de l'ingrédient",
-  "quantity": nombre (peut être décimal),
-  "unit": "g|kg|ml|l|piece|slice|tbsp|tsp|clove|branch|leaf|jar|sachet|roll|pinch|grain",
-  "position": numéro ordre (commence à 1)
+  "quantity": nombre_décimal,
+  "unit": "CODE_UNITÉ",
+  "position": numéro_ordre
 }
 
-ÉTAPES :
+UNITÉS DISPONIBLES (utiliser UNIQUEMENT ces codes) :
+- POIDS : "g" (grammes), "kg" (kilogrammes), "mg" (milligrammes)
+- VOLUME : "ml" (millilitres), "l" (litres), "cl" (centilitres), "dl" (décilitres)
+- MESURES : "tsp" (cuillère à café), "tbsp" (cuillère à soupe), "cup" (tasse)
+- UNITÉS : "piece" (pièce), "slice" (tranche), "pinch" (pincée), "bunch" (botte), "can" (boîte), "jar" (pot), "package" (paquet), "branch" (branche), "leaf" (feuille), "clove" (gousse), "sachet" (sachet), "roll" (rouleau), "grain" (grain)
+
+STRUCTURE ÉTAPE (obligatoire) :
 {
-  "text": "Description de l'étape",
-  "position": numéro ordre (commence à 1),
-  "timer_minutes": durée optionnelle
+  "text": "Description claire de l'étape",
+  "position": numéro_ordre,
+  "timer_minutes": durée_optionnelle
 }
 
-DIFFICULTÉS :
-- easy : recettes simples, techniques basiques
-- medium : techniques moyennes
-- hard : techniques avancées
+NIVEAUX DE DIFFICULTÉ :
+- "easy" : recettes simples, techniques basiques, peu d'étapes
+- "medium" : techniques moyennes, plusieurs étapes
+- "hard" : techniques avancées, préparation complexe
 
-THÈMES ANTI-GASPI :
-- Pain rassis (pain perdu, chapelure, croûtons)
-- Fruits abîmés (compotes, smoothies, confitures)
-- Épluchures (chips, bouillons, pestos)
-- Fanes de légumes (soupes, tartes, gratins)
-- Restes (croquettes, hachis, gratins)
-- Yaourts périmés (gâteaux, sauces)
-- Fromages secs (gratins, sauces)
-- Légumes flétris (soupes, purées)
+RÈGLES IMPORTANTES :
+1. JSON sur UNE SEULE LIGNE (aucun retour à la ligne dans le JSON)
+2. Pas de retour à la ligne dans la commande echo
+3. Utiliser guillemets doubles " pour clés et valeurs JSON
+4. Échapper les apostrophes : ' devient '\''
+5. Positions des ingrédients/étapes commencent à 1 et s'incrémentent
+6. La recette sera publique automatiquement
+7. Ne PAS ajouter le champ "is_public" (toujours true par défaut)
 
-RÈGLES JSON :
-- JSON sur UNE SEULE LIGNE (pas de retours à la ligne)
-- Pas d'espaces inutiles
-- Utiliser guillemets doubles pour les clés et valeurs
-- Échapper les apostrophes dans le texte : remplacer ' par \'
-- Échapper les guillemets doubles dans le texte : \"
-- Ne PAS mettre de retour à la ligne dans la commande
-
-EXEMPLE COMPLET :
-echo '{"title":"Chips de pelures","summary":"Transformez vos épluchures en chips croustillantes.","servings":4,"prep_minutes":10,"cook_minutes":20,"difficulty":"easy","cuisine":"Française","calories":180,"is_public":true,"ingredients":[{"name":"Pelures de pommes de terre","quantity":300,"unit":"g","position":1},{"name":"Huile d'\''olive","quantity":2,"unit":"tbsp","position":2},{"name":"Sel","quantity":1,"unit":"pinch","position":3}],"steps":[{"text":"Laver les pelures.","position":1},{"text":"Mélanger avec huile et sel.","position":2},{"text":"Enfourner 20 min à 180°C.","position":3,"timer_minutes":20}],"image_url":"https://images.unsplash.com/photo-1234.jpg"}' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
+EXEMPLE COMPLET (UNE SEULE LIGNE) :
+echo '{"title":"Poulet rôti aux herbes","summary":"Un poulet rôti savoureux et croustillant, parfumé aux herbes de Provence. Recette simple et traditionnelle pour un repas familial réussi.","servings":4,"prep_minutes":15,"cook_minutes":60,"difficulty":"medium","cuisine":"Française","calories":320,"ingredients":[{"name":"Poulet entier","quantity":1.5,"unit":"kg","position":1},{"name":"Beurre","quantity":50,"unit":"g","position":2},{"name":"Herbes de Provence","quantity":2,"unit":"tbsp","position":3},{"name":"Gousses d'\''ail","quantity":4,"unit":"clove","position":4},{"name":"Sel","quantity":1,"unit":"tsp","position":5},{"name":"Poivre","quantity":0.5,"unit":"tsp","position":6}],"steps":[{"text":"Préchauffer le four à 200°C.","position":1},{"text":"Mélanger le beurre ramolli avec les herbes, le sel et le poivre.","position":2},{"text":"Badigeonner le poulet avec le mélange et insérer l'\''ail dans la cavité.","position":3},{"text":"Enfourner et cuire 60 minutes en arrosant régulièrement.","position":4,"timer_minutes":60}],"image_url":"https://images.unsplash.com/photo-1598103442097-8b74394b95c6"}' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
