@@ -141,6 +141,7 @@ Route::middleware([
     Route::put('/collections/{collection}', [CollectionController::class, 'update'])->name('collections.update');
     Route::delete('/collections/{collection}', [CollectionController::class, 'destroy'])->name('collections.destroy');
     Route::post('/collections/{collection}/recipes/{recipe}', [CollectionController::class, 'addRecipe'])->name('collections.recipes.add')->where('recipe', '[0-9]+');
+    Route::post('/collections/{collection}/recipes-bulk', [CollectionController::class, 'addMultipleRecipes'])->name('collections.recipes.add-multiple');
     Route::delete('/collections/{collection}/recipes/{recipe:slug}', [CollectionController::class, 'removeRecipe'])->name('collections.recipes.remove');
     Route::post('/collections/{collection}/reorder', [CollectionController::class, 'reorder'])->name('collections.reorder');
 

@@ -46,13 +46,14 @@ class StripeDataFormatter
                 'past_due' => $subscription->pastDue(),
                 'incomplete' => $subscription->incomplete(),
                 'canceled' => $subscription->canceled(),
-                'created_at' => $subscription->created_at->format('d/m/Y H:i'),
-                'updated_at' => $subscription->updated_at->format('d/m/Y H:i'),
+                'created_at' => $subscription->created_at?->format('d/m/Y H:i') ?? null,
+                'updated_at' => $subscription->updated_at?->format('d/m/Y H:i') ?? null,
             ];
         } catch (\Exception $e) {
             Log::error('Failed to format subscription', [
-                'subscription_id' => $subscription->id,
+                'subscription_id' => $subscription->id ?? 'unknown',
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return null;

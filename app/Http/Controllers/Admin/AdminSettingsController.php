@@ -69,6 +69,11 @@ class AdminSettingsController extends Controller
             'stripe_price_yearly' => 'nullable|string',
             'trial_days' => 'nullable|integer|min:0',
             'stripe_calculate_taxes' => 'nullable|boolean',
+            'monthly_price' => 'nullable|numeric|min:0',
+            'yearly_price' => 'nullable|numeric|min:0',
+            'monthly_plan_name' => 'nullable|string|max:255',
+            'yearly_plan_name' => 'nullable|string|max:255',
+            'yearly_savings_message' => 'nullable|string|max:255',
         ]);
 
         $validated['stripe_enabled'] = $request->has('stripe_enabled') ? (bool)($validated['stripe_enabled'] ?? false) : false;

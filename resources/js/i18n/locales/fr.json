@@ -763,7 +763,10 @@
     "collection_name": "Nom de la collection",
     "collection_description": "Description",
     "add_recipe": "Ajouter une recette",
+    "add_recipes": "Ajouter des recettes",
+    "add_recipes_title": "Ajouter des recettes à la collection",
     "remove_recipe": "Retirer de la collection",
+    "remove_recipe_confirmation": "Êtes-vous sûr de vouloir retirer cette recette de la collection ?",
     "empty": "Cette collection est vide",
     "visibility": "Visibilité",
     "public": "Publique",
@@ -772,7 +775,14 @@
     "public_collection": "Collection publique",
     "no_collections": "Vous n'avez pas encore de collection",
     "delete_confirmation": "Supprimer cette collection ?",
-    "by_user": "Par {name}"
+    "by_user": "Par {name}",
+    "search_recipes": "Rechercher des recettes",
+    "search_placeholder": "Rechercher par titre...",
+    "selected_count": "{count} recette sélectionnée | {count} recettes sélectionnées",
+    "add_selected": "Ajouter ({count})",
+    "no_results": "Aucune recette trouvée",
+    "no_recipes_available": "Aucune recette disponible",
+    "add_first_recipe": "Ajouter ma première recette"
   },
   "favorites": {
     "title": "Mes favoris",
