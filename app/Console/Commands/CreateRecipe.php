@@ -28,6 +28,8 @@ class CreateRecipe extends Command
             $jsonInput = stream_get_contents(STDIN);
         }
 
+        $jsonInput = trim($jsonInput);
+
         $data = json_decode($jsonInput, true);
 
         if (!$data) {
