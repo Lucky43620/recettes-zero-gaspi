@@ -67,23 +67,45 @@ RÈGLES IMPORTANTES :
 1. JSON sur UNE SEULE LIGNE (aucun retour à la ligne dans le JSON)
 2. Pas de retour à la ligne dans la commande echo
 3. Utiliser guillemets doubles " pour toutes les valeurs textuelles JSON
-4. ÉCHAPPEMENT DES APOSTROPHES (CRUCIAL) :
-   - Dans le texte français, TOUJOURS utiliser les apostrophes : d'eau, l'ail, qu'il
-   - Pour échapper l'apostrophe dans le shell : remplacer ' par '\''
-   - Exemples :
-     ✓ CORRECT : "Cuire les pâtes dans une casserole d'\''eau bouillante"
-     ✗ FAUX : "Cuire les pâtes dans une casserole d eau bouillante"
-     ✓ CORRECT : "Éplucher l'\''ail et le hacher"
-     ✗ FAUX : "Éplucher l ail et le hacher"
+4. ÉCHAPPEMENT DES APOSTROPHES (ULTRA IMPORTANT - NE PAS SE TROMPER) :
+
+   RÈGLE D'OR : Chaque apostrophe ' dans le texte français doit être remplacée par EXACTEMENT cette séquence de 5 caractères : '\''
+
+   Détail de la séquence '\'' :
+   - Caractère 1 : ' (apostrophe qui ferme la chaîne)
+   - Caractère 2 : \ (backslash d'échappement)
+   - Caractère 3 : ' (apostrophe échappée)
+   - Caractère 4 : ' (apostrophe qui ouvre la chaîne)
+   - Total : '\'' (5 caractères)
+
+   ⚠️ ATTENTION : NE JAMAIS utiliser ''' (3 apostrophes) - C'EST FAUX !
+   ✓ TOUJOURS utiliser '\'' (apostrophe-backslash-apostrophe-apostrophe)
+
+   Exemples de transformation :
+   ✓ CORRECT : d'eau → d'\''eau
+   ✓ CORRECT : l'ail → l'\''ail
+   ✓ CORRECT : jusqu'à → jusqu'\''à
+   ✗ FAUX : d'''eau (3 apostrophes - NE JAMAIS FAIRE ÇA)
+   ✗ FAUX : d eau (sans apostrophe - pas français)
+
 5. Positions des ingrédients/étapes commencent à 1 et s'incrémentent
 6. La recette sera publique automatiquement
 7. Ne PAS ajouter le champ "is_public" (toujours true par défaut)
+8. Les images générées avec DALL-E sont automatiquement téléchargées et sauvegardées sur le serveur
 
-EXEMPLES D'ÉCHAPPEMENT CORRECT :
-- Huile d'olive → "Huile d'\''olive"
-- L'eau salée → "l'\''eau salée"
-- Jusqu'à ébullition → "jusqu'\''à ébullition"
-- Qu'il soit doré → "qu'\''il soit doré"
+TABLEAU DE CONVERSION DES APOSTROPHES (À SUIVRE EXACTEMENT) :
+┌──────────────────────┬─────────────────────────┐
+│ Texte français       │ Dans le JSON            │
+├──────────────────────┼─────────────────────────┤
+│ d'eau                │ d'\''eau                │
+│ l'ail                │ l'\''ail                │
+│ l'huile              │ l'\''huile              │
+│ l'oignon             │ l'\''oignon             │
+│ jusqu'à              │ jusqu'\''à              │
+│ qu'il                │ qu'\''il                │
+│ qu'elle              │ qu'\''elle              │
+│ s'il                 │ s'\''il                 │
+└──────────────────────┴─────────────────────────┘
 
 EXEMPLE COMPLET AVEC IMAGE GÉNÉRÉE (UNE SEULE LIGNE) :
 Si tu as généré une image avec DALL-E, utilise son URL :
