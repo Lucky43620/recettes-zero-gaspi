@@ -15,14 +15,20 @@ use Illuminate\Support\Str;
 
 class CreateRecipe extends Command
 {
-    protected $signature = 'recipe:create {email} {data}';
+    protected $signature = 'recipe:create {email} {--json=}';
 
     protected $description = 'Créer une nouvelle recette';
 
     public function handle()
     {
         $email = $this->argument('email');
-        $data = json_decode($this->argument('data'), true);
+
+        $jsonInput = $this->option('json');
+        if (!$jsonInput) {
+            $jsonInput = stream_get_contents(STDIN);
+        }
+
+        $data = json_decode($jsonInput, true);
 
         if (!$data) {
             $this->error('Données JSON invalides');
@@ -89,6 +95,8 @@ class CreateRecipe extends Command
                 }
             }
 
+            $imageAdded = false;
+
             if (isset($data['image_url'])) {
                 try {
                     $response = Http::timeout(30)->get($data['image_url']);
@@ -100,8 +108,18 @@ class CreateRecipe extends Command
                         $recipe->addMediaFromString($response->body())
                             ->usingFileName($filename)
                             ->toMediaCollection('images');
+                        $imageAdded = true;
                     }
                 } catch (\Exception $e) {
+                }
+            }
+
+            if (!$imageAdded) {
+                $defaultImagePath = public_path('images/defaut.webp');
+                if (file_exists($defaultImagePath)) {
+                    $recipe->addMedia($defaultImagePath)
+                        ->preservingOriginal()
+                        ->toMediaCollection('images');
                 }
             }
 

@@ -1,82 +1,69 @@
-Génère une commande complète pour créer une recette anti-gaspillage dans une application Laravel.
+Génère une commande complète pour créer une recette anti-gaspillage.
 
 CONTRAINTES STRICTES :
 - La recette DOIT être une vraie recette anti-gaspillage (utiliser restes, épluchures, produits abîmés, etc.)
-- Réponds UNIQUEMENT avec la commande Docker, sans aucun texte avant ou après
+- Réponds UNIQUEMENT avec la commande complète, sans texte avant ou après
 - Pas d'explications, pas de markdown, pas de commentaires
-- Format : docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com 'JSON'
 
-STRUCTURE JSON REQUISE :
+FORMAT OBLIGATOIRE :
+echo 'JSON' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
+
+STRUCTURE JSON REQUISE (compact, sans retours à la ligne) :
+{"title":"Titre","summary":"Description","servings":4,"prep_minutes":10,"cook_minutes":20,"difficulty":"easy","cuisine":"Française","calories":200,"is_public":true,"ingredients":[{"name":"Nom","quantity":100,"unit":"g","position":1}],"steps":[{"text":"Description","position":1}],"image_url":"https://url.jpg"}
+
+CHAMPS OBLIGATOIRES :
+- title : Titre court et accrocheur
+- summary : Description détaillée (2-3 phrases)
+- servings : Nombre de portions (entier)
+- difficulty : "easy", "medium" ou "hard"
+- ingredients : Array avec minimum 3 ingrédients
+- steps : Array avec minimum 3 étapes
+
+CHAMPS OPTIONNELS :
+- prep_minutes : Temps de préparation en minutes
+- cook_minutes : Temps de cuisson en minutes
+- cuisine : Type de cuisine (Française, Italienne, etc.)
+- calories : Calories par portion
+- is_public : true/false (défaut: true)
+- image_url : URL image (si absent, image par défaut utilisée)
+
+INGRÉDIENTS :
 {
-  "title": "Titre court et accrocheur",
-  "summary": "Description détaillée de la recette (2-3 phrases)",
-  "servings": nombre_de_portions,
-  "prep_minutes": temps_préparation,
-  "cook_minutes": temps_cuisson,
-  "difficulty": "easy|medium|hard",
-  "cuisine": "Type de cuisine",
-  "calories": calories_par_portion,
-  "is_public": true,
-  "ingredients": [
-    {
-      "name": "Nom ingrédient",
-      "quantity": quantité_numérique,
-      "unit": "g|kg|ml|l|piece|slice|tbsp|tsp|clove|branch|leaf|jar|sachet|roll|pinch|grain",
-      "position": position_ordre
-    }
-  ],
-  "steps": [
-    {
-      "text": "Description détaillée de l'étape",
-      "position": position_ordre,
-      "timer_minutes": durée_optionnelle
-    }
-  ],
-  "image_url": "https://url-image-libre-droits.jpg"
+  "name": "Nom de l'ingrédient",
+  "quantity": nombre (peut être décimal),
+  "unit": "g|kg|ml|l|piece|slice|tbsp|tsp|clove|branch|leaf|jar|sachet|roll|pinch|grain",
+  "position": numéro ordre (commence à 1)
 }
 
-RÈGLES D'INGRÉDIENTS :
-- Minimum 3 ingrédients, maximum 15
-- Utiliser des ingrédients qui sont normalement jetés (épluchures, pain rassis, fruits abîmés, restes, etc.)
-- Units valides uniquement : g, kg, ml, l, piece, slice, tbsp, tsp, clove, branch, leaf, jar, sachet, roll, pinch, grain
-- Position commence à 1 et s'incrémente
-
-RÈGLES D'ÉTAPES :
-- Minimum 3 étapes, maximum 12
-- Chaque étape doit être claire et précise
-- Position commence à 1 et s'incrémente
-- timer_minutes uniquement si nécessaire (cuisson, repos, etc.)
-
-RÈGLES D'IMAGE :
-- URL doit être accessible publiquement
-- Préférer des images libres de droits (Unsplash, Pexels, etc.)
-- Format : jpg, jpeg, png, webp
+ÉTAPES :
+{
+  "text": "Description de l'étape",
+  "position": numéro ordre (commence à 1),
+  "timer_minutes": durée optionnelle
+}
 
 DIFFICULTÉS :
-- easy : recettes simples, peu d'étapes, techniques basiques
-- medium : techniques moyennes, plusieurs étapes
-- hard : techniques avancées, préparation complexe
+- easy : recettes simples, techniques basiques
+- medium : techniques moyennes
+- hard : techniques avancées
 
-TYPES DE CUISINE :
-Française, Italienne, Asiatique, Méditerranéenne, Végétarienne, Végane, Sans gluten, etc.
-
-EXEMPLE DE THÈMES ANTI-GASPI :
+THÈMES ANTI-GASPI :
 - Pain rassis (pain perdu, chapelure, croûtons)
 - Fruits abîmés (compotes, smoothies, confitures)
 - Épluchures (chips, bouillons, pestos)
 - Fanes de légumes (soupes, tartes, gratins)
-- Restes de viande/poisson (croquettes, hachis, gratins)
+- Restes (croquettes, hachis, gratins)
 - Yaourts périmés (gâteaux, sauces)
 - Fromages secs (gratins, sauces)
-- Légumes flétris (soupes, purées, gratins)
+- Légumes flétris (soupes, purées)
 
-ÉCHAPPEMENT JSON :
-- Échapper les guillemets doubles dans le JSON avec \"
-- Échapper les apostrophes avec \'
-- Le JSON complet doit être entouré de guillemets simples dans la commande
+RÈGLES JSON :
+- JSON sur UNE SEULE LIGNE (pas de retours à la ligne)
+- Pas d'espaces inutiles
+- Utiliser guillemets doubles pour les clés et valeurs
+- Échapper les apostrophes dans le texte : remplacer ' par \'
+- Échapper les guillemets doubles dans le texte : \"
+- Ne PAS mettre de retour à la ligne dans la commande
 
-IMPORTANT :
-- Une seule ligne de commande
-- Pas de retour à la ligne dans la commande
-- JSON compact (pas de pretty print)
-- Vérifier que le JSON est valide avant de générer la commande
+EXEMPLE COMPLET :
+echo '{"title":"Chips de pelures","summary":"Transformez vos épluchures en chips croustillantes.","servings":4,"prep_minutes":10,"cook_minutes":20,"difficulty":"easy","cuisine":"Française","calories":180,"is_public":true,"ingredients":[{"name":"Pelures de pommes de terre","quantity":300,"unit":"g","position":1},{"name":"Huile d'\''olive","quantity":2,"unit":"tbsp","position":2},{"name":"Sel","quantity":1,"unit":"pinch","position":3}],"steps":[{"text":"Laver les pelures.","position":1},{"text":"Mélanger avec huile et sel.","position":2},{"text":"Enfourner 20 min à 180°C.","position":3,"timer_minutes":20}],"image_url":"https://images.unsplash.com/photo-1234.jpg"}' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
