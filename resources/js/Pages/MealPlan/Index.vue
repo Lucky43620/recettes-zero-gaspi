@@ -13,7 +13,7 @@ import { useI18n } from 'vue-i18n';
 import { useMediaConversions } from '@/composables/useMediaConversions';
 
 const { t } = useI18n();
-const { getConversionUrl } = useMediaConversions();
+const { getRecipeImage } = useMediaConversions();
 
 const props = defineProps({
     mealPlan: Object,
@@ -131,10 +131,6 @@ const generateShoppingList = () => {
         },
     });
 };
-
-const getRecipeImage = (recipe) => {
-    return recipe.media?.[0] ? getConversionUrl(recipe.media[0], 'thumb') : '/images/placeholder-recipe.svg';
-};
 </script>
 
 <template>
@@ -222,7 +218,6 @@ const getRecipeImage = (recipe) => {
                                 :on-drag-over="onDragOver"
                                 :on-drop="onDrop"
                                 :remove-recipe="removeRecipe"
-                                :get-recipe-image="getRecipeImage"
                             />
                         </div>
                     </div>

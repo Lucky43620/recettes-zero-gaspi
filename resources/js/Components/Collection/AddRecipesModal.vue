@@ -2,12 +2,14 @@
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { useMediaConversions } from '@/composables/useMediaConversions';
 import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import FormInput from '@/Components/Common/FormInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 
 const { t } = useI18n();
+const { getRecipeImage } = useMediaConversions();
 
 const props = defineProps({
     show: Boolean,
@@ -131,14 +133,13 @@ const close = () => {
                             </svg>
                         </div>
 
-                        <div v-if="recipe.media && recipe.media[0]" class="flex-shrink-0">
+                        <div class="flex-shrink-0">
                             <img
-                                :src="recipe.media[0].original_url"
+                                :src="getRecipeImage(recipe, 'thumb')"
                                 :alt="recipe.title"
                                 class="w-12 h-12 object-cover rounded"
                             />
                         </div>
-                        <div v-else class="w-12 h-12 bg-gray-200 rounded flex-shrink-0"></div>
 
                         <div class="flex-1 min-w-0">
                             <p class="font-medium text-gray-900 truncate">{{ recipe.title }}</p>

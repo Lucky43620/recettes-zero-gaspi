@@ -2,10 +2,12 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { useMediaConversions } from '@/composables/useMediaConversions';
 import { ref, computed } from 'vue';
 import FormInput from '@/Components/Common/FormInput.vue';
 
 const { t } = useI18n();
+const { getRecipeImage } = useMediaConversions();
 
 const props = defineProps({
     collections: Object,
@@ -89,12 +91,10 @@ const filteredCollections = computed(() => {
                                     class="relative overflow-hidden"
                                 >
                                     <img
-                                        v-if="recipe.media && recipe.media[0]"
-                                        :src="recipe.media[0].original_url"
+                                        :src="getRecipeImage(recipe, 'thumb')"
                                         :alt="recipe.title"
                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
                                     />
-                                    <div v-else class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300"></div>
                                 </div>
                                 <!-- Fill empty slots if less than 4 recipes -->
                                 <div

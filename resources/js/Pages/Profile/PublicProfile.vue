@@ -37,7 +37,7 @@ const props = defineProps({
                                     :alt="profileUser.name"
                                     class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg bg-white relative z-10"
                                 />
-                                <div class="pb-2 text-center sm:text-left">
+                                <div class="pb-2 text-center sm:text-left relative z-10">
                                     <div class="flex flex-col sm:flex-row items-center gap-2">
                                         <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
                                             {{ profileUser.name }}
