@@ -58,7 +58,7 @@ class CollectionService
         return $user->collections()
             ->withCount('recipes')
             ->latest()
-            ->paginate($perPage);
+            ->get();
     }
 
     public function getCollectionWithRecipes(Collection $collection)

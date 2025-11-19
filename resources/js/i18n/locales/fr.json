@@ -482,6 +482,7 @@
     "settings_tabs": {
       "general": "Général",
       "stripe": "Stripe",
+      "pricing": "Tarification",
       "features": "Fonctionnalités",
       "limits": "Limites",
       "gdpr": "RGPD",

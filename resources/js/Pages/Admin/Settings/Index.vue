@@ -144,43 +144,6 @@
                                     min="0"
                                 />
 
-                                <div class="border-t pt-4 mt-6">
-                                    <h3 class="text-sm font-medium text-gray-900 mb-4">{{ t('admin.settings_pricing') }}</h3>
-                                    <div class="space-y-4">
-                                        <SettingsInput
-                                            v-model.number="forms.stripe.monthly_price"
-                                            :label="t('admin.settings_monthly_price')"
-                                            type="number"
-                                            step="0.01"
-                                            min="0"
-                                            :help="t('admin.settings_price_help')"
-                                        />
-                                        <SettingsInput
-                                            v-model="forms.stripe.monthly_plan_name"
-                                            :label="t('admin.settings_monthly_plan_name')"
-                                            placeholder="Premium Mensuel"
-                                        />
-                                        <SettingsInput
-                                            v-model.number="forms.stripe.yearly_price"
-                                            :label="t('admin.settings_yearly_price')"
-                                            type="number"
-                                            step="0.01"
-                                            min="0"
-                                            :help="t('admin.settings_price_help')"
-                                        />
-                                        <SettingsInput
-                                            v-model="forms.stripe.yearly_plan_name"
-                                            :label="t('admin.settings_yearly_plan_name')"
-                                            placeholder="Premium Annuel"
-                                        />
-                                        <SettingsInput
-                                            v-model="forms.stripe.yearly_savings_message"
-                                            :label="t('admin.settings_yearly_savings')"
-                                            placeholder="Économisez 2 mois"
-                                        />
-                                    </div>
-                                </div>
-
                                 <div class="pt-4 flex justify-end gap-3">
                                     <button
                                         type="button"
@@ -189,6 +152,56 @@
                                     >
                                         {{ t('admin.settings_test_connection') }}
                                     </button>
+                                    <button
+                                        type="submit"
+                                        class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
+                                    >
+                                        {{ t('common.save') }}
+                                    </button>
+                                </div>
+                            </form>
+                        </SettingsSection>
+                    </div>
+
+                    <div v-show="activeTab === 'pricing'" class="space-y-6">
+                        <SettingsSection
+                            :title="t('admin.settings_pricing')"
+                            :description="t('admin.settings_price_help')"
+                        >
+                            <form @submit.prevent="updatePricing" class="space-y-4">
+                                <SettingsInput
+                                    v-model.number="forms.pricing.monthly_price"
+                                    :label="t('admin.settings_monthly_price')"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    :help="t('admin.settings_price_help')"
+                                />
+                                <SettingsInput
+                                    v-model="forms.pricing.monthly_plan_name"
+                                    :label="t('admin.settings_monthly_plan_name')"
+                                    placeholder="Premium Mensuel"
+                                />
+                                <SettingsInput
+                                    v-model.number="forms.pricing.yearly_price"
+                                    :label="t('admin.settings_yearly_price')"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    :help="t('admin.settings_price_help')"
+                                />
+                                <SettingsInput
+                                    v-model="forms.pricing.yearly_plan_name"
+                                    :label="t('admin.settings_yearly_plan_name')"
+                                    placeholder="Premium Annuel"
+                                />
+                                <SettingsInput
+                                    v-model="forms.pricing.yearly_savings_message"
+                                    :label="t('admin.settings_yearly_savings')"
+                                    placeholder="Économisez 2 mois"
+                                />
+
+                                <div class="pt-4 flex justify-end">
                                     <button
                                         type="submit"
                                         class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
@@ -414,6 +427,7 @@ const activeTab = ref('general')
 const tabs = [
     { id: 'general', name: t('admin.settings_tabs.general') },
     { id: 'stripe', name: t('admin.settings_tabs.stripe') },
+    { id: 'pricing', name: t('admin.settings_tabs.pricing') },
     { id: 'features', name: t('admin.settings_tabs.features') },
     { id: 'limits', name: t('admin.settings_tabs.limits') },
     { id: 'gdpr', name: t('admin.settings_tabs.gdpr') },
@@ -435,7 +449,9 @@ const forms = reactive({
         stripe_webhook_secret: props.settings.stripe?.stripe_webhook_secret?.value ?? '',
         stripe_price_monthly: props.settings.stripe?.stripe_price_monthly?.value ?? '',
         stripe_price_yearly: props.settings.stripe?.stripe_price_yearly?.value ?? '',
-        trial_days: props.settings.stripe?.trial_days?.value ?? 0,
+        trial_days: props.settings.stripe?.trial_days?.value ?? 0
+    },
+    pricing: {
         monthly_price: props.settings.stripe?.monthly_price?.value ?? 4.99,
         monthly_plan_name: props.settings.stripe?.monthly_plan_name?.value ?? 'Premium Mensuel',
         yearly_price: props.settings.stripe?.yearly_price?.value ?? 49.90,
@@ -482,6 +498,10 @@ const updateLimits = () => {
 
 const updateGdpr = () => {
     router.post('/admin/settings/gdpr', forms.gdpr)
+}
+
+const updatePricing = () => {
+    router.post('/admin/settings/stripe', forms.pricing)
 }
 
 const clearCache = (type) => {

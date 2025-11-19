@@ -181,8 +181,10 @@ import { Link, router } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import DialogModal from '@/Components/DialogModal.vue'
+import { useDateFormat } from '@/composables/useDateFormat'
 
 const { t } = useI18n()
+const { formatDate } = useDateFormat()
 
 const props = defineProps({
     user: Object,
