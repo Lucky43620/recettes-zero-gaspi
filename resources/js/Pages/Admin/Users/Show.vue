@@ -95,13 +95,13 @@ const { formatDate, formatRelativeTime } = useDateFormat();
                 />
                 <StatCard
                     :title="t('admin.registered_on_date')"
-                    :value="formatDate(user.created_at)"
+                    :value="user.created_at ? formatDate(user.created_at) : '-'"
                     icon="📅"
                     color="green"
                 />
                 <StatCard
                     :title="t('admin.last_activity')"
-                    :value="formatRelativeTime(user.updated_at)"
+                    :value="user.updated_at ? formatRelativeTime(user.updated_at) : '-'"
                     icon="⚡"
                     color="purple"
                 />
@@ -124,7 +124,7 @@ const { formatDate, formatRelativeTime } = useDateFormat();
                                 </Link>
                                 <div class="flex items-center gap-4 mt-1 text-sm text-gray-500">
                                     <span>{{ recipe.is_public ? t('admin.public_badge') : t('admin.private_badge') }}</span>
-                                    <span>{{ formatRelativeTime(recipe.created_at) }}</span>
+                                    <span>{{ recipe.created_at ? formatRelativeTime(recipe.created_at) : '-' }}</span>
                                 </div>
                             </div>
                             <div v-if="recipe.rating_avg" class="flex items-center gap-1">
@@ -154,7 +154,7 @@ const { formatDate, formatRelativeTime } = useDateFormat();
                             <Link v-if="comment.recipe" :href="`/recipes/${comment.recipe.slug}`" class="hover:text-green-600">
                                 {{ t('admin.on_recipe', { title: comment.recipe.title }) }}
                             </Link>
-                            <span>{{ formatRelativeTime(comment.created_at) }}</span>
+                            <span>{{ comment.created_at ? formatRelativeTime(comment.created_at) : '-' }}</span>
                         </div>
                     </div>
                 </div>

@@ -43,17 +43,17 @@
                                             <span class="text-sm text-gray-600">{{ t('subscription.status') }}</span>
                                             <span class="text-sm">{{ sub.stripe_status }}</span>
                                         </div>
-                                        <div class="flex justify-between">
+                                        <div v-if="sub.created_at" class="flex justify-between">
                                             <span class="text-sm text-gray-600">{{ t('admin.subscriptions_created_on') }}</span>
-                                            <span class="text-sm">{{ formatDate(sub.created_at) }}</span>
+                                            <span class="text-sm">{{ sub.created_at }}</span>
                                         </div>
                                         <div v-if="sub.trial_ends_at" class="flex justify-between">
                                             <span class="text-sm text-gray-600">{{ t('admin.subscriptions_trial_end') }}</span>
-                                            <span class="text-sm">{{ formatDate(sub.trial_ends_at) }}</span>
+                                            <span class="text-sm">{{ sub.trial_ends_at }}</span>
                                         </div>
                                         <div v-if="sub.ends_at" class="flex justify-between">
                                             <span class="text-sm text-gray-600">{{ t('admin.subscriptions_scheduled_end') }}</span>
-                                            <span class="text-sm text-red-600">{{ formatDate(sub.ends_at) }}</span>
+                                            <span class="text-sm text-red-600">{{ sub.ends_at }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -68,15 +68,15 @@
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('admin.subscriptions_invoices') }}</h2>
 
-                        <div v-if="invoices.length > 0" class="space-y-3">
+                        <div v-if="invoices && invoices.length > 0" class="space-y-3">
                             <div
                                 v-for="invoice in invoices"
                                 :key="invoice.id"
                                 class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                             >
                                 <div>
-                                    <div class="font-medium">{{ formatCurrency(invoice.total) }}</div>
-                                    <div class="text-sm text-gray-500">{{ formatDate(invoice.date) }}</div>
+                                    <div class="font-medium">{{ invoice.total_formatted }}</div>
+                                    <div class="text-sm text-gray-500">{{ invoice.date_formatted }}</div>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <span :class="[
@@ -193,20 +193,11 @@ const props = defineProps({
 const showCancelModal = ref(false)
 
 const hasEndDate = computed(() => {
+    if (!props.subscription.subscriptions || !Array.isArray(props.subscription.subscriptions)) {
+        return false
+    }
     return props.subscription.subscriptions.some(sub => sub.ends_at)
 })
-
-const formatCurrency = (value) => {
-    return new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: 'EUR'
-    }).format(value)
-}
-
-const formatDate = (date) => {
-    if (!date) return '-'
-    return new Date(date).toLocaleDateString('fr-FR')
-}
 
 const cancelSubscription = () => {
     router.post(`/admin/subscriptions/${props.user.id}/cancel`, {}, {
