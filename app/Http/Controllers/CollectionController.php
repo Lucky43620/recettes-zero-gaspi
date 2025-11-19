@@ -48,11 +48,11 @@ class CollectionController extends Controller
 
         $collection = $this->collectionService->getCollectionWithRecipes($collection);
 
-        $userRecipes = Auth::user()
-            ? Auth::user()->recipes()
-                ->with('media')
-                ->get()
-            : collect();
+        // Charger toutes les recettes publiques pour le modal
+        $userRecipes = Recipe::where('is_public', true)
+            ->with(['media', 'author'])
+            ->latest()
+            ->get();
 
         return Inertia::render('Collection/Show', [
             'collection' => $collection,
