@@ -135,6 +135,7 @@ Route::middleware([
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('/recipes/{recipe:slug}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
+    Route::get('/collections/public', [CollectionController::class, 'public'])->name('collections.public');
     Route::get('/collections', [CollectionController::class, 'index'])->name('collections.index');
     Route::post('/collections', [CollectionController::class, 'store'])->name('collections.store');
     Route::get('/collections/{collection}', [CollectionController::class, 'show'])->name('collections.show');

@@ -24,15 +24,27 @@ const searchQuery = ref('');
 const selectedRecipes = ref([]);
 
 const filteredRecipes = computed(() => {
+    // Exclure les recettes déjà dans la collection
+    const existingRecipeIds = props.collection?.recipes?.map(r => r.id) || [];
+    const availableRecipes = props.userRecipes.filter(recipe =>
+        !existingRecipeIds.includes(recipe.id)
+    );
+
     if (!searchQuery.value) {
-        return props.userRecipes;
+        return availableRecipes;
     }
 
-    const query = searchQuery.value.toLowerCase();
-    return props.userRecipes.filter(recipe =>
-        recipe.title.toLowerCase().includes(query) ||
-        recipe.description?.toLowerCase().includes(query)
-    );
+    const query = searchQuery.value.toLowerCase().trim();
+
+    return availableRecipes.filter(recipe => {
+        const title = (recipe.title || '').toLowerCase();
+        const description = (recipe.description || '').toLowerCase();
+        const summary = (recipe.summary || '').toLowerCase();
+
+        return title.includes(query) ||
+               description.includes(query) ||
+               summary.includes(query);
+    });
 });
 
 const toggleRecipe = (recipeId) => {

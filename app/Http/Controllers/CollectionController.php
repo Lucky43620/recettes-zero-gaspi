@@ -29,6 +29,19 @@ class CollectionController extends Controller
         ]);
     }
 
+    public function public()
+    {
+        $collections = Collection::with(['user', 'recipes'])
+            ->where('is_public', true)
+            ->withCount('recipes')
+            ->latest()
+            ->paginate(12);
+
+        return Inertia::render('Collection/Public', [
+            'collections' => $collections,
+        ]);
+    }
+
     public function show(Collection $collection)
     {
         $this->authorize('view', $collection);
