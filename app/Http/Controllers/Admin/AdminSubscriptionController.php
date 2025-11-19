@@ -75,7 +75,7 @@ class AdminSubscriptionController extends Controller
             'is_premium' => $user->isPremium(),
             'subscriptions' => $user->subscriptions()->get()->map(function ($sub) {
                 return $this->stripeFormatter->formatSubscription($sub);
-            }),
+            })->filter()->values()->toArray(),
         ];
 
         $invoices = [];
@@ -84,7 +84,10 @@ class AdminSubscriptionController extends Controller
                 $stripeInvoices = $user->invoices();
                 if ($stripeInvoices) {
                     foreach ($stripeInvoices as $invoice) {
-                        $invoices[] = $this->stripeFormatter->formatInvoice($invoice);
+                        $formatted = $this->stripeFormatter->formatInvoice($invoice);
+                        if ($formatted) {
+                            $invoices[] = $formatted;
+                        }
                     }
                 }
             }
