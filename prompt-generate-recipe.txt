@@ -1,113 +1,45 @@
-Génère une commande complète pour créer une recette culinaire.
+Génère une commande pour créer une recette culinaire.
 
-CONTRAINTES ABSOLUES :
-- Réponds UNIQUEMENT avec la commande, sans texte avant ou après
-- Pas d'explications, pas de markdown, pas de commentaires
-- Commande sur UNE SEULE LIGNE (aucun retour à la ligne)
-- NE JAMAIS inclure le champ "image_url" (l'image sera ajoutée manuellement après)
+FORMAT :
+echo 'JSON' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
 
-FORMAT OBLIGATOIRE :
-echo 'JSON_COMPACT' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
-
-STRUCTURE JSON (tout sur une ligne, sans espaces inutiles, SANS image_url) :
-{"title":"...","summary":"...","servings":4,"prep_minutes":10,"cook_minutes":20,"difficulty":"easy","cuisine":"...","calories":200,"ingredients":[...],"steps":[...]}
-
-⚠️ NE PAS INCLURE : "image_url", "is_public"
-
-CHAMPS OBLIGATOIRES :
-- title : Titre de la recette (court et accrocheur)
-- summary : Description détaillée (2-3 phrases)
-- servings : Nombre de portions (entier, ex: 4)
-- difficulty : UNIQUEMENT "easy", "medium" ou "hard"
-- ingredients : Array avec minimum 3 ingrédients
-- steps : Array avec minimum 3 étapes
-
-CHAMPS OPTIONNELS :
-- prep_minutes : Temps de préparation en minutes (entier)
-- cook_minutes : Temps de cuisson en minutes (entier)
-- cuisine : Type de cuisine (Française, Italienne, Asiatique, etc.)
-- calories : Calories par portion (entier)
-
-STRUCTURE INGRÉDIENT (obligatoire) :
+STRUCTURE JSON (une seule ligne) :
 {
-  "name": "Nom de l'ingrédient",
-  "quantity": nombre_décimal,
-  "unit": "CODE_UNITÉ",
-  "position": numéro_ordre
+  "title": "Titre de la recette",
+  "summary": "Description en 2-3 phrases",
+  "servings": 4,
+  "prep_minutes": 15,
+  "cook_minutes": 30,
+  "difficulty": "easy|medium|hard",
+  "cuisine": "Type de cuisine",
+  "calories": 400,
+  "ingredients": [
+    {
+      "name": "Nom de l'ingrédient",
+      "quantity": 100,
+      "unit": "g",
+      "position": 1
+    }
+  ],
+  "steps": [
+    {
+      "text": "Description de l'étape",
+      "position": 1,
+      "timer_minutes": 10
+    }
+  ]
 }
 
-UNITÉS DISPONIBLES (utiliser UNIQUEMENT ces codes) :
-- POIDS : "g" (grammes), "kg" (kilogrammes), "mg" (milligrammes)
-- VOLUME : "ml" (millilitres), "l" (litres), "cl" (centilitres), "dl" (décilitres)
-- MESURES : "tsp" (cuillère à café), "tbsp" (cuillère à soupe), "cup" (tasse)
-- UNITÉS : "piece" (pièce), "slice" (tranche), "pinch" (pincée), "bunch" (botte), "can" (boîte), "jar" (pot), "package" (paquet), "branch" (branche), "leaf" (feuille), "clove" (gousse), "sachet" (sachet), "roll" (rouleau), "grain" (grain)
+UNITÉS DISPONIBLES :
+g, kg, mg, ml, l, cl, dl, tsp, tbsp, cup, piece, slice, pinch, bunch, can, jar, package, branch, leaf, clove, sachet, roll, grain
 
-STRUCTURE ÉTAPE (obligatoire) :
-{
-  "text": "Description claire de l'étape",
-  "position": numéro_ordre,
-  "timer_minutes": durée_optionnelle
-}
+RÈGLES :
+- JSON sur une seule ligne sans retour à la ligne
+- Minimum 3 ingrédients et 3 étapes
+- Positions commencent à 1
+- Ne pas inclure "image_url" ni "is_public"
+- Échapper correctement les apostrophes pour le shell
 
-NIVEAUX DE DIFFICULTÉ :
-- "easy" : recettes simples, techniques basiques, peu d'étapes
-- "medium" : techniques moyennes, plusieurs étapes
-- "hard" : techniques avancées, préparation complexe
+EXEMPLE :
+echo '{"title":"Pâtes carbonara","summary":"Recette italienne traditionnelle et crémeuse.","servings":4,"prep_minutes":10,"cook_minutes":15,"difficulty":"easy","cuisine":"Italienne","calories":450,"ingredients":[{"name":"Pâtes","quantity":400,"unit":"g","position":1},{"name":"Lardons","quantity":200,"unit":"g","position":2},{"name":"Œufs","quantity":3,"unit":"piece","position":3},{"name":"Parmesan","quantity":100,"unit":"g","position":4}],"steps":[{"text":"Cuire les pâtes al dente.","position":1,"timer_minutes":10},{"text":"Faire revenir les lardons.","position":2},{"text":"Mélanger œufs et parmesan puis ajouter aux pâtes.","position":3}]}' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
 
-RÈGLES IMPORTANTES :
-1. JSON sur UNE SEULE LIGNE (aucun retour à la ligne dans le JSON)
-2. Pas de retour à la ligne dans la commande echo
-3. Utiliser guillemets doubles " pour toutes les valeurs textuelles JSON
-4. ÉCHAPPEMENT DES APOSTROPHES (ULTRA IMPORTANT - NE PAS SE TROMPER) :
-
-   RÈGLE D'OR : Chaque apostrophe ' dans le texte français doit être remplacée par EXACTEMENT cette séquence de 5 caractères : '\''
-
-   Détail de la séquence '\'' :
-   - Caractère 1 : ' (apostrophe qui ferme la chaîne)
-   - Caractère 2 : \ (backslash d'échappement)
-   - Caractère 3 : ' (apostrophe échappée)
-   - Caractère 4 : ' (apostrophe qui ouvre la chaîne)
-   - Total : '\'' (5 caractères)
-
-   ⚠️ ATTENTION : NE JAMAIS utiliser ''' (3 apostrophes) - C'EST FAUX !
-   ✓ TOUJOURS utiliser '\'' (apostrophe-backslash-apostrophe-apostrophe)
-
-   Exemples de transformation :
-   ✓ CORRECT : d'eau → d'\''eau
-   ✓ CORRECT : l'ail → l'\''ail
-   ✓ CORRECT : jusqu'à → jusqu'\''à
-   ✗ FAUX : d'''eau (3 apostrophes - NE JAMAIS FAIRE ÇA)
-   ✗ FAUX : d eau (sans apostrophe - pas français)
-
-5. Positions des ingrédients/étapes commencent à 1 et s'incrémentent
-6. La recette sera publique automatiquement
-7. Ne PAS ajouter le champ "is_public" (toujours true par défaut)
-8. Ne PAS ajouter le champ "image_url" (l'image par défaut sera utilisée, puis modifiée manuellement)
-
-TABLEAU DE CONVERSION DES APOSTROPHES (À SUIVRE EXACTEMENT) :
-┌──────────────────────┬─────────────────────────┐
-│ Texte français       │ Dans le JSON            │
-├──────────────────────┼─────────────────────────┤
-│ d'eau                │ d'\''eau                │
-│ l'ail                │ l'\''ail                │
-│ l'huile              │ l'\''huile              │
-│ l'oignon             │ l'\''oignon             │
-│ jusqu'à              │ jusqu'\''à              │
-│ qu'il                │ qu'\''il                │
-│ qu'elle              │ qu'\''elle              │
-│ s'il                 │ s'\''il                 │
-└──────────────────────┴─────────────────────────┘
-
-VALIDATION JSON AVANT EXÉCUTION :
-Avant de fournir la commande, VALIDE que ton JSON est correct :
-1. Vérifie que toutes les accolades {} et crochets [] sont bien fermés
-2. Vérifie que CHAQUE apostrophe ' est remplacée par '\''
-3. Vérifie qu'il n'y a AUCUN retour à la ligne dans le JSON
-
-EXEMPLE COMPLET (UNE SEULE LIGNE - COPIER TEL QUEL) :
-echo '{"title":"Pâtes carbonara","summary":"Un classique italien crémeux et réconfortant. Cette recette traditionnelle n'\''utilise que des œufs, du parmesan et des lardons pour créer une sauce onctueuse sans crème.","servings":4,"prep_minutes":10,"cook_minutes":15,"difficulty":"easy","cuisine":"Italienne","calories":450,"ingredients":[{"name":"Pâtes","quantity":400,"unit":"g","position":1},{"name":"Lardons","quantity":200,"unit":"g","position":2},{"name":"Œufs entiers","quantity":3,"unit":"piece","position":3},{"name":"Jaune d'\''œuf","quantity":1,"unit":"piece","position":4},{"name":"Parmesan râpé","quantity":100,"unit":"g","position":5},{"name":"Poivre noir","quantity":1,"unit":"tsp","position":6}],"steps":[{"text":"Cuire les pâtes dans une casserole d'\''eau bouillante salée jusqu'\''à ce qu'\''elles soient al dente.","position":1,"timer_minutes":10},{"text":"Faire revenir les lardons dans une poêle sans ajout de matière grasse jusqu'\''à ce qu'\''ils soient dorés.","position":2,"timer_minutes":5},{"text":"Battre les œufs avec le parmesan râpé et une bonne quantité de poivre noir.","position":3},{"text":"Égoutter les pâtes en conservant un peu d'\''eau de cuisson, puis les mélanger hors du feu avec les lardons et le mélange œufs-parmesan. Ajouter l'\''eau de cuisson si nécessaire pour obtenir une texture crémeuse.","position":4}]}' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
-
-NOTE IMPORTANTE :
-- PAS de champ "image_url" dans le JSON
-- L'image par défaut sera utilisée automatiquement
-- L'utilisateur modifiera l'image manuellement après création si nécessaire
