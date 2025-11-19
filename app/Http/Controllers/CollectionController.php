@@ -31,7 +31,7 @@ class CollectionController extends Controller
 
     public function public()
     {
-        $collections = Collection::with(['user', 'recipes'])
+        $collections = Collection::with(['user', 'recipes.media'])
             ->where('is_public', true)
             ->withCount('recipes')
             ->latest()

@@ -38,13 +38,13 @@ const props = defineProps({
                                     class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg bg-white relative z-10"
                                 />
                                 <div class="pb-2 text-center sm:text-left relative z-10">
-                                    <div class="flex flex-col sm:flex-row items-center gap-2">
-                                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+                                    <div class="flex flex-col sm:flex-row items-center gap-2 mb-1">
+                                        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
                                             {{ profileUser.name }}
                                         </h1>
                                         <Badge v-if="profileUser.is_premium" variant="premium" size="md">{{ t('common.premium') }}</Badge>
                                     </div>
-                                    <p v-if="profileUser.bio" class="text-sm md:text-base text-gray-600 mt-1">
+                                    <p v-if="profileUser.bio" class="text-sm md:text-base text-gray-600 mt-2 max-w-md">
                                         {{ profileUser.bio }}
                                     </p>
                                 </div>
