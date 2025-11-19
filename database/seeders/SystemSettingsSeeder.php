@@ -116,6 +116,27 @@ class SystemSettingsSeeder extends Seeder
                 'description' => 'Prix annuel affiché',
             ],
             [
+                'key' => 'monthly_plan_name',
+                'value' => 'Premium Mensuel',
+                'group' => 'stripe',
+                'type' => 'string',
+                'description' => 'Nom du plan mensuel',
+            ],
+            [
+                'key' => 'yearly_plan_name',
+                'value' => 'Premium Annuel',
+                'group' => 'stripe',
+                'type' => 'string',
+                'description' => 'Nom du plan annuel',
+            ],
+            [
+                'key' => 'yearly_savings_message',
+                'value' => 'Économisez 2 mois',
+                'group' => 'stripe',
+                'type' => 'string',
+                'description' => 'Message économies plan annuel',
+            ],
+            [
                 'key' => 'enable_ai_suggestions',
                 'value' => 'false',
                 'group' => 'features',

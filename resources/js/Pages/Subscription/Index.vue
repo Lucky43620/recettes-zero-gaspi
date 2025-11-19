@@ -111,10 +111,10 @@ const getPlanFeatures = (features) => {
                 <!-- Header Section -->
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        Choisissez votre formule
+                        {{ t('subscription.choose_plan') }}
                     </h2>
                     <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Profitez de toutes les fonctionnalités Premium pour gérer votre cuisine de manière intelligente et réduire le gaspillage alimentaire
+                        {{ t('subscription.premium_description') }}
                     </p>
                 </div>
 
@@ -135,29 +135,29 @@ const getPlanFeatures = (features) => {
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-700">Accès aux recettes publiques</span>
+                                <span class="text-gray-700">{{ t('subscription.features.public_recipes_access') }}</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-700">Créer vos propres recettes</span>
+                                <span class="text-gray-700">{{ t('subscription.features.create_own_recipes') }}</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-700">Garde-manger basique (10 articles max)</span>
+                                <span class="text-gray-700">{{ t('subscription.features.basic_pantry_limit') }}</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-700">Planning de repas basique</span>
+                                <span class="text-gray-700">{{ t('subscription.features.basic_meal_planning') }}</span>
                             </li>
                         </ul>
                         <button v-if="currentPlan === 'free'" disabled class="w-full py-3 px-6 rounded-lg bg-gray-200 text-gray-600 font-semibold cursor-not-allowed">
-                            Plan actuel
+                            {{ t('subscription.current_plan_badge') }}
                         </button>
                     </div>
 
@@ -182,37 +182,37 @@ const getPlanFeatures = (features) => {
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-900 font-medium">Toutes les fonctionnalités gratuites</span>
+                                <span class="text-gray-900 font-medium">{{ t('subscription.features.all_free_features') }}</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-900 font-medium">Garde-manger illimité avec scanner code-barres</span>
+                                <span class="text-gray-900 font-medium">{{ t('subscription.features.unlimited_pantry_barcode') }}</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-900 font-medium">Alertes de péremption intelligentes</span>
+                                <span class="text-gray-900 font-medium">{{ t('subscription.features.smart_expiry_alerts') }}</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-900 font-medium">Recettes anti-gaspi personnalisées</span>
+                                <span class="text-gray-900 font-medium">{{ t('subscription.features.personalized_antigaspi') }}</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-900 font-medium">Plans de repas illimités</span>
+                                <span class="text-gray-900 font-medium">{{ t('subscription.features.unlimited_meal_plans') }}</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-900 font-medium">Sans publicité</span>
+                                <span class="text-gray-900 font-medium">{{ t('subscription.features.ad_free') }}</span>
                             </li>
                         </ul>
                         <PrimaryButton
@@ -226,7 +226,7 @@ const getPlanFeatures = (features) => {
                             <span v-else>{{ t('subscription.subscribe') }}</span>
                         </PrimaryButton>
                         <button v-else disabled class="w-full py-4 px-6 rounded-lg bg-gray-200 text-gray-600 font-semibold cursor-not-allowed">
-                            Plan actuel
+                            {{ t('subscription.current_plan_badge') }}
                         </button>
                     </div>
 
@@ -246,7 +246,7 @@ const getPlanFeatures = (features) => {
                                 <span class="text-gray-600">/ {{ t('subscription.year') }}</span>
                             </div>
                             <p class="text-sm text-green-600 font-semibold mt-2">
-                                Soit {{ (plans.yearly.price / 12).toFixed(2) }}€/mois
+                                {{ t('subscription.monthly_equivalent', { price: (plans.yearly.price / 12).toFixed(2) }) }}
                             </p>
                         </div>
                         <ul class="space-y-4 mb-8 flex-grow">
@@ -254,19 +254,19 @@ const getPlanFeatures = (features) => {
                                 <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-900 font-medium">Toutes les fonctionnalités mensuelles</span>
+                                <span class="text-gray-900 font-medium">{{ t('subscription.features.all_monthly_features') }}</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <svg class="w-6 h-6 text-yellow-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                 </svg>
-                                <span class="text-gray-900 font-medium">Économisez 2 mois sur l'année</span>
+                                <span class="text-gray-900 font-medium">{{ t('subscription.features.save_two_months') }}</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <svg class="w-6 h-6 text-yellow-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                 </svg>
-                                <span class="text-gray-900 font-medium">Meilleur rapport qualité-prix</span>
+                                <span class="text-gray-900 font-medium">{{ t('subscription.features.best_value') }}</span>
                             </li>
                         </ul>
                         <PrimaryButton
@@ -280,7 +280,7 @@ const getPlanFeatures = (features) => {
                             <span v-else>{{ t('subscription.subscribe') }}</span>
                         </PrimaryButton>
                         <button v-else disabled class="w-full py-4 px-6 rounded-lg bg-gray-200 text-gray-600 font-semibold cursor-not-allowed">
-                            Plan actuel
+                            {{ t('subscription.current_plan_badge') }}
                         </button>
                     </div>
                 </div>
@@ -291,19 +291,19 @@ const getPlanFeatures = (features) => {
                         <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>Paiement sécurisé avec Stripe</span>
+                        <span>{{ t('subscription.trust.secure_payment') }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>Annulation à tout moment</span>
+                        <span>{{ t('subscription.trust.cancel_anytime') }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                         </svg>
-                        <span>Support client réactif</span>
+                        <span>{{ t('subscription.trust.responsive_support') }}</span>
                     </div>
                 </div>
 

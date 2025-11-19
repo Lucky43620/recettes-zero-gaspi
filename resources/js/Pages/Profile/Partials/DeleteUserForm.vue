@@ -2,11 +2,10 @@
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import ActionSection from '@/Components/ActionSection.vue';
-import DangerButton from '@/Components/DangerButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import InputError from '@/Components/InputError.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import FormInput from '@/Components/Common/FormInput.vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -56,9 +55,9 @@ const closeModal = () => {
             </div>
 
             <div class="mt-5">
-                <DangerButton @click="confirmUserDeletion">
+                <PrimaryButton variant="danger" @click="confirmUserDeletion">
                     {{ t('profile.delete_account_title') }}
-                </DangerButton>
+                </PrimaryButton>
             </div>
 
             <!-- Delete Account Confirmation Modal -->
@@ -71,7 +70,7 @@ const closeModal = () => {
                     {{ t('profile.delete_account_confirmation') }}
 
                     <div class="mt-4">
-                        <TextInput
+                        <FormInput
                             ref="passwordInput"
                             v-model="form.password"
                             type="password"
@@ -86,18 +85,19 @@ const closeModal = () => {
                 </template>
 
                 <template #footer>
-                    <SecondaryButton class="w-full sm:w-auto" @click="closeModal">
+                    <PrimaryButton variant="secondary" class="w-full sm:w-auto" @click="closeModal">
                         {{ t('common.cancel') }}
-                    </SecondaryButton>
+                    </PrimaryButton>
 
-                    <DangerButton
+                    <PrimaryButton
+                        variant="danger"
                         class="w-full sm:w-auto"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                         @click="deleteUser"
                     >
                         {{ t('profile.delete_account_title') }}
-                    </DangerButton>
+                    </PrimaryButton>
                 </template>
             </DialogModal>
         </template>

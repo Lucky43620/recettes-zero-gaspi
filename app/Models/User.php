@@ -122,8 +122,8 @@ class User extends Authenticatable
     public function planDisplayName(): string
     {
         return match ($this->planName()) {
-            'monthly' => 'Premium Mensuel',
-            'yearly' => 'Premium Annuel',
+            'monthly' => SystemSetting::getValue('monthly_plan_name', 'Premium Mensuel'),
+            'yearly' => SystemSetting::getValue('yearly_plan_name', 'Premium Annuel'),
             'free' => 'Gratuit',
             default => 'Premium',
         };
@@ -131,9 +131,12 @@ class User extends Authenticatable
 
     public function planPrice(): ?string
     {
+        $monthlyPrice = SystemSetting::getValue('monthly_price', 4.99);
+        $yearlyPrice = SystemSetting::getValue('yearly_price', 49.90);
+
         return match ($this->planName()) {
-            'monthly' => '4,99€/mois',
-            'yearly' => '49,90€/an',
+            'monthly' => number_format($monthlyPrice, 2, ',', ' ') . '€/mois',
+            'yearly' => number_format($yearlyPrice, 2, ',', ' ') . '€/an',
             'free' => 'Gratuit',
             default => null,
         };

@@ -123,4 +123,24 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Days Mapping
+    |--------------------------------------------------------------------------
+    |
+    | This configuration maps English day names to their French equivalents
+    | for use throughout the application.
+    |
+    */
+
+    'days_map' => [
+        'monday' => 'Lundi',
+        'tuesday' => 'Mardi',
+        'wednesday' => 'Mercredi',
+        'thursday' => 'Jeudi',
+        'friday' => 'Vendredi',
+        'saturday' => 'Samedi',
+        'sunday' => 'Dimanche'
+    ],
+
 ];

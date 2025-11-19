@@ -138,20 +138,14 @@
             </div>
         </div>
 
-        <AddPantryItemModal
-            v-if="showAddModal"
+        <PantryItemModal
+            v-if="showAddModal || (showEditModal && editingItem)"
+            :item="showEditModal ? editingItem : null"
             :units="units"
-            @close="closeAddModal"
+            @close="showAddModal ? closeAddModal() : closeEditModal()"
         />
 
-        <EditPantryItemModal
-            v-if="showEditModal && editingItem"
-            :item="editingItem"
-            :units="units"
-            @close="closeEditModal"
-        />
-
-        <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
+        <DialogModal variant="danger" :show="confirmingDeletion" @close="confirmingDeletion = false">
             <template #title>
                 {{ t('pantry.delete_item') }}
             </template>
@@ -173,7 +167,7 @@
                     {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
     </AppLayout>
 </template>
 
@@ -182,9 +176,8 @@ import { useI18n } from 'vue-i18n';
 import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PantryItemCard from '@/Components/Pantry/PantryItemCard.vue';
-import AddPantryItemModal from '@/Components/Pantry/AddPantryItemModal.vue';
-import EditPantryItemModal from '@/Components/Pantry/EditPantryItemModal.vue';
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import PantryItemModal from '@/Components/Pantry/PantryItemModal.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';

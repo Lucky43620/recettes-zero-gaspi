@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class NotificationController extends Controller
 {
+    public function __construct(
+        private NotificationService $notificationService
+    ) {}
+
     public function index()
     {
-        $user = Auth::user()->loadCount('unreadNotifications');
-
-        $notifications = $user->notifications()->paginate(20);
-
-        $unreadCount = $user->unread_notifications_count;
+        $user = Auth::user();
+        $notifications = $this->notificationService->getUserNotifications($user, 20);
+        $unreadCount = $this->notificationService->getUnreadCount($user);
 
         return Inertia::render('Notifications/Index', [
             'notifications' => $notifications,
@@ -24,24 +26,19 @@ class NotificationController extends Controller
 
     public function markAsRead($id)
     {
-        $notification = Auth::user()->notifications()->findOrFail($id);
-        $notification->markAsRead();
-
+        $this->notificationService->markAsRead($id);
         return back();
     }
 
     public function markAllAsRead()
     {
-        Auth::user()->unreadNotifications->markAsRead();
-
+        $this->notificationService->markAllAsRead(Auth::user());
         return back()->with('success', 'Toutes les notifications ont été marquées comme lues');
     }
 
     public function destroy($id)
     {
-        $notification = Auth::user()->notifications()->findOrFail($id);
-        $notification->delete();
-
+        $this->notificationService->deleteNotification($id);
         return back()->with('success', 'Notification supprimée');
     }
 }

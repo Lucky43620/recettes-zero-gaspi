@@ -154,4 +154,14 @@ class Recipe extends Model implements HasMedia
     {
         return $query->latest();
     }
+
+    public function scopeWithAuthorAndMedia($query)
+    {
+        return $query->with(['author', 'media']);
+    }
+
+    public function scopePublicOnly($query)
+    {
+        return $query->where('is_public', true);
+    }
 }

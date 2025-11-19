@@ -4,9 +4,7 @@ import { useForm, usePage } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 
 const { t } = useI18n();
 const page = usePage();
@@ -125,14 +123,8 @@ const formatCurrency = (value) => {
 };
 
 const getStatusLabel = (status) => {
-    const labels = {
-        paid: 'Payée',
-        open: 'En attente',
-        draft: 'Brouillon',
-        void: 'Annulée',
-        uncollectible: 'Non recouvrable',
-    };
-    return labels[status] || status;
+    const statusKey = `subscription.invoice_status.${status}`;
+    return t(statusKey, status);
 };
 
 const getStatusClass = (status) => {
@@ -308,14 +300,14 @@ const getSwapPlanName = () => {
                             <div v-if="!subscription.on_grace_period && subscription.status === 'active'" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
                                 <div class="flex-1">
                                     <p class="font-semibold text-blue-900 text-sm md:text-base">
-                                        Changer de formule
+                                        {{ t('subscription.change_plan') }}
                                     </p>
                                     <p class="text-xs md:text-sm text-blue-700 mt-1">
-                                        Passez à la formule {{ getSwapPlanName() }}
+                                        {{ t('subscription.switch_to_plan', { plan: getSwapPlanName() }) }}
                                     </p>
                                 </div>
                                 <PrimaryButton @click="swapPlan(getOtherPlan())" class="w-full sm:w-auto whitespace-nowrap">
-                                    Changer de plan
+                                    {{ t('subscription.change_plan_button') }}
                                 </PrimaryButton>
                             </div>
 
@@ -329,24 +321,24 @@ const getSwapPlanName = () => {
                                         {{ t('subscription.cancel_info') }}
                                     </p>
                                 </div>
-                                <DangerButton @click="showCancelModal = true" class="w-full sm:w-auto whitespace-nowrap">
+                                <PrimaryButton variant="danger" @click="showCancelModal = true" class="w-full sm:w-auto whitespace-nowrap">
                                     {{ t('subscription.cancel') }}
-                                </DangerButton>
+                                </PrimaryButton>
                             </div>
 
                             <!-- Cancel Now -->
                             <div v-if="subscription.on_grace_period" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-red-50 border border-red-200 rounded-lg p-4">
                                 <div class="flex-1">
                                     <p class="font-semibold text-red-900 text-sm md:text-base">
-                                        Annuler immédiatement
+                                        {{ t('subscription.cancel_now_title') }}
                                     </p>
                                     <p class="text-xs md:text-sm text-red-700 mt-1">
-                                        Mettre fin à votre abonnement dès maintenant sans attendre la fin de la période
+                                        {{ t('subscription.cancel_now_description') }}
                                     </p>
                                 </div>
-                                <DangerButton @click="showCancelNowModal = true" class="w-full sm:w-auto whitespace-nowrap">
-                                    Annuler maintenant
-                                </DangerButton>
+                                <PrimaryButton variant="danger" @click="showCancelNowModal = true" class="w-full sm:w-auto whitespace-nowrap">
+                                    {{ t('subscription.cancel_now_button') }}
+                                </PrimaryButton>
                             </div>
 
                             <!-- Billing Portal -->
@@ -356,11 +348,11 @@ const getSwapPlanName = () => {
                                         {{ t('subscription.payment_method') }}
                                     </p>
                                     <p class="text-xs md:text-sm text-gray-600 mt-1">
-                                        Gérez votre moyen de paiement et vos factures sur Stripe
+                                        {{ t('subscription.manage_payment_stripe') }}
                                     </p>
                                 </div>
                                 <PrimaryButton @click="openBillingPortal" class="w-full sm:w-auto whitespace-nowrap">
-                                    Portail de facturation
+                                    {{ t('subscription.billing_portal') }}
                                 </PrimaryButton>
                             </div>
                         </div>
@@ -406,7 +398,7 @@ const getSwapPlanName = () => {
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                         </svg>
-                                        Voir
+                                        {{ t('common.view') }}
                                     </a>
                                     <a
                                         v-if="invoice.invoice_pdf"
@@ -417,7 +409,7 @@ const getSwapPlanName = () => {
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>
-                                        Télécharger PDF
+                                        {{ t('subscription.download_pdf') }}
                                     </a>
                                 </div>
                             </div>
@@ -428,7 +420,7 @@ const getSwapPlanName = () => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
                             <p class="text-gray-600 text-sm">
-                                Aucune facture disponible
+                                {{ t('subscription.no_invoices') }}
                             </p>
                         </div>
                     </div>
@@ -437,7 +429,7 @@ const getSwapPlanName = () => {
         </div>
 
         <!-- Cancel Confirmation Modal -->
-        <ConfirmationModal :show="showCancelModal" @close="showCancelModal = false">
+        <DialogModal variant="danger" :show="showCancelModal" @close="showCancelModal = false">
             <template #title>
                 {{ t('subscription.confirm_cancel') }}
             </template>
@@ -447,23 +439,24 @@ const getSwapPlanName = () => {
             </template>
 
             <template #footer>
-                <SecondaryButton @click="showCancelModal = false">
+                <PrimaryButton variant="secondary" @click="showCancelModal = false">
                     {{ t('common.cancel') }}
-                </SecondaryButton>
+                </PrimaryButton>
 
-                <DangerButton
+                <PrimaryButton
+                    variant="danger"
                     class="ms-3"
                     :class="{ 'opacity-25': cancelForm.processing }"
                     :disabled="cancelForm.processing"
                     @click="cancelSubscription"
                 >
                     {{ t('subscription.confirm_cancel_button') }}
-                </DangerButton>
+                </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
 
         <!-- Resume Confirmation Modal -->
-        <ConfirmationModal :show="showResumeModal" @close="showResumeModal = false">
+        <DialogModal variant="danger" :show="showResumeModal" @close="showResumeModal = false">
             <template #title>
                 {{ t('subscription.confirm_resume') }}
             </template>
@@ -473,9 +466,9 @@ const getSwapPlanName = () => {
             </template>
 
             <template #footer>
-                <SecondaryButton @click="showResumeModal = false">
+                <PrimaryButton variant="secondary" @click="showResumeModal = false">
                     {{ t('common.cancel') }}
-                </SecondaryButton>
+                </PrimaryButton>
 
                 <PrimaryButton
                     class="ms-3"
@@ -486,29 +479,29 @@ const getSwapPlanName = () => {
                     {{ t('subscription.confirm_resume_button') }}
                 </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
 
         <!-- Swap Plan Confirmation Modal -->
-        <ConfirmationModal :show="showSwapModal" @close="showSwapModal = false">
+        <DialogModal variant="danger" :show="showSwapModal" @close="showSwapModal = false">
             <template #title>
-                Changer de formule
+                {{ t('subscription.change_plan') }}
             </template>
 
             <template #content>
                 <div v-if="swapForm.plan">
-                    <p class="mb-4">Êtes-vous sûr de vouloir passer à la formule {{ getSwapPlanName() }} ?</p>
+                    <p class="mb-4">{{ t('subscription.swap_plan_question', { plan: getSwapPlanName() }) }}</p>
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <p class="text-sm text-blue-900">
-                            <strong>Note:</strong> Le changement sera effectué immédiatement. Votre facturation sera ajustée au prorata.
+                            <strong>{{ t('subscription.swap_note_label') }}</strong> {{ t('subscription.swap_note_text') }}
                         </p>
                     </div>
                 </div>
             </template>
 
             <template #footer>
-                <SecondaryButton @click="showSwapModal = false">
-                    Annuler
-                </SecondaryButton>
+                <PrimaryButton variant="secondary" @click="showSwapModal = false">
+                    {{ t('common.cancel') }}
+                </PrimaryButton>
 
                 <PrimaryButton
                     class="ms-3"
@@ -516,42 +509,43 @@ const getSwapPlanName = () => {
                     :disabled="swapForm.processing"
                     @click="confirmSwap"
                 >
-                    Confirmer le changement
+                    {{ t('subscription.confirm_swap') }}
                 </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
 
         <!-- Cancel Now Confirmation Modal -->
-        <ConfirmationModal :show="showCancelNowModal" @close="showCancelNowModal = false">
+        <DialogModal variant="danger" :show="showCancelNowModal" @close="showCancelNowModal = false">
             <template #title>
-                Annuler immédiatement
+                {{ t('subscription.cancel_now_title') }}
             </template>
 
             <template #content>
                 <div>
-                    <p class="mb-4">Êtes-vous sûr de vouloir annuler votre abonnement immédiatement ?</p>
+                    <p class="mb-4">{{ t('subscription.cancel_now_question') }}</p>
                     <div class="bg-red-50 border border-red-200 rounded-lg p-4">
                         <p class="text-sm text-red-900">
-                            <strong>Attention:</strong> Votre accès aux fonctionnalités Premium sera révoqué immédiatement et vous ne serez pas remboursé pour la période restante.
+                            <strong>{{ t('subscription.warning_label') }}</strong> {{ t('subscription.cancel_now_warning') }}
                         </p>
                     </div>
                 </div>
             </template>
 
             <template #footer>
-                <SecondaryButton @click="showCancelNowModal = false">
-                    Annuler
-                </SecondaryButton>
+                <PrimaryButton variant="secondary" @click="showCancelNowModal = false">
+                    {{ t('common.cancel') }}
+                </PrimaryButton>
 
-                <DangerButton
+                <PrimaryButton
+                    variant="danger"
                     class="ms-3"
                     :class="{ 'opacity-25': cancelNowForm.processing }"
                     :disabled="cancelNowForm.processing"
                     @click="cancelNow"
                 >
-                    Confirmer l'annulation immédiate
-                </DangerButton>
+                    {{ t('subscription.confirm_cancel_now') }}
+                </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
     </AppLayout>
 </template>

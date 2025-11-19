@@ -3,12 +3,10 @@ import { ref, computed, watch } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import ActionSection from '@/Components/ActionSection.vue';
 import ConfirmsPassword from '@/Components/ConfirmsPassword.vue';
-import DangerButton from '@/Components/DangerButton.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import FormInput from '@/Components/Common/FormInput.vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -159,7 +157,7 @@ const disableTwoFactorAuthentication = () => {
                     <div v-if="confirming" class="mt-4">
                         <InputLabel for="code" :value="t('auth.code')" />
 
-                        <TextInput
+                        <FormInput
                             id="code"
                             v-model="confirmationForm.code"
                             type="text"
@@ -213,43 +211,47 @@ const disableTwoFactorAuthentication = () => {
                     </ConfirmsPassword>
 
                     <ConfirmsPassword @confirmed="regenerateRecoveryCodes">
-                        <SecondaryButton
+                        <PrimaryButton
+                            variant="secondary"
                             v-if="recoveryCodes.length > 0 && ! confirming"
                             class="w-full sm:w-auto"
                         >
                             {{ t('profile.two_factor_regenerate_codes') }}
-                        </SecondaryButton>
+                        </PrimaryButton>
                     </ConfirmsPassword>
 
                     <ConfirmsPassword @confirmed="showRecoveryCodes">
-                        <SecondaryButton
+                        <PrimaryButton
+                            variant="secondary"
                             v-if="recoveryCodes.length === 0 && ! confirming"
                             class="w-full sm:w-auto"
                         >
                             {{ t('profile.two_factor_show_codes') }}
-                        </SecondaryButton>
+                        </PrimaryButton>
                     </ConfirmsPassword>
 
                     <ConfirmsPassword @confirmed="disableTwoFactorAuthentication">
-                        <SecondaryButton
+                        <PrimaryButton
+                            variant="secondary"
                             v-if="confirming"
                             class="w-full sm:w-auto"
                             :class="{ 'opacity-25': disabling }"
                             :disabled="disabling"
                         >
                             {{ t('common.cancel') }}
-                        </SecondaryButton>
+                        </PrimaryButton>
                     </ConfirmsPassword>
 
                     <ConfirmsPassword @confirmed="disableTwoFactorAuthentication">
-                        <DangerButton
+                        <PrimaryButton
+                            variant="danger"
                             v-if="! confirming"
                             class="w-full sm:w-auto"
                             :class="{ 'opacity-25': disabling }"
                             :disabled="disabling"
                         >
                             {{ t('profile.two_factor_disable') }}
-                        </DangerButton>
+                        </PrimaryButton>
                     </ConfirmsPassword>
                 </div>
             </div>

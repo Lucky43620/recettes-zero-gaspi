@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import CommentForm from './CommentForm.vue';
 import CommentItem from './CommentItem.vue';
@@ -109,7 +109,7 @@ function getUserVote(commentId) {
             />
         </div>
 
-        <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
+        <DialogModal variant="danger" :show="confirmingDeletion" @close="confirmingDeletion = false">
             <template #title>
                 {{ t('profile.delete_comment') }}
             </template>
@@ -131,6 +131,6 @@ function getUserVote(commentId) {
                     {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
     </div>
 </template>

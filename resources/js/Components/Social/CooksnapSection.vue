@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import CooksnapForm from './CooksnapForm.vue';
 import CooksnapCard from './CooksnapCard.vue';
@@ -97,7 +97,7 @@ function closeImageModal() {
             </button>
         </div>
 
-        <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
+        <DialogModal variant="danger" :show="confirmingDeletion" @close="confirmingDeletion = false">
             <template #title>
                 {{ t('cooksnaps.delete_cooksnap') }}
             </template>
@@ -119,6 +119,6 @@ function closeImageModal() {
                     {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
     </div>
 </template>

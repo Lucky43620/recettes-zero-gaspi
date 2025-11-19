@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import StatCard from '@/Components/Admin/StatCard.vue';
 import { useDateFormat } from '@/composables/useDateFormat';
@@ -164,7 +164,7 @@ const { formatDate, formatRelativeTime } = useDateFormat();
             </div>
         </div>
 
-        <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
+        <DialogModal variant="danger" :show="confirmingDeletion" @close="confirmingDeletion = false">
             <template #title>
                 {{ t('admin.delete_user') }}
             </template>
@@ -187,6 +187,6 @@ const { formatDate, formatRelativeTime } = useDateFormat();
                     {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
     </AdminLayout>
 </template>

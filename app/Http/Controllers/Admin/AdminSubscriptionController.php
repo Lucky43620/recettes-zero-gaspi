@@ -5,18 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\SubscriptionStatsService;
+use App\Services\StripeDataFormatter;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Laravel\Cashier\Subscription;
 
 class AdminSubscriptionController extends Controller
 {
-    protected $statsService;
-
-    public function __construct(SubscriptionStatsService $statsService)
-    {
-        $this->statsService = $statsService;
-    }
+    public function __construct(
+        private SubscriptionStatsService $statsService,
+        private StripeDataFormatter $stripeFormatter
+    ) {}
 
     public function index(Request $request)
     {
@@ -75,15 +74,7 @@ class AdminSubscriptionController extends Controller
             'current_plan' => $user->planName(),
             'is_premium' => $user->isPremium(),
             'subscriptions' => $user->subscriptions()->get()->map(function ($sub) {
-                return [
-                    'id' => $sub->id,
-                    'stripe_id' => $sub->stripe_id,
-                    'stripe_status' => $sub->stripe_status,
-                    'stripe_price' => $sub->stripe_price,
-                    'trial_ends_at' => $sub->trial_ends_at,
-                    'ends_at' => $sub->ends_at,
-                    'created_at' => $sub->created_at,
-                ];
+                return $this->stripeFormatter->formatSubscription($sub);
             }),
         ];
 
@@ -93,12 +84,7 @@ class AdminSubscriptionController extends Controller
                 $stripeInvoices = $user->invoices();
                 if ($stripeInvoices) {
                     foreach ($stripeInvoices as $invoice) {
-                        $invoices[] = [
-                            'id' => $invoice->id,
-                            'date' => $invoice->date()->toDateTimeString(),
-                            'total' => $invoice->total() / 100,
-                            'status' => $invoice->status,
-                        ];
+                        $invoices[] = $this->stripeFormatter->formatInvoice($invoice);
                     }
                 }
             }

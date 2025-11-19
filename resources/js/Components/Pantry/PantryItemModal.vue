@@ -6,7 +6,7 @@
             <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-semibold text-gray-900">
-                        {{ t('pantry.add_to_pantry') }}
+                        {{ isEditing ? t('pantry.edit_item') : t('pantry.add_to_pantry') }}
                     </h3>
                     <button
                         @click="$emit('close')"
@@ -19,7 +19,7 @@
                 </div>
 
                 <form @submit.prevent="submit" class="space-y-4">
-                    <div>
+                    <div v-if="!isEditing">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             {{ t('pantry.search_ingredient') }}
                         </label>
@@ -93,6 +93,29 @@
                         <p v-if="form.errors.ingredient_id" class="mt-2 text-sm text-red-600">{{ form.errors.ingredient_id }}</p>
                     </div>
 
+                    <div v-else>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ t('pantry.ingredient') }}
+                        </label>
+                        <div class="p-3 bg-gray-50 border border-gray-200 rounded-md flex items-center gap-3">
+                            <img
+                                v-if="item.ingredient?.image_url"
+                                :src="item.ingredient.image_url"
+                                :alt="item.ingredient?.name"
+                                class="w-12 h-12 object-cover rounded"
+                            >
+                            <div v-else class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">{{ item.ingredient?.name }}</p>
+                                <p v-if="item.ingredient?.brands" class="text-sm text-gray-600">{{ item.ingredient.brands }}</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-4">
                         <FormInput
                             v-model="form.quantity"
@@ -121,7 +144,7 @@
                         v-model="form.expiration_date"
                         :label="t('pantry.expiration_date')"
                         type="date"
-                        :min="today"
+                        :min="isEditing ? undefined : today"
                         :error="form.errors.expiration_date"
                     />
 
@@ -140,25 +163,25 @@
                         <input
                             v-model="form.opened"
                             type="checkbox"
-                            id="opened"
+                            :id="isEditing ? 'opened-edit' : 'opened'"
                             class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500"
                         >
-                        <label for="opened" class="ml-2 text-sm text-gray-700">
+                        <label :for="isEditing ? 'opened-edit' : 'opened'" class="ml-2 text-sm text-gray-700">
                             {{ t('pantry.item_opened') }}
                         </label>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-4 border-t">
-                        <SecondaryButton @click="$emit('close')">
+                        <PrimaryButton variant="secondary" @click="$emit('close')">
                             {{ t('common.cancel') }}
-                        </SecondaryButton>
+                        </PrimaryButton>
 
                         <PrimaryButton
                             type="submit"
-                            :disabled="!form.ingredient_id"
+                            :disabled="!isEditing && !form.ingredient_id"
                             :loading="form.processing"
                         >
-                            {{ t('shopping_list.add') }}
+                            {{ isEditing ? t('common.save') : t('shopping_list.add') }}
                         </PrimaryButton>
                     </div>
                 </form>
@@ -175,18 +198,32 @@ import axios from 'axios';
 import FormInput from '@/Components/Common/FormInput.vue';
 import FormSelect from '@/Components/Common/FormSelect.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { useStorageLocationLabels } from '@/composables/useEnumLabels';
 
 const { t } = useI18n();
 
 const props = defineProps({
-    units: Array,
+    units: {
+        type: Array,
+        required: true
+    },
+    item: {
+        type: Object,
+        default: null
+    }
 });
 
 const emit = defineEmits(['close']);
 
-const form = useForm({
+const isEditing = computed(() => !!props.item);
+
+const form = useForm(isEditing.value ? {
+    quantity: props.item.quantity,
+    unit_code: props.item.unit?.code || props.item.unit_code,
+    expiration_date: props.item.expiration_date || '',
+    storage_location: props.item.storage_location || '',
+    opened: props.item.opened || false,
+} : {
     ingredient_id: null,
     quantity: 1,
     unit_code: '',
@@ -246,11 +283,20 @@ const clearSelection = () => {
 };
 
 const submit = () => {
-    form.post(route('pantry.store'), {
-        preserveScroll: true,
-        onSuccess: () => {
-            emit('close');
-        },
-    });
+    if (isEditing.value) {
+        form.put(route('pantry.update', props.item.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                emit('close');
+            },
+        });
+    } else {
+        form.post(route('pantry.store'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                emit('close');
+            },
+        });
+    }
 };
 </script>

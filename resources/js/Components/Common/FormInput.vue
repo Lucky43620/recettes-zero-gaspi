@@ -7,6 +7,7 @@
             </slot>
         </label>
         <input
+            ref="input"
             :id="id"
             :type="type"
             :value="modelValue"
@@ -17,6 +18,8 @@
             :min="min"
             :max="max"
             :step="step"
+            :autocomplete="autocomplete"
+            :name="name"
             :class="[
                 'w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm',
                 error ? 'border-red-500' : '',
@@ -29,7 +32,9 @@
 </template>
 
 <script setup>
-defineProps({
+import { onMounted, ref } from 'vue';
+
+const props = defineProps({
     id: String,
     label: String,
     type: {
@@ -45,7 +50,20 @@ defineProps({
     min: [String, Number],
     max: [String, Number],
     step: [String, Number],
+    autocomplete: String,
+    name: String,
+    autofocus: Boolean,
 });
 
 defineEmits(['update:modelValue']);
+
+const input = ref(null);
+
+onMounted(() => {
+    if (props.autofocus && input.value) {
+        input.value.focus();
+    }
+});
+
+defineExpose({ focus: () => input.value?.focus() });
 </script>

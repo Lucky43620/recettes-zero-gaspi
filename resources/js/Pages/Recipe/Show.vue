@@ -10,7 +10,7 @@ import RatingStars from '@/Components/Social/RatingStars.vue';
 import CommentSection from '@/Components/Social/CommentSection.vue';
 import CooksnapSection from '@/Components/Social/CooksnapSection.vue';
 import FavoriteButton from '@/Components/Social/FavoriteButton.vue';
-import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import RecipeHeader from '@/Components/Recipe/RecipeHeader.vue';
 import RecipeStats from '@/Components/Recipe/RecipeStats.vue';
@@ -159,7 +159,7 @@ function deleteRecipe() {
             </div>
         </div>
 
-        <ConfirmationModal :show="confirmingDeletion" @close="confirmingDeletion = false">
+        <DialogModal variant="danger" :show="confirmingDeletion" @close="confirmingDeletion = false">
             <template #title>
                 {{ t('recipe.delete_recipe') }}
             </template>
@@ -181,6 +181,6 @@ function deleteRecipe() {
                     {{ t('common.delete') }}
                 </PrimaryButton>
             </template>
-        </ConfirmationModal>
+        </DialogModal>
     </component>
 </template>
