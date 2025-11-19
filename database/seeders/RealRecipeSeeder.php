@@ -42,6 +42,10 @@ class RealRecipeSeeder extends Seeder
                 'calories' => $recipeData['calories'] ?? null,
             ]);
 
+            $recipe->addMediaFromUrl(public_path('images/defaut.webp'))
+                ->preservingOriginal()
+                ->toMediaCollection('images');
+
             foreach ($recipeData['steps'] as $index => $stepData) {
                 RecipeStep::create([
                     'recipe_id' => $recipe->id,
