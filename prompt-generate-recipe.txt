@@ -1,5 +1,16 @@
 Génère une commande complète pour créer une recette culinaire.
 
+ÉTAPE 1 - GÉNÉRATION D'IMAGE (si disponible) :
+Si tu as accès à DALL-E ou un outil de génération d'images :
+1. Génère d'abord une image appétissante pour la recette
+2. Récupère l'URL de l'image générée
+3. Utilise cette URL dans le champ "image_url" du JSON
+
+Si tu n'as pas accès à la génération d'images :
+- Omets complètement le champ "image_url" (une image par défaut sera utilisée)
+
+ÉTAPE 2 - GÉNÉRATION DE LA COMMANDE :
+
 CONTRAINTES :
 - Réponds UNIQUEMENT avec la commande, sans texte avant ou après
 - Pas d'explications, pas de markdown, pas de commentaires
@@ -55,11 +66,28 @@ NIVEAUX DE DIFFICULTÉ :
 RÈGLES IMPORTANTES :
 1. JSON sur UNE SEULE LIGNE (aucun retour à la ligne dans le JSON)
 2. Pas de retour à la ligne dans la commande echo
-3. Utiliser guillemets doubles " pour clés et valeurs JSON
-4. Échapper les apostrophes : ' devient '\''
+3. Utiliser guillemets doubles " pour toutes les valeurs textuelles JSON
+4. ÉCHAPPEMENT DES APOSTROPHES (CRUCIAL) :
+   - Dans le texte français, TOUJOURS utiliser les apostrophes : d'eau, l'ail, qu'il
+   - Pour échapper l'apostrophe dans le shell : remplacer ' par '\''
+   - Exemples :
+     ✓ CORRECT : "Cuire les pâtes dans une casserole d'\''eau bouillante"
+     ✗ FAUX : "Cuire les pâtes dans une casserole d eau bouillante"
+     ✓ CORRECT : "Éplucher l'\''ail et le hacher"
+     ✗ FAUX : "Éplucher l ail et le hacher"
 5. Positions des ingrédients/étapes commencent à 1 et s'incrémentent
 6. La recette sera publique automatiquement
 7. Ne PAS ajouter le champ "is_public" (toujours true par défaut)
 
-EXEMPLE COMPLET (UNE SEULE LIGNE) :
-echo '{"title":"Poulet rôti aux herbes","summary":"Un poulet rôti savoureux et croustillant, parfumé aux herbes de Provence. Recette simple et traditionnelle pour un repas familial réussi.","servings":4,"prep_minutes":15,"cook_minutes":60,"difficulty":"medium","cuisine":"Française","calories":320,"ingredients":[{"name":"Poulet entier","quantity":1.5,"unit":"kg","position":1},{"name":"Beurre","quantity":50,"unit":"g","position":2},{"name":"Herbes de Provence","quantity":2,"unit":"tbsp","position":3},{"name":"Gousses d'\''ail","quantity":4,"unit":"clove","position":4},{"name":"Sel","quantity":1,"unit":"tsp","position":5},{"name":"Poivre","quantity":0.5,"unit":"tsp","position":6}],"steps":[{"text":"Préchauffer le four à 200°C.","position":1},{"text":"Mélanger le beurre ramolli avec les herbes, le sel et le poivre.","position":2},{"text":"Badigeonner le poulet avec le mélange et insérer l'\''ail dans la cavité.","position":3},{"text":"Enfourner et cuire 60 minutes en arrosant régulièrement.","position":4,"timer_minutes":60}],"image_url":"https://images.unsplash.com/photo-1598103442097-8b74394b95c6"}' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
+EXEMPLES D'ÉCHAPPEMENT CORRECT :
+- Huile d'olive → "Huile d'\''olive"
+- L'eau salée → "l'\''eau salée"
+- Jusqu'à ébullition → "jusqu'\''à ébullition"
+- Qu'il soit doré → "qu'\''il soit doré"
+
+EXEMPLE COMPLET AVEC IMAGE GÉNÉRÉE (UNE SEULE LIGNE) :
+Si tu as généré une image avec DALL-E, utilise son URL :
+echo '{"title":"Pâtes carbonara","summary":"Un classique italien crémeux et réconfortant. Cette recette traditionnelle n'\''utilise que des œufs, du parmesan et des lardons pour créer une sauce onctueuse sans crème.","servings":4,"prep_minutes":10,"cook_minutes":15,"difficulty":"easy","cuisine":"Italienne","calories":450,"ingredients":[{"name":"Pâtes","quantity":400,"unit":"g","position":1},{"name":"Lardons","quantity":200,"unit":"g","position":2},{"name":"Œufs entiers","quantity":3,"unit":"piece","position":3},{"name":"Jaune d'\''œuf","quantity":1,"unit":"piece","position":4},{"name":"Parmesan râpé","quantity":100,"unit":"g","position":5},{"name":"Poivre noir","quantity":1,"unit":"tsp","position":6}],"steps":[{"text":"Cuire les pâtes dans une casserole d'\''eau bouillante salée jusqu'\''à ce qu'\''elles soient al dente.","position":1,"timer_minutes":10},{"text":"Faire revenir les lardons dans une poêle sans ajout de matière grasse jusqu'\''à ce qu'\''ils soient dorés.","position":2,"timer_minutes":5},{"text":"Battre les œufs avec le parmesan râpé et une bonne quantité de poivre noir.","position":3},{"text":"Égoutter les pâtes en conservant un peu d'\''eau de cuisson, puis les mélanger hors du feu avec les lardons et le mélange œufs-parmesan. Ajouter l'\''eau de cuisson si nécessaire pour obtenir une texture crémeuse.","position":4}],"image_url":"URL_DE_L_IMAGE_DALLE_ICI"}' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
+
+EXEMPLE SANS IMAGE (utilise image par défaut) :
+echo '{"title":"Pâtes carbonara","summary":"Un classique italien crémeux et réconfortant. Cette recette traditionnelle n'\''utilise que des œufs, du parmesan et des lardons pour créer une sauce onctueuse sans crème.","servings":4,"prep_minutes":10,"cook_minutes":15,"difficulty":"easy","cuisine":"Italienne","calories":450,"ingredients":[{"name":"Pâtes","quantity":400,"unit":"g","position":1},{"name":"Lardons","quantity":200,"unit":"g","position":2},{"name":"Œufs entiers","quantity":3,"unit":"piece","position":3},{"name":"Jaune d'\''œuf","quantity":1,"unit":"piece","position":4},{"name":"Parmesan râpé","quantity":100,"unit":"g","position":5},{"name":"Poivre noir","quantity":1,"unit":"tsp","position":6}],"steps":[{"text":"Cuire les pâtes dans une casserole d'\''eau bouillante salée jusqu'\''à ce qu'\''elles soient al dente.","position":1,"timer_minutes":10},{"text":"Faire revenir les lardons dans une poêle sans ajout de matière grasse jusqu'\''à ce qu'\''ils soient dorés.","position":2,"timer_minutes":5},{"text":"Battre les œufs avec le parmesan râpé et une bonne quantité de poivre noir.","position":3},{"text":"Égoutter les pâtes en conservant un peu d'\''eau de cuisson, puis les mélanger hors du feu avec les lardons et le mélange œufs-parmesan. Ajouter l'\''eau de cuisson si nécessaire pour obtenir une texture crémeuse.","position":4}]}' | docker compose exec -T laravel.test php artisan recipe:create lulu.bruyere43@gmail.com
