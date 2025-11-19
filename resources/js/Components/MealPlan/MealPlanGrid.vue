@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useMediaConversions } from '@/composables/useMediaConversions';
 
 const { t } = useI18n();
-const { getConversionUrl } = useMediaConversions();
+const { getRecipeImage } = useMediaConversions();
 
 const props = defineProps({
     daysOfWeek: Array,
@@ -21,10 +21,6 @@ const props = defineProps({
 const draggedMealPlanRecipe = ref(null);
 const dragOverCell = ref(null);
 const isDragging = ref(false);
-
-const getRecipeImage = (recipe) => {
-    return recipe.media?.[0] ? getConversionUrl(recipe.media[0], 'thumb') : '/images/placeholder-recipe.svg';
-};
 
 const getGridClasses = (recipeCount) => {
     if (recipeCount === 0) return '';
@@ -155,7 +151,7 @@ const isDragOver = (day, mealType) => {
                                     </div>
 
                                     <img
-                                        :src="getRecipeImage(mpr.recipe)"
+                                        :src="getRecipeImage(mpr.recipe, 'thumb')"
                                         :alt="mpr.recipe.title"
                                         class="w-full h-full object-cover"
                                     />

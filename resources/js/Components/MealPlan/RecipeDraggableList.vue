@@ -4,7 +4,7 @@ import { Link } from '@inertiajs/vue3';
 import { useMediaConversions } from '@/composables/useMediaConversions';
 
 const { t } = useI18n();
-const { getConversionUrl } = useMediaConversions();
+const { getRecipeImage } = useMediaConversions();
 
 defineProps({
     recipes: Array,
@@ -23,10 +23,6 @@ defineProps({
 });
 
 const emit = defineEmits(['dragstart']);
-
-const getRecipeImage = (recipe) => {
-    return recipe.media?.[0] ? getConversionUrl(recipe.media[0], 'thumb') : '/images/placeholder-recipe.svg';
-};
 </script>
 
 <template>
@@ -52,7 +48,7 @@ const getRecipeImage = (recipe) => {
             >
                 <div class="flex items-center gap-2">
                     <img
-                        :src="getRecipeImage(recipe)"
+                        :src="getRecipeImage(recipe, 'thumb')"
                         :alt="recipe.title"
                         class="w-12 h-12 object-cover rounded"
                     />

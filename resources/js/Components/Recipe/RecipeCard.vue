@@ -8,7 +8,7 @@ import { ClockIcon, UserIcon, StarIcon } from '@heroicons/vue/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/vue/24/solid';
 
 const { t } = useI18n();
-const { getConversionUrl, getSrcset, getSizes } = useMediaConversions();
+const { getConversionUrl, getSrcset, getSizes, getRecipeImage } = useMediaConversions();
 
 const props = defineProps({
     recipe: Object,
@@ -32,20 +32,15 @@ const recipeUrl = computed(() => {
         class="group bg-white overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300 block border border-gray-100"
     >
         <div class="relative overflow-hidden">
-            <div v-if="recipe.media && recipe.media.length > 0" class="h-56 bg-gray-100">
+            <div class="h-56 bg-gray-100">
                 <img
-                    :src="getConversionUrl(recipe.media[0], 'medium')"
-                    :srcset="getSrcset(recipe.media[0])"
+                    :src="getRecipeImage(recipe, 'medium')"
+                    :srcset="recipe.media && recipe.media.length > 0 ? getSrcset(recipe.media[0]) : ''"
                     :sizes="getSizes('card')"
                     :alt="recipe.title"
                     loading="lazy"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-            </div>
-            <div v-else class="h-56 bg-gradient-to-br from-green-100 to-orange-100 flex items-center justify-center">
-                <svg class="w-20 h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
             </div>
 
             <div v-if="recipe.difficulty" :class="['absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm', getDifficultyClasses(recipe.difficulty)]">

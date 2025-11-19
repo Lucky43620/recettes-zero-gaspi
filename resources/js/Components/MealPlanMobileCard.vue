@@ -1,8 +1,10 @@
 <script setup>
 import { router } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { useMediaConversions } from '@/composables/useMediaConversions';
 
 const { t } = useI18n();
+const { getRecipeImage } = useMediaConversions();
 
 const props = defineProps({
     day: String,
@@ -13,7 +15,6 @@ const props = defineProps({
     onDragOver: Function,
     onDrop: Function,
     removeRecipe: Function,
-    getRecipeImage: Function,
 });
 </script>
 
@@ -45,7 +46,7 @@ const props = defineProps({
                             </button>
                             <div class="flex items-start gap-2">
                                 <img
-                                    :src="getRecipeImage(mpr.recipe)"
+                                    :src="getRecipeImage(mpr.recipe, 'thumb')"
                                     :alt="mpr.recipe.title"
                                     class="w-10 h-10 object-cover rounded"
                                 />

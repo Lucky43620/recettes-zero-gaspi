@@ -53,9 +53,14 @@ export function useMediaConversions() {
         return presets[size] || presets.card;
     };
 
+    const getRecipeImage = (recipe, conversion = 'medium') => {
+        return recipe?.media?.[0] ? getConversionUrl(recipe.media[0], conversion) : '/images/defaut.webp';
+    };
+
     return {
         getConversionUrl,
         getSrcset,
         getSizes,
+        getRecipeImage,
     };
 }
