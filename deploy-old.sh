@@ -13,7 +13,7 @@ cd "$(dirname "$0")"
 # ============================================
 # 1. NETTOYAGE COMPLET
 # ============================================
-echo "🧹 1/13 Nettoyage complet..."
+echo "🧹 1/12 Nettoyage complet..."
 
 # Stop et supprime tous les containers
 docker compose down -v 2>/dev/null || true
@@ -37,7 +37,7 @@ echo "   ✓ Nettoyage terminé"
 # 2. VÉRIFICATION .ENV
 # ============================================
 echo ""
-echo "📝 2/13 Vérification .env..."
+echo "📝 2/12 Vérification .env..."
 
 if [ ! -f .env ]; then
     echo "   ⚠️  Fichier .env manquant, copie depuis .env.example..."
@@ -62,7 +62,7 @@ echo "   ✓ .env vérifié"
 # 3. INSTALLATION COMPOSER
 # ============================================
 echo ""
-echo "📦 3/13 Installation Composer..."
+echo "📦 3/12 Installation Composer..."
 
 docker run --rm \
     -v $(pwd):/app \
@@ -79,7 +79,7 @@ echo "   ✓ Dépendances Composer installées"
 # 4. VÉRIFICATION LARAVEL SAIL
 # ============================================
 echo ""
-echo "✅ 4/13 Vérification Laravel Sail..."
+echo "✅ 4/12 Vérification Laravel Sail..."
 
 if [ ! -d "vendor/laravel/sail/runtimes/8.4" ]; then
     echo "   ❌ ERREUR: Laravel Sail runtime 8.4 introuvable"
@@ -93,7 +93,7 @@ echo "   ✓ Laravel Sail runtime 8.4 trouvé"
 # 5. BUILD DOCKER
 # ============================================
 echo ""
-echo "🔨 5/13 Build des images Docker..."
+echo "🔨 5/12 Build des images Docker..."
 
 export WWWGROUP=$(id -g)
 export WWWUSER=$(id -u)
@@ -106,7 +106,7 @@ echo "   ✓ Images Docker construites"
 # 6. DÉMARRAGE CONTAINERS
 # ============================================
 echo ""
-echo "🚀 6/13 Démarrage des containers..."
+echo "🚀 6/12 Démarrage des containers..."
 
 docker compose up -d
 
@@ -116,7 +116,7 @@ echo "   ✓ Containers démarrés"
 # 7. ATTENTE SERVICES
 # ============================================
 echo ""
-echo "⏳ 7/13 Attente du démarrage des services (60s)..."
+echo "⏳ 7/12 Attente du démarrage des services (60s)..."
 sleep 60
 
 # Vérification que MySQL est prêt
@@ -144,7 +144,7 @@ fi
 # 8. GÉNÉRATION APP_KEY SI NÉCESSAIRE
 # ============================================
 echo ""
-echo "🔑 8/13 Génération APP_KEY..."
+echo "🔑 8/12 Génération APP_KEY..."
 
 if ! grep -q "APP_KEY=base64:" .env; then
     docker compose exec -T laravel.test php artisan key:generate
@@ -157,7 +157,7 @@ fi
 # 9. NPM INSTALL & BUILD
 # ============================================
 echo ""
-echo "📦 9/13 Installation NPM et build des assets..."
+echo "📦 9/12 Installation NPM et build des assets..."
 
 docker compose exec -T laravel.test bash -c "npm install && npm run build"
 
@@ -167,7 +167,7 @@ echo "   ✓ Assets construits"
 # 10. MIGRATIONS & SEEDERS
 # ============================================
 echo ""
-echo "🗄️  10/13 Migrations et seeders..."
+echo "🗄️  10/12 Migrations et seeders..."
 
 docker compose exec -T laravel.test php artisan migrate --force
 
@@ -181,7 +181,7 @@ echo "   ✓ Seeders exécutés"
 # 11. CACHE LARAVEL
 # ============================================
 echo ""
-echo "⚡ 11/13 Optimisation et cache..."
+echo "⚡ 11/12 Optimisation et cache..."
 
 docker compose exec -T laravel.test php artisan config:cache
 docker compose exec -T laravel.test php artisan route:cache
@@ -193,7 +193,7 @@ echo "   ✓ Cache créé"
 # 12. STORAGE LINK & PERMISSIONS
 # ============================================
 echo ""
-echo "🔗 12/13 Configuration finale..."
+echo "🔗 12/12 Configuration finale..."
 
 docker compose exec -T laravel.test php artisan storage:link 2>/dev/null || echo "   ℹ️  Storage link déjà créé"
 
@@ -207,78 +207,6 @@ docker compose exec -T laravel.test find /var/www/html/storage -type f -exec chm
 docker compose exec -T laravel.test find /var/www/html/storage -type d -exec chmod 777 {} \; 2>/dev/null || true
 
 echo "   ✓ Storage link et permissions configurés"
-
-# ============================================
-# 13. CONFIGURATION HTTPS (OPTIONNELLE)
-# ============================================
-echo ""
-echo "🔐 13/13 Configuration HTTPS..."
-echo ""
-read -p "Voulez-vous configurer HTTPS maintenant ? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo ""
-    echo "📝 Configuration HTTPS en cours..."
-
-    # Backup du .env
-    cp .env .env.backup.$(date +%Y%m%d_%H%M%S)
-
-    # Demander le domaine
-    read -p "Domaine (ex: recettes-zero-gaspi.com): " DOMAIN
-
-    # Mettre à jour APP_URL
-    if grep -q "^APP_URL=" .env; then
-        sed -i "s|^APP_URL=.*|APP_URL=https://$DOMAIN|" .env
-        echo "✅ APP_URL mis à jour vers https://$DOMAIN"
-    else
-        echo "APP_URL=https://$DOMAIN" >> .env
-        echo "✅ APP_URL ajouté"
-    fi
-
-    # Mettre à jour SESSION_SECURE_COOKIE
-    if grep -q "^SESSION_SECURE_COOKIE=" .env; then
-        sed -i 's|^SESSION_SECURE_COOKIE=.*|SESSION_SECURE_COOKIE=true|' .env
-    else
-        echo "SESSION_SECURE_COOKIE=true" >> .env
-    fi
-    echo "✅ SESSION_SECURE_COOKIE activé"
-
-    # Demander le mode production
-    echo ""
-    read -p "Passer en mode production (APP_ENV=production) ? (y/n) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sed -i 's|^APP_ENV=.*|APP_ENV=production|' .env
-        sed -i 's|^APP_DEBUG=.*|APP_DEBUG=false|' .env
-        echo "✅ Mode production activé"
-    fi
-
-    echo ""
-    echo "🔄 Redémarrage de Docker pour appliquer les changements..."
-    docker compose down
-    docker compose up -d
-
-    echo "⏳ Attente du démarrage..."
-    sleep 10
-
-    echo ""
-    echo "🧹 Nettoyage du cache Laravel..."
-    docker compose exec -T laravel.test php artisan config:clear
-    docker compose exec -T laravel.test php artisan cache:clear
-    docker compose exec -T laravel.test php artisan view:clear
-    docker compose exec -T laravel.test php artisan route:clear
-    docker compose exec -T laravel.test php artisan config:cache
-
-    echo ""
-    echo "✅ Configuration HTTPS terminée !"
-    echo ""
-    echo "🔧 Prochaines étapes:"
-    echo "   1. Testez votre site: https://$DOMAIN"
-    echo "   2. Mettez à jour le webhook Stripe:"
-    echo "      https://$DOMAIN/stripe/webhook"
-    echo "   3. Mettez à jour la clé secrète webhook dans le panel admin"
-    echo ""
-fi
 
 # ============================================
 # FIN
@@ -298,7 +226,7 @@ APP_PORT=$(grep APP_PORT .env | cut -d '=' -f2)
 echo "   → ${APP_URL}"
 echo ""
 echo "📊 Services disponibles:"
-echo "   → Mailpit: http://$(echo $APP_URL | sed 's/http[s]*:\/\///'):\$(grep FORWARD_MAILPIT_DASHBOARD_PORT .env | cut -d '=' -f2)"
+echo "   → Mailpit: http://$(echo $APP_URL | sed 's/http:\/\///'):\$(grep FORWARD_MAILPIT_DASHBOARD_PORT .env | cut -d '=' -f2)"
 echo ""
 echo "📝 Commandes utiles:"
 echo "   → Logs:           docker compose logs -f"
@@ -306,5 +234,4 @@ echo "   → Artisan:        docker compose exec laravel.test php artisan"
 echo "   → Shell:          docker compose exec laravel.test bash"
 echo "   → Arrêter:        docker compose down"
 echo "   → Redémarrer:     docker compose restart"
-echo "   → Mise à jour:    ./update.sh"
 echo ""

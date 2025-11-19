@@ -159,16 +159,16 @@ class MealPlanController extends Controller
         $this->authorize('view', $mealPlan);
 
         $validated = $request->validate([
-            'week_start_date' => 'required|date',
+            'week_start' => 'required|date',
         ]);
 
         $newPlan = $mealPlanService->duplicateMealPlan(
             Auth::user(),
             $mealPlan,
-            $validated['week_start_date']
+            $validated['week_start']
         );
 
-        return redirect()->route('meal-plans.index', ['week' => $validated['week_start_date']])
+        return redirect()->route('meal-plans.index', ['week' => $validated['week_start']])
             ->with('success', 'Semaine dupliquée avec succès');
     }
 }
