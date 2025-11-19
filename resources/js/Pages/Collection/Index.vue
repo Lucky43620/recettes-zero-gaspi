@@ -6,6 +6,7 @@ import FormInput from '@/Components/Common/FormInput.vue';
 import FormTextarea from '@/Components/Common/FormTextarea.vue';
 import FormCheckbox from '@/Components/Common/FormCheckbox.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import BackButton from '@/Components/Common/BackButton.vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -34,16 +35,20 @@ function submitCollection() {
 <template>
     <AppLayout :title="t('collections.my_collections')">
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ t('collections.my_collections') }}
-                </h2>
-                <PrimaryButton
-                    @click="showForm = !showForm"
-                    :variant="showForm ? 'secondary' : 'primary'"
-                >
-                    {{ showForm ? t('common.cancel') : t('collections.create_collection') }}
-                </PrimaryButton>
+            <div class="space-y-4">
+                <BackButton :href="route('collections.public')" />
+
+                <div class="flex justify-between items-center">
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                        {{ t('collections.my_collections') }}
+                    </h2>
+                    <PrimaryButton
+                        @click="showForm = !showForm"
+                        :variant="showForm ? 'secondary' : 'primary'"
+                    >
+                        {{ showForm ? t('common.cancel') : t('collections.create_collection') }}
+                    </PrimaryButton>
+                </div>
             </div>
         </template>
 

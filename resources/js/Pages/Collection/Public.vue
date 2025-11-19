@@ -2,27 +2,80 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { ref, computed } from 'vue';
+import FormInput from '@/Components/Common/FormInput.vue';
 
 const { t } = useI18n();
 
 const props = defineProps({
     collections: Object,
 });
+
+const searchQuery = ref('');
+
+const filteredCollections = computed(() => {
+    if (!props.collections?.data) return [];
+
+    if (!searchQuery.value) {
+        return props.collections.data;
+    }
+
+    const query = searchQuery.value.toLowerCase().trim();
+    return props.collections.data.filter(collection => {
+        const name = (collection.name || '').toLowerCase();
+        const description = (collection.description || '').toLowerCase();
+        const userName = (collection.user?.name || '').toLowerCase();
+
+        return name.includes(query) ||
+               description.includes(query) ||
+               userName.includes(query);
+    });
+});
 </script>
 
 <template>
     <AppLayout :title="t('collections.title')">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ t('collections.title') }}
-            </h2>
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    {{ t('collections.title') }}
+                </h2>
+
+                <div class="flex gap-3">
+                    <Link
+                        :href="route('collections.index')"
+                        class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                    >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                        {{ t('collections.my_collections') }}
+                    </Link>
+                </div>
+            </div>
         </template>
 
         <div class="py-12">
             <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                <div v-if="collections.data && collections.data.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Search Bar -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <FormInput
+                        v-model="searchQuery"
+                        type="text"
+                        :placeholder="t('collections.search_placeholder')"
+                        class="w-full"
+                    >
+                        <template #prefix>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </template>
+                    </FormInput>
+                </div>
+
+                <div v-if="filteredCollections.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <Link
-                        v-for="collection in collections.data"
+                        v-for="collection in filteredCollections"
                         :key="collection.id"
                         :href="route('collections.show', collection.id)"
                         class="bg-white rounded-lg shadow hover:shadow-lg transition-all duration-200 overflow-hidden group"
