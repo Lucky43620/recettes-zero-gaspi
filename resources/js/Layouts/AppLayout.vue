@@ -66,7 +66,7 @@ const logout = () => {
                                 <NavLink :href="route('favorites.index')" :active="route().current('favorites.index')">
                                     {{ t('nav.favorites') }}
                                 </NavLink>
-                                <NavLink :href="route('collections.index')" :active="route().current('collections.*')">
+                                <NavLink :href="route('collections.public')" :active="route().current('collections.public')">
                                     {{ t('nav.collections') }}
                                 </NavLink>
                             </div>
@@ -102,6 +102,10 @@ const logout = () => {
 
                                         <DropdownLink :href="route('user.public-profile', $page.props.auth.user)">
                                             {{ t('profile.view_public') }}
+                                        </DropdownLink>
+
+                                        <DropdownLink :href="route('collections.index')">
+                                            {{ t('profile.my_collections') }}
                                         </DropdownLink>
 
                                         <template v-if="$page.props.auth.user.is_admin">
@@ -186,7 +190,7 @@ const logout = () => {
                         <ResponsiveNavLink :href="route('favorites.index')" :active="route().current('favorites.index')">
                             {{ t('nav.favorites') }}
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('collections.index')" :active="route().current('collections.*')">
+                        <ResponsiveNavLink :href="route('collections.public')" :active="route().current('collections.public')">
                             {{ t('nav.collections') }}
                         </ResponsiveNavLink>
                     </div>
