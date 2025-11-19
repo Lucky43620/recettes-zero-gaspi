@@ -763,7 +763,10 @@
     "collection_name": "Collection Name",
     "collection_description": "Description",
     "add_recipe": "Add Recipe",
+    "add_recipes": "Add Recipes",
+    "add_recipes_title": "Add recipes to collection",
     "remove_recipe": "Remove from Collection",
+    "remove_recipe_confirmation": "Are you sure you want to remove this recipe from the collection?",
     "empty": "This collection is empty",
     "visibility": "Visibility",
     "public": "Public",
@@ -772,7 +775,14 @@
     "public_collection": "Public collection",
     "no_collections": "You don't have any collections yet",
     "delete_confirmation": "Delete this collection?",
-    "by_user": "By {name}"
+    "by_user": "By {name}",
+    "search_recipes": "Search recipes",
+    "search_placeholder": "Search by title...",
+    "selected_count": "{count} recipe selected | {count} recipes selected",
+    "add_selected": "Add ({count})",
+    "no_results": "No recipes found",
+    "no_recipes_available": "No recipes available",
+    "add_first_recipe": "Add my first recipe"
   },
   "favorites": {
     "title": "My Favorites",
