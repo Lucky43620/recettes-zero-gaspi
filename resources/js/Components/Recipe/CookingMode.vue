@@ -23,7 +23,7 @@ const steps = computed(() => props.recipe.steps || []);
 const ingredients = computed(() => props.recipe.ingredients || []);
 const showingIngredients = computed(() => currentStep.value === -1);
 
-const { timers, extractDuration, formatTime, startTimer } = useCookingTimer();
+const { timers, extractDuration, formatTime, startTimer, stopAllTimers } = useCookingTimer();
 
 const isStepCompleted = (index) => completedSteps.value.includes(index);
 
@@ -36,6 +36,7 @@ const toggleStepCompletion = (index) => {
 };
 
 const nextStep = () => {
+    stopAllTimers();
     if (currentStep.value === -1) {
         currentStep.value = 0;
     } else if (currentStep.value < steps.value.length - 1) {
@@ -44,6 +45,7 @@ const nextStep = () => {
 };
 
 const previousStep = () => {
+    stopAllTimers();
     if (currentStep.value === 0) {
         currentStep.value = -1;
     } else if (currentStep.value > 0) {
