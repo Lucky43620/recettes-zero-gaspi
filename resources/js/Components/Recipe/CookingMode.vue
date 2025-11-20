@@ -60,6 +60,13 @@ const handleStartTimer = (stepIndex) => {
     startTimer(stepIndex, step.content);
 };
 
+const currentStepDuration = computed(() => {
+    if (currentStep.value >= 0 && steps.value[currentStep.value]) {
+        return extractDuration(steps.value[currentStep.value].content);
+    }
+    return null;
+});
+
 const isTimerActive = computed(() => {
     return activeTimer.value !== null && activeTimer.value.stepIndex === currentStep.value;
 });
@@ -94,10 +101,11 @@ const formattedTime = computed(() => {
 
                     <CookingModeStep
                         v-if="steps[currentStep]"
+                        :key="currentStep"
                         :step-number="currentStep + 1"
                         :content="steps[currentStep].content"
                         :is-completed="isStepCompleted(currentStep)"
-                        :duration="extractDuration(steps[currentStep].content)"
+                        :duration="currentStepDuration"
                         :timer-active="isTimerActive"
                         :formatted-time="formattedTime"
                         @toggle-completion="toggleStepCompletion(currentStep)"
