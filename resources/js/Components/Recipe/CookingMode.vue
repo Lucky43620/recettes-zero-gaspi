@@ -6,6 +6,7 @@ import CookingModeIngredients from './CookingModeIngredients.vue';
 import CookingModeProgress from './CookingModeProgress.vue';
 import CookingModeStep from './CookingModeStep.vue';
 import CookingModeNavigation from './CookingModeNavigation.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 
 const { t } = useI18n();
 
@@ -17,6 +18,8 @@ const emit = defineEmits(['close']);
 
 const currentStep = ref(-1);
 const completedSteps = ref([]);
+const stepKey = ref(0);
+const showExitModal = ref(false);
 
 const steps = computed(() => props.recipe.steps || []);
 const ingredients = computed(() => props.recipe.ingredients || []);
@@ -86,6 +89,9 @@ const startTimer = () => {
 
 watch(currentStep, () => {
     stopTimer();
+    timerActive.value = false;
+    timerRemaining.value = 0;
+    stepKey.value++;
 });
 
 const isStepCompleted = (index) => completedSteps.value.includes(index);
@@ -127,13 +133,27 @@ const currentDuration = computed(() => {
     }
     return null;
 });
+
+const handleClose = () => {
+    showExitModal.value = true;
+};
+
+const confirmExit = () => {
+    stopTimer();
+    showExitModal.value = false;
+    emit('close');
+};
+
+const cancelExit = () => {
+    showExitModal.value = false;
+};
 </script>
 
 <template>
     <div class="fixed inset-0 bg-white z-50 flex flex-col">
         <div class="bg-green-600 text-white p-3 md:p-4 flex items-center justify-between">
             <h2 class="text-base md:text-xl font-bold truncate mr-2">{{ recipe.title }}</h2>
-            <button @click="emit('close')" class="p-3 hover:bg-green-700 rounded-lg transition flex-shrink-0 active:bg-green-800" :aria-label="t('cook.close')">
+            <button @click="handleClose" class="p-3 hover:bg-green-700 rounded-lg transition flex-shrink-0 active:bg-green-800" :aria-label="t('cook.close')">
                 <XMarkIcon class="w-6 h-6" />
             </button>
         </div>
@@ -154,7 +174,7 @@ const currentDuration = computed(() => {
 
                     <CookingModeStep
                         v-if="currentStepData"
-                        :key="`step-${currentStep}`"
+                        :key="stepKey"
                         :step-number="currentStep + 1"
                         :content="currentStepData.content"
                         :is-completed="isStepCompleted(currentStep)"
@@ -173,9 +193,34 @@ const currentDuration = computed(() => {
             :total-steps="steps.length"
             :completed-count="completedSteps.length"
             :showing-ingredients="showingIngredients"
-            @previous="currentStep === -1 ? emit('close') : previousStep()"
+            @previous="currentStep === -1 ? handleClose() : previousStep()"
             @next="nextStep"
-            @finish="emit('close')"
+            @finish="handleClose"
         />
+
+        <DialogModal :show="showExitModal" @close="cancelExit">
+            <template #title>
+                {{ t('cook.exit_confirmation_title') }}
+            </template>
+
+            <template #content>
+                {{ t('cook.exit_confirmation_message') }}
+            </template>
+
+            <template #footer>
+                <button
+                    @click="cancelExit"
+                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                >
+                    {{ t('common.cancel') }}
+                </button>
+                <button
+                    @click="confirmExit"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                >
+                    {{ t('cook.exit_cooking_mode') }}
+                </button>
+            </template>
+        </DialogModal>
     </div>
 </template>
