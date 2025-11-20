@@ -64,9 +64,14 @@ export function useCookingTimer() {
         }
     };
 
-    onUnmounted(() => {
+    const stopAllTimers = () => {
         intervals.forEach(interval => clearInterval(interval));
         intervals.clear();
+        timers.value = {};
+    };
+
+    onUnmounted(() => {
+        stopAllTimers();
     });
 
     return {
@@ -74,6 +79,7 @@ export function useCookingTimer() {
         extractDuration,
         formatTime,
         startTimer,
-        stopTimer
+        stopTimer,
+        stopAllTimers
     };
 }
