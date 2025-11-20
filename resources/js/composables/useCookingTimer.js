@@ -3,8 +3,8 @@ import { useI18n } from 'vue-i18n';
 
 export function useCookingTimer() {
     const { t } = useI18n();
-    const timers = ref({});
-    const intervals = new Map();
+    const activeTimer = ref(null);
+    let intervalId = null;
 
     const extractDuration = (content) => {
         const match = content.match(/(\d+)\s*(min|minute|minutes|h|heure|heures)/i);
@@ -22,35 +22,36 @@ export function useCookingTimer() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const stopTimer = (stepIndex) => {
-        const interval = intervals.get(stepIndex);
-        if (interval) {
-            clearInterval(interval);
-            intervals.delete(stepIndex);
+    const stopTimer = () => {
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
         }
-        delete timers.value[stepIndex];
+        activeTimer.value = null;
     };
 
     const startTimer = (stepIndex, stepContent) => {
-        stopTimer(stepIndex);
+        stopTimer();
 
         const duration = extractDuration(stepContent);
 
         if (duration) {
             const endTime = Date.now() + duration * 60 * 1000;
-            timers.value[stepIndex] = {
+            activeTimer.value = {
+                stepIndex,
                 endTime,
                 remaining: duration * 60,
             };
 
-            const interval = setInterval(() => {
+            intervalId = setInterval(() => {
                 const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-                if (timers.value[stepIndex]) {
-                    timers.value[stepIndex].remaining = remaining;
+
+                if (activeTimer.value) {
+                    activeTimer.value.remaining = remaining;
                 }
 
                 if (remaining === 0) {
-                    stopTimer(stepIndex);
+                    stopTimer();
                     if (Notification.permission === 'granted') {
                         new Notification(t('app.name'), {
                             body: t('cook.step_completed', { step: stepIndex + 1 }),
@@ -59,27 +60,18 @@ export function useCookingTimer() {
                     }
                 }
             }, 1000);
-
-            intervals.set(stepIndex, interval);
         }
     };
 
-    const stopAllTimers = () => {
-        intervals.forEach(interval => clearInterval(interval));
-        intervals.clear();
-        timers.value = {};
-    };
-
     onUnmounted(() => {
-        stopAllTimers();
+        stopTimer();
     });
 
     return {
-        timers,
+        activeTimer,
         extractDuration,
         formatTime,
         startTimer,
-        stopTimer,
-        stopAllTimers
+        stopTimer
     };
 }
