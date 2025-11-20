@@ -6,7 +6,6 @@ import CookingModeIngredients from './CookingModeIngredients.vue';
 import CookingModeProgress from './CookingModeProgress.vue';
 import CookingModeStep from './CookingModeStep.vue';
 import CookingModeNavigation from './CookingModeNavigation.vue';
-import { useCookingTimer } from '@/composables/useCookingTimer';
 
 const { t } = useI18n();
 
@@ -23,7 +22,67 @@ const steps = computed(() => props.recipe.steps || []);
 const ingredients = computed(() => props.recipe.ingredients || []);
 const showingIngredients = computed(() => currentStep.value === -1);
 
-const { activeTimer, extractDuration, formatTime, startTimer, stopTimer } = useCookingTimer();
+const timerActive = ref(false);
+const timerRemaining = ref(0);
+let timerInterval = null;
+
+const extractDuration = (step) => {
+    if (step.timer_minutes) {
+        return Math.ceil(step.timer_minutes);
+    }
+
+    const match = step.content?.match(/(\d+)\s*(min|minute|minutes|h|heure|heures)/i);
+    if (match) {
+        const value = parseInt(match[1]);
+        const unit = match[2].toLowerCase();
+        return unit.startsWith('h') ? value * 60 : value;
+    }
+
+    return null;
+};
+
+const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
+const stopTimer = () => {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    timerActive.value = false;
+    timerRemaining.value = 0;
+};
+
+const startTimer = () => {
+    stopTimer();
+
+    const step = steps.value[currentStep.value];
+    const duration = extractDuration(step);
+
+    if (duration) {
+        timerActive.value = true;
+        timerRemaining.value = duration * 60;
+        const endTime = Date.now() + duration * 60 * 1000;
+
+        timerInterval = setInterval(() => {
+            const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            timerRemaining.value = remaining;
+
+            if (remaining === 0) {
+                stopTimer();
+                if (Notification.permission === 'granted') {
+                    new Notification(t('app.name'), {
+                        body: t('cook.step_completed', { step: currentStep.value + 1 }),
+                        icon: '/favicon.ico',
+                    });
+                }
+            }
+        }, 1000);
+    }
+};
 
 watch(currentStep, () => {
     stopTimer();
@@ -55,24 +114,18 @@ const previousStep = () => {
     }
 };
 
-const handleStartTimer = (stepIndex) => {
-    const step = steps.value[stepIndex];
-    startTimer(stepIndex, step.content);
-};
-
-const currentStepDuration = computed(() => {
+const currentStepData = computed(() => {
     if (currentStep.value >= 0 && steps.value[currentStep.value]) {
-        return extractDuration(steps.value[currentStep.value].content);
+        return steps.value[currentStep.value];
     }
     return null;
 });
 
-const isTimerActive = computed(() => {
-    return activeTimer.value !== null && activeTimer.value.stepIndex === currentStep.value;
-});
-
-const formattedTime = computed(() => {
-    return isTimerActive.value ? formatTime(activeTimer.value.remaining) : '';
+const currentDuration = computed(() => {
+    if (currentStepData.value) {
+        return extractDuration(currentStepData.value);
+    }
+    return null;
 });
 </script>
 
@@ -100,16 +153,16 @@ const formattedTime = computed(() => {
                     />
 
                     <CookingModeStep
-                        v-if="steps[currentStep]"
-                        :key="currentStep"
+                        v-if="currentStepData"
+                        :key="`step-${currentStep}`"
                         :step-number="currentStep + 1"
-                        :content="steps[currentStep].content"
+                        :content="currentStepData.content"
                         :is-completed="isStepCompleted(currentStep)"
-                        :duration="currentStepDuration"
-                        :timer-active="isTimerActive"
-                        :formatted-time="formattedTime"
+                        :duration="currentDuration"
+                        :timer-active="timerActive"
+                        :formatted-time="formatTime(timerRemaining)"
                         @toggle-completion="toggleStepCompletion(currentStep)"
-                        @start-timer="handleStartTimer(currentStep)"
+                        @start-timer="startTimer"
                     />
                 </div>
             </div>
