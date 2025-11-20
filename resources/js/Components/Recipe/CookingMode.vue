@@ -17,6 +17,7 @@ const emit = defineEmits(['close']);
 
 const currentStep = ref(-1);
 const completedSteps = ref([]);
+const stepKey = ref(0);
 
 const steps = computed(() => props.recipe.steps || []);
 const ingredients = computed(() => props.recipe.ingredients || []);
@@ -86,6 +87,9 @@ const startTimer = () => {
 
 watch(currentStep, () => {
     stopTimer();
+    timerActive.value = false;
+    timerRemaining.value = 0;
+    stepKey.value++;
 });
 
 const isStepCompleted = (index) => completedSteps.value.includes(index);
@@ -154,7 +158,7 @@ const currentDuration = computed(() => {
 
                     <CookingModeStep
                         v-if="currentStepData"
-                        :key="`step-${currentStep}`"
+                        :key="stepKey"
                         :step-number="currentStep + 1"
                         :content="currentStepData.content"
                         :is-completed="isStepCompleted(currentStep)"
