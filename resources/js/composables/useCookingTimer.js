@@ -1,9 +1,10 @@
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 export function useCookingTimer() {
     const { t } = useI18n();
     const timers = ref({});
+    const intervals = new Map();
 
     const extractDuration = (content) => {
         const match = content.match(/(\d+)\s*(min|minute|minutes|h|heure|heures)/i);
@@ -21,7 +22,18 @@ export function useCookingTimer() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    const stopTimer = (stepIndex) => {
+        const interval = intervals.get(stepIndex);
+        if (interval) {
+            clearInterval(interval);
+            intervals.delete(stepIndex);
+        }
+        delete timers.value[stepIndex];
+    };
+
     const startTimer = (stepIndex, stepContent) => {
+        stopTimer(stepIndex);
+
         const duration = extractDuration(stepContent);
 
         if (duration) {
@@ -38,7 +50,7 @@ export function useCookingTimer() {
                 }
 
                 if (remaining === 0) {
-                    clearInterval(interval);
+                    stopTimer(stepIndex);
                     if (Notification.permission === 'granted') {
                         new Notification(t('app.name'), {
                             body: t('cook.step_completed', { step: stepIndex + 1 }),
@@ -47,13 +59,21 @@ export function useCookingTimer() {
                     }
                 }
             }, 1000);
+
+            intervals.set(stepIndex, interval);
         }
     };
+
+    onUnmounted(() => {
+        intervals.forEach(interval => clearInterval(interval));
+        intervals.clear();
+    });
 
     return {
         timers,
         extractDuration,
         formatTime,
-        startTimer
+        startTimer,
+        stopTimer
     };
 }
