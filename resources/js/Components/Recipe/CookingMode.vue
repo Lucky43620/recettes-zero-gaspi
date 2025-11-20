@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import CookingModeIngredients from './CookingModeIngredients.vue';
@@ -23,7 +23,11 @@ const steps = computed(() => props.recipe.steps || []);
 const ingredients = computed(() => props.recipe.ingredients || []);
 const showingIngredients = computed(() => currentStep.value === -1);
 
-const { timers, extractDuration, formatTime, startTimer, stopAllTimers } = useCookingTimer();
+const { activeTimer, extractDuration, formatTime, startTimer, stopTimer } = useCookingTimer();
+
+watch(currentStep, () => {
+    stopTimer();
+});
 
 const isStepCompleted = (index) => completedSteps.value.includes(index);
 
@@ -36,7 +40,6 @@ const toggleStepCompletion = (index) => {
 };
 
 const nextStep = () => {
-    stopAllTimers();
     if (currentStep.value === -1) {
         currentStep.value = 0;
     } else if (currentStep.value < steps.value.length - 1) {
@@ -45,7 +48,6 @@ const nextStep = () => {
 };
 
 const previousStep = () => {
-    stopAllTimers();
     if (currentStep.value === 0) {
         currentStep.value = -1;
     } else if (currentStep.value > 0) {
@@ -57,6 +59,14 @@ const handleStartTimer = (stepIndex) => {
     const step = steps.value[stepIndex];
     startTimer(stepIndex, step.content);
 };
+
+const isTimerActive = computed(() => {
+    return activeTimer.value !== null && activeTimer.value.stepIndex === currentStep.value;
+});
+
+const formattedTime = computed(() => {
+    return isTimerActive.value ? formatTime(activeTimer.value.remaining) : '';
+});
 </script>
 
 <template>
@@ -88,8 +98,8 @@ const handleStartTimer = (stepIndex) => {
                         :content="steps[currentStep].content"
                         :is-completed="isStepCompleted(currentStep)"
                         :duration="extractDuration(steps[currentStep].content)"
-                        :timer-active="!!timers[currentStep]"
-                        :formatted-time="timers[currentStep] ? formatTime(timers[currentStep].remaining) : ''"
+                        :timer-active="isTimerActive"
+                        :formatted-time="formattedTime"
                         @toggle-completion="toggleStepCompletion(currentStep)"
                         @start-timer="handleStartTimer(currentStep)"
                     />
