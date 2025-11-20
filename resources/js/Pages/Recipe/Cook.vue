@@ -51,6 +51,7 @@
 
               <div v-if="currentStep.timer_minutes" class="mt-8">
                 <RecipeTimer
+                  :key="`timer-${currentStepIndex}`"
                   :minutes="currentStep.timer_minutes"
                   :step-number="currentStepIndex + 1"
                 />
@@ -152,6 +153,31 @@
         </div>
       </div>
 
+      <DialogModal :show="showExitModal" @close="cancelExit">
+        <template #title>
+          {{ t('cook.exit_confirmation_title') }}
+        </template>
+
+        <template #content>
+          {{ t('cook.exit_confirmation_message') }}
+        </template>
+
+        <template #footer>
+          <button
+            @click="cancelExit"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+          >
+            {{ t('common.cancel') }}
+          </button>
+          <button
+            @click="confirmExit"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          >
+            {{ t('cook.exit_cooking_mode') }}
+          </button>
+        </template>
+      </DialogModal>
+
       <CongratulationsModal
         :show="showCongratulations"
         @close="closeCongratulations"
@@ -184,6 +210,7 @@ import { storeToRefs } from 'pinia'
 import PublicLayout from '@/Layouts/PublicLayout.vue'
 import RecipeTimer from '@/Components/Recipe/RecipeTimer.vue'
 import CongratulationsModal from '@/Components/Common/CongratulationsModal.vue'
+import DialogModal from '@/Components/DialogModal.vue'
 import {
   XMarkIcon,
   ChevronLeftIcon,
@@ -247,15 +274,23 @@ const releaseWakeLock = async () => {
   }
 }
 
+const showExitModal = ref(false)
+const showCongratulations = ref(false)
+
 const exitCooking = () => {
-  if (confirm(t('cook.exit_confirmation'))) {
-    releaseWakeLock()
-    exitStore()
-    router.visit(`/recipes/${props.recipe.slug}`)
-  }
+  showExitModal.value = true
 }
 
-const showCongratulations = ref(false)
+const confirmExit = () => {
+  showExitModal.value = false
+  releaseWakeLock()
+  exitStore()
+  router.visit(`/recipes/${props.recipe.slug}`)
+}
+
+const cancelExit = () => {
+  showExitModal.value = false
+}
 
 const finishCooking = () => {
   showCongratulations.value = true
